@@ -1183,6 +1183,7 @@ var _players = [
 
 // ── HELPERS ──
 function canEdit(){return !!window._fbUser;}
+function canWrite(){return !!window._fbUser;}
 function esc(s){if(!s)return"";return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function calcStatus(s,e){var n=new Date();n.setHours(0,0,0,0);var a=new Date(s+"T00:00:00"),b=new Date(e+"T23:59:59");return n<a?"proxima":n>b?"finalizada":"en_curso";}
 function fmtRange(s,e){if(!s)return"\u2014";var a=new Date(s+"T12:00:00"),b=new Date(e+"T12:00:00");return a.toLocaleDateString("es-ES",{day:"2-digit",month:"short"})+" \u2014 "+b.toLocaleDateString("es-ES",{day:"2-digit",month:"short",year:"numeric"});}
@@ -1368,13 +1369,11 @@ function bindTabs(onSelect){
 function route(v){
   S.view=v;
   document.querySelectorAll(".nb").forEach(function(b){b.classList.toggle("active",b.dataset.v===v);});
-  // Hide Nueva if not logged in
-  var nbNew=document.querySelector(".nb-new");
-  if(nbNew)nbNew.style.display=canEdit()?"":"none";
+  document.querySelectorAll(".nb-new,.nb[data-v='jugadores']").forEach(function(b){b.style.display=canEdit()?"":"none";});
   var views={agenda:renderAgenda,nueva:renderNueva,madrilena:function(){renderSel("madrilena");},espanola:function(){renderSel("espanola");},internacional:function(){renderSel("internacional");},calendario:renderCalendario,planificacion:renderPlanificacion,jugadores:renderJugadores,stats:renderStats};
   (views[v]||renderAgenda)();
 }
-document.querySelectorAll("[data-v]").forEach(function(b){b.addEventListener("click",function(){route(b.dataset.v);});});
+document.querySelector(".nav").addEventListener("click",function(e){var btn=e.target.closest("[data-v]");if(btn)route(btn.dataset.v);});
 
 // ── BIND CARDS ──
 function bindCards(){
