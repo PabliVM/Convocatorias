@@ -484,6 +484,9 @@ details[open] .fin-summary__label::before{transform:rotate(90deg)}
 .fsec-vuelta{background:rgba(80,80,110,.15);border:1px solid rgba(100,100,140,.25)}.fsec-vuelta .fsec-lbl{color:var(--text-mid)}
 .tbtn-sm{padding:5px 11px;font-size:12px;min-height:30px}
 .tbar-wrap-sm{margin-bottom:12px}
+
+.jug-edit-btn{background:none;border:1px solid var(--border-strong);border-radius:6px;color:var(--gold);font-size:11px;padding:4px 8px;cursor:pointer;flex-shrink:0;font-family:inherit;font-weight:600;transition:all var(--t)}
+.jug-edit-btn:active{background:var(--off-white-3)}
 </style>
 <!-- Firebase SDK -->
 <script type="module">
@@ -533,9 +536,653 @@ loadCallups();
 var _callups = [];
 var _seasons = ["2025-26"];
 
+
+// ── CONSTANTS ──
+var SELS = {};
+SELS["madrilena"] = {label:"Madrile\u00f1a",short:"MAD",cats:["sub12","sub14","sub16"],colors:{sub12:{badge:"#2563EB"},sub14:{badge:"#1D4ED8"},sub16:{badge:"#1E3A8A"}}};
+SELS["espanola"] = {label:"Espa\u00f1ola",short:"ESP",cats:["sub14","sub15","sub16","sub17","sub18","sub19","sub20","sub21","abs"],colors:{sub14:{badge:"#DC2626"},sub15:{badge:"#DC2626"},sub16:{badge:"#B91C1C"},sub17:{badge:"#B91C1C"},sub18:{badge:"#991B1B"},sub19:{badge:"#7F1D1D"},sub20:{badge:"#7F1D1D"},sub21:{badge:"#450A0A"},abs:{badge:"#1A0000"}}};
+SELS["internacional"] = {label:"Internacional",short:"INT",cats:["sub16","sub17","sub18","sub19","sub20","sub21","abs"],colors:{sub16:{badge:"#10B981"},sub17:{badge:"#10B981"},sub18:{badge:"#047857"},sub19:{badge:"#047857"},sub20:{badge:"#065F46"},sub21:{badge:"#065F46"},abs:{badge:"#064E3B"}}};
+
+var CAT={sub12:"Sub-12",sub13:"Sub-13",sub14:"Sub-14",sub15:"Sub-15",sub16:"Sub-16",sub17:"Sub-17",sub18:"Sub-18",sub19:"Sub-19",sub20:"Sub-20",sub21:"Sub-21",abs:"Absoluta"};
+
+var STATUS={proxima:{c:"s-prox",i:"\u23F0",l:"PR\u00d3XIMA"},en_curso:{c:"s-cur",i:"\u25CF",l:"EN CURSO"},finalizada:{c:"s-fin",i:"\u2713",l:"FINALIZADA"}};
+
+var TEAMS=[
+  {id:"t_castilla",name:"Castilla",order:12},{id:"t_rmc",name:"RMC",order:11},
+  {id:"t_ja",name:"JA",order:10},{id:"t_jb",name:"JB",order:9},{id:"t_jc",name:"JC",order:8},
+  {id:"t_ca",name:"CA",order:7},{id:"t_cb",name:"CB",order:6},
+  {id:"t_ia",name:"IA",order:5},{id:"t_ib",name:"IB",order:4},
+  {id:"t_aa",name:"AA",order:3},{id:"t_ab",name:"AB",order:2},{id:"t_ac",name:"AC",order:1}
+];
+
+var FLAGS={
+  "Espa\u00f1a":"\uD83C\uDDEA\uD83C\uDDF8","Francia":"\uD83C\uDDEB\uD83C\uDDF7","Alemania":"\uD83C\uDDE9\uD83C\uDDEA",
+  "Portugal":"\uD83C\uDDF5\uD83C\uDDF9","Italia":"\uD83C\uDDEE\uD83C\uDDF9","Argentina":"\uD83C\uDDE6\uD83C\uDDF7",
+  "Brasil":"\uD83C\uDDE7\uD83C\uDDF7","Marruecos":"\uD83C\uDDF2\uD83C\uDDE6","Colombia":"\uD83C\uDDE8\uD83C\uDDF4",
+  "Suecia":"\uD83C\uDDF8\uD83C\uDDEA","Suiza":"\uD83C\uDDE8\uD83C\uDDED","Holanda":"\uD83C\uDDF3\uD83C\uDDF1",
+  "B\u00e9lgica":"\uD83C\uDDE7\uD83C\uDDEA","Uruguay":"\uD83C\uDDFA\uD83C\uDDFE","Chile":"\uD83C\uDDE8\uD83C\uDDF1",
+  "M\u00e9xico":"\uD83C\uDDF2\uD83C\uDDFD","Ecuador":"\uD83C\uDDEA\uD83C\uDDE8","Per\u00fa":"\uD83C\uDDF5\uD83C\uDDEA",
+  "Venezuela":"\uD83C\uDDFB\uD83C\uDDEA","Bolivia":"\uD83C\uDDE7\uD83C\uDDF4","Paraguay":"\uD83C\uDDF5\uD83C\uDDFE",
+  "Senegal":"\uD83C\uDDF8\uD83C\uDDF3","Costa de Marfil":"\uD83C\uDDE8\uD83C\uDDEE","Nigeria":"\uD83C\uDDF3\uD83C\uDDEC",
+  "Ghana":"\uD83C\uDDEC\uD83C\uDDED","Turqu\u00eda":"\uD83C\uDDF9\uD83C\uDDF7","Polonia":"\uD83C\uDDF5\uD83C\uDDF1",
+  "Rumania":"\uD83C\uDDF7\uD83C\uDDF4","Ucrania":"\uD83C\uDDFA\uD83C\uDDE6","Croacia":"\uD83C\uDDED\uD83C\uDDF7",
+  "Guinea Ecuatorial":"\uD83C\uDDEC\uD83C\uDDF6","Camerún":"\uD83C\uDDE8\uD83C\uDDF2"
+};
+
+var PAIS_ADJ={
+  "Francia":"Francesa","Marruecos":"Marroqu\u00ed","Argentina":"Argentina","Colombia":"Colombiana",
+  "Suecia":"Sueca","Suiza":"Suiza","Brasil":"Brasile\u00f1a","Portugal":"Portuguesa",
+  "Alemania":"Alemana","Italia":"Italiana","Holanda":"Holandesa","B\u00e9lgica":"Belga",
+  "Uruguay":"Uruguaya","Chile":"Chilena","M\u00e9xico":"Mexicana","Ecuador":"Ecuatoriana",
+  "Per\u00fa":"Peruana","Venezuela":"Venezolana","Bolivia":"Boliviana","Paraguay":"Paraguaya",
+  "Senegal":"Senegalesa","Nigeria":"Nigeriana","Ghana":"Ghanesa","Turqu\u00eda":"Turca",
+  "Polonia":"Polaca","Rumania":"Rumana","Ucrania":"Ucraniana","Croacia":"Croata",
+  "Guinea Ecuatorial":"Ecuatoguineana","Camer\u00fan":"Camerunesa"
+};
+
+function selKey(type){if(!type)return"";var t=type.toLowerCase();if(t.indexOf("madril")!==-1)return"madrilena";if(t.indexOf("espa")!==-1)return"espanola";if(t.indexOf("intern")!==-1)return"internacional";return t;}
+function paisAdj(p){return PAIS_ADJ[p]||p;}
+function getFlag(p){return FLAGS[p]||"\uD83C\uDFF4";}
+function getSelFlag(type,pais){var k=selKey(type);if(k==="madrilena")return"\uD83D\uDCCD";if(k==="espanola")return"\uD83C\uDDEA\uD83C\uDDF8";if(k==="internacional")return getFlag(pais);return"\uD83C\uDFF4";}
+
+var _refEvents = [
+  {id:"ref_u16_apr",cat:"sub16",type:"espanola",title:"Partidos pendiente",startDate:"2026-04-06",endDate:"2026-04-08"},
+  {id:"ref_u17_apr",cat:"sub17",type:"espanola",title:"Concentraci\u00f3n/Partidos pendiente",startDate:"2026-04-21",endDate:"2026-04-25"},
+  {id:"ref_u19_apr",cat:"sub19",type:"espanola",title:"Concentraci\u00f3n/Partidos pendiente",startDate:"2026-04-26",endDate:"2026-04-30"},
+  {id:"ref_u15_may",cat:"sub15",type:"espanola",title:"Torneo Albir",startDate:"2026-05-05",endDate:"2026-05-09"},
+  {id:"ref_u17_may",cat:"sub17",type:"espanola",title:"Euro U17 Estonia",startDate:"2026-05-26",endDate:"2026-06-06"},
+  {id:"ref_u19_jun",cat:"sub19",type:"espanola",title:"Euro U19 Gales",startDate:"2026-06-28",endDate:"2026-07-10"}
+];
+
+var _players = [
+  {id:"rp1",fullName:"FRAN GONZÁLEZ",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp2",fullName:"SERGIO MESTRE",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp3",fullName:"GUILLE SÚNICO",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp4",fullName:"MARIO RIVAS",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp5",fullName:"MANU SERRANO",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp6",fullName:"CRISTIAN PEREA",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp7",fullName:"LAMINI FATI",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp8",fullName:"DAVID JIMÉNEZ",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp9",fullName:"VÍCTOR VALDEPEÑAS",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp10",fullName:"CÉSAR PALACIOS",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp11",fullName:"BRUNO IGLESIAS",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp12",fullName:"MANUEL ÁNGEL",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp13",fullName:"JORGE CESTERO",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp14",fullName:"JOAN MARTÍNEZ",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp15",fullName:"THIAGO PITARCH",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp16",fullName:"JESÚS FORTEA",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp17",fullName:"RACHAD FETAL",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp18",fullName:"POL FORTUNY",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp19",fullName:"DIEGO AGUADO",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp20",fullName:"HUGO DE LLANOS",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp21",fullName:"DANIEL YAÑEZ",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp22",fullName:"LORENZO ZÚÑIGA",active:true,teamHistory:[
+    {teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp23",fullName:"FERRAN QUETGLAS",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp24",fullName:"ALEJANDRO MOYA",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp25",fullName:"ALFREDO SOTRES",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp26",fullName:"JAIME CALLEJA",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp27",fullName:"CARLOS RGUEZ.",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp28",fullName:"IZAN REGUEIRA",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp29",fullName:"ÁLVARO GINÉS",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp30",fullName:"JOAN MASCARÓ",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp31",fullName:"JACOBO ORTEGA",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp32",fullName:"DANIEL MESONERO",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp33",fullName:"DIEGO ARROYO",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp34",fullName:"ALEJANDRO PÉREZ",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp35",fullName:"YERAY LANCHA",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp36",fullName:"ÓSCAR MESA",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp37",fullName:"ÁLVARO LEIVA",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp38",fullName:"AIMAR SANTIAGO",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp39",fullName:"ERIC GÓMEZ",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp40",fullName:"EMANUEL SANTANA",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp41",fullName:"ROBERTO MARTÍN",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp42",fullName:"GABRIEL CASTRELO",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp43",fullName:"ÁLVARO GONZÁLEZ",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp44",fullName:"MANEX REZOLA",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp45",fullName:"ADRIÁN ARNUCIO",active:true,teamHistory:[
+    {teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp46",fullName:"JAIME BARROSO",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp47",fullName:"POL DURÁN",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp48",fullName:"LIBERTO  NAV.",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp49",fullName:"JAVIER NAVARRO",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp50",fullName:"ILLIA VOLOSHYN",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp51",fullName:"DIEGO MTNEZ BETO",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp52",fullName:"JOSE A. REYES",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp53",fullName:"FERRAN SECO",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp54",fullName:"FCO. JAVIER BAILÓN",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp55",fullName:"ADRIÁN PÉREZ",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp56",fullName:"IGNACIO GASCÓN",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp57",fullName:"ÁLVARO LEZCANO",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp58",fullName:"CARLOS DÍEZ",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp59",fullName:"PAULO DE ALMEIDA",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp60",fullName:"ALEXIS CIRIA",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp61",fullName:"ALFONSO ROMERO",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp62",fullName:"MARCOS VIEGA",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp63",fullName:"ARIEL NKOGHE",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp64",fullName:"AARÓN GÓMEZ",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp65",fullName:"GABRIEL VALERO",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp66",fullName:"JOEL PLEGUEZUELOS",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp67",fullName:"MELVIN UKPEIGBE",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp68",fullName:"BRUNO GALASSI",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp69",fullName:"RUBÉN MARTÍNEZ",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp70",fullName:"JAVIER MENA",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp71",fullName:"GUILLE GONZÁLEZ",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp72",fullName:"IKER DOBLAS",active:true,teamHistory:[
+    {teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp73",fullName:"DIEGO LACOSTA",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp74",fullName:"LUIS PAULO",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp75",fullName:"FERNANDO VEGA",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp76",fullName:"SANTIAGO DEL PINO",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp77",fullName:"YEREMAIAH RAMOS",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp78",fullName:"RODRIGO VELASCO",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp79",fullName:"ARES CAPATANA",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp80",fullName:"ENZO ALVES",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp81",fullName:"LÉO LEMAITRE",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp82",fullName:"MATEO GARRIDO",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp83",fullName:"MARCO COMPANY",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp84",fullName:"RAÚL ANDREI PERTEA",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp85",fullName:"BRYAN BUGARÍN",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp86",fullName:"GUILLERMO PONCE",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp87",fullName:"JUAN CASADO",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp88",fullName:"ANDRÉS CORCOBA",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp89",fullName:"PELAYO PALOMO",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp90",fullName:"RUBÉN LÓPEZ",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp91",fullName:"ALEJANDRO MORA",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp92",fullName:"NICOLÁS SAN PÍO",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp93",fullName:"CARLOS LARDÍN",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp94",fullName:"JL ESPINOSA",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp95",fullName:"RAFAEL SALES",active:true,teamHistory:[
+    {teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp96",fullName:"BELTRÁN CAPOTE",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp97",fullName:"ALEJANDRO CASTAÑO",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp98",fullName:"J. ALBERTO CASTELAU",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp99",fullName:"EDUARDO VALENTIN",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp100",fullName:"MATEO POZO",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp101",fullName:"MATIAS MARTIN",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp102",fullName:"HUGO SARMIENTO",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp103",fullName:"OMAR CHAOUI",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp104",fullName:"MARIO BULLÓN",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp105",fullName:"PABLO IBAÑEZ",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp106",fullName:"HÉCTOR MARTÍNEZ",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp107",fullName:"IZAN MESA",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp108",fullName:"ÁLVARO RIVERA",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp109",fullName:"GUILLERMO DIAZ",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp110",fullName:"JESÚS PALACIOS",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp111",fullName:"RUBEN DÍAZ",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp112",fullName:"GUILLERMO LÓPEZ",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp113",fullName:"JENRY HERNANDEZ",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp114",fullName:"PABLO MARTINEZ",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp115",fullName:"DIEGO SANCHEZ",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp116",fullName:"MANUEL ROMERO",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp117",fullName:"MOCTAR CHERIF",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp118",fullName:"NILS LEON WESTIN",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp119",fullName:"JAIRO MORILLA",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp120",fullName:"VÍCTOR RIVAS",active:true,teamHistory:[
+    {teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp121",fullName:"Iker Diepa",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp122",fullName:"Hugo Medina",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp123",fullName:"Unai Ordoñez",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp124",fullName:"Joel Pallé",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp125",fullName:"Fernando Pereira",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp126",fullName:"Adrián Talavera",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp127",fullName:"Ignacio Alameda",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp128",fullName:"Alvaro Barral",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp129",fullName:"Martin Espuela",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp130",fullName:"Aitor Gandia",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp131",fullName:"David Kravets",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp132",fullName:"Adrián Morales",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp133",fullName:"Victor Manuel Plazas",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp134",fullName:"Carlos Sánchez",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp135",fullName:"Francisco Asier Sanchez",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp136",fullName:"Asier Santoyo",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp137",fullName:"Alvaro Vega",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp138",fullName:"Daniel González",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp139",fullName:"Héctor Montero",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp140",fullName:"Izan Ramirez",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp141",fullName:"Hugo Torresano",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp142",fullName:"Iván Vázquez",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp143",fullName:"Gorka Abascal",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp144",fullName:"Aitor Torondel",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp145",fullName:"Hugo Moreno",active:true,teamHistory:[
+    {teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp146",fullName:"Adrián Garcia",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp147",fullName:"Beltrán Guillén",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp148",fullName:"Rubén Lebrero",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp149",fullName:"Mikel López",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp150",fullName:"Luis Molina",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp151",fullName:"Alberto Ruiz",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp152",fullName:"Hugo Álvarez",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp153",fullName:"Iker Álvarez",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp154",fullName:"Marcos Carrasco",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp155",fullName:"Mauro Del Castillo",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp156",fullName:"Hugo Fernández",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp157",fullName:"David Garcia",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp158",fullName:"Juan Mairata",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp159",fullName:"Daniel Manzano",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp160",fullName:"Alonso Moreno",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp161",fullName:"Thiago Muñoz",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp162",fullName:"Marco Poyatos",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp163",fullName:"Izan Santamaria",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp164",fullName:"Noah Corona",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp165",fullName:"Adrian Velasco",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp166",fullName:"Marc Stefan Lorente",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp167",fullName:"Bame Tom Miller",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp168",fullName:"Thiago Iván Montes De Oca",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp169",fullName:"Dario Reina",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp170",fullName:"Alfred Mbella Kotto",active:true,teamHistory:[
+    {teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp171",fullName:"Saul Aranda",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp172",fullName:"Guillermo Collado",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp173",fullName:"Daniel Diaz",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp174",fullName:"Iñigo Fresco",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp175",fullName:"Pablo Garcia",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp176",fullName:"Rubén Martín",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp177",fullName:"Victor Martín",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp178",fullName:"Gonzalo Martinez",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp179",fullName:"Mateo Soria",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp180",fullName:"Olivier Telus",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp181",fullName:"Lucas Gómez",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp182",fullName:"Pablo Martinez",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp183",fullName:"Aliaksei",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp184",fullName:"Fco Manuel Duarte",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp185",fullName:"Jorge Marti",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp186",fullName:"Mauro Miralles",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp187",fullName:"Anderson Jesús",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp188",fullName:"Carlos Colley",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp189",fullName:"Fernando Gómez",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp190",fullName:"Adrián Guerra",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp191",fullName:"Aleksandar Chobanov",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp192",fullName:"Simon Ondo Obama",active:true,teamHistory:[
+    {teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp193",fullName:"Yago Nuñez",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp194",fullName:"Pablo De La Pedraja",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp195",fullName:"Enzo Martinez",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp196",fullName:"Hugo Navarro",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp197",fullName:"Alejandro Del Pino",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp198",fullName:"Alvaro Montoro",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp199",fullName:"Daniel Del Pino",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp200",fullName:"Aaron Krall",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp201",fullName:"Álvaro Cuervo",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp202",fullName:"Alexis Salado",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp203",fullName:"Daniel Buiza",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp204",fullName:"Pedro Adrián Alarcón",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp205",fullName:"Adrián Marrero",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp206",fullName:"Izan Garcia",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp207",fullName:"Hugo Fernández",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp208",fullName:"Luis Garcia",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp209",fullName:"Adrián Rodriguez",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp210",fullName:"Eduardo Malo",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp211",fullName:"Diego Gonzalez",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp212",fullName:"Andres Estaire",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp213",fullName:"Hugo Mora",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp214",fullName:"Hugo Álvarez",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp215",fullName:"Alejandro Martinez",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp216",fullName:"Ignacio Villanueva",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp217",fullName:"Samuel Aceves",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp218",fullName:".",active:true,teamHistory:[
+    {teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp219",fullName:"Martin Casillas",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp220",fullName:"Marco Pérez",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp221",fullName:"Daniel De Ibar",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp222",fullName:"Manuel Morilla",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp223",fullName:"Nicolás Moreno",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp224",fullName:"Ethan Balboa",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp225",fullName:"Daniel Havrylyak",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp226",fullName:"Diego Fernández",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp227",fullName:"Hugo Grande",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp228",fullName:"Hugo Mateo",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp229",fullName:"David Sánchez",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp230",fullName:"Joel Mateo",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp231",fullName:"Carlos Calvo",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp232",fullName:"Antonio Gómez",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp233",fullName:"Ignacio Aguilar",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp234",fullName:"Mario De Andrés",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp235",fullName:"Roberto Jiménez",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp236",fullName:"Mario Abad",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp237",fullName:"Daniel Osayamen",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp238",fullName:"Guillermo Soriano",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp239",fullName:"Didac Gómez",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp240",fullName:"Pablo Morilla",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp241",fullName:"Moses Oriakhi",active:true,teamHistory:[
+    {teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp242",fullName:"Jaime Alameda",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp243",fullName:"Diego Alonso",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp244",fullName:"Liam Alves",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp245",fullName:"Adrián Badas",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp246",fullName:"Adrián Balsera",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp247",fullName:"Adrián Camacho",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp248",fullName:"Yago Carmona",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp249",fullName:"Hugo Herrero",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp250",fullName:"Liam Román",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp251",fullName:"Teo Galán",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp252",fullName:"Javier Martínez",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp253",fullName:"Eduard Andrei Ocheanu",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp254",fullName:"Prebenjamin B",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp255",fullName:"Alberto Gómez",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp256",fullName:"Enzo Guijosa",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp257",fullName:"Bruno Jiménez",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp258",fullName:"Pablo Martín",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp259",fullName:"Marco Medina",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp260",fullName:"Daniel Montoya",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp261",fullName:"Elias Peña",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp262",fullName:"Jorge Pérez",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp263",fullName:"Mateo Praja",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp264",fullName:"Daniel Rodriguez",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp265",fullName:"Hugo Terrón",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp266",fullName:"Mauro Urrutia",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp267",fullName:"Pablo Garcia",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp268",fullName:"Victor Rosado",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp269",fullName:"Jaime Crespo",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp270",fullName:"Marcos Blasco",active:true,teamHistory:[
+    {teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp271",fullName:"Ignacio García",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp272",fullName:"Joel Herráez",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp273",fullName:"Héctor Lorenzo",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp274",fullName:"Bruno Serrano",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp275",fullName:"Héctor Solis",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp276",fullName:"Daniel Mtez Leonidas",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp277",fullName:"Samuel Rodriguez",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp278",fullName:"Álvaro González",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp279",fullName:"Marcos Gómez",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp280",fullName:"Marco Alvarez",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp281",fullName:"Hugo Boch",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp282",fullName:"Joaquin Cordido",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp283",fullName:"Eitan Levinstein",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp284",fullName:"Gonzalo Paz",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp285",fullName:"Debutantes",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp286",fullName:"Aritz Diaz",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp287",fullName:"Héctor Miguel",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp288",fullName:"Nicolás Arizmendi",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp289",fullName:"Luca Díaz",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp290",fullName:"Ángel Baltasar",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp291",fullName:"Fernando Maillo",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+  {id:"rp292",fullName:"Christian Salido",active:true,teamHistory:[
+    {teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
+];
+
 // ── HELPERS ──
-function canEdit(){return true;}
-function canWrite(){return !!window._fbUser;}
+function canEdit(){return !!window._fbUser;}
 function esc(s){if(!s)return"";return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function calcStatus(s,e){var n=new Date();n.setHours(0,0,0,0);var a=new Date(s+"T00:00:00"),b=new Date(e+"T23:59:59");return n<a?"proxima":n>b?"finalizada":"en_curso";}
 function fmtRange(s,e){if(!s)return"\u2014";var a=new Date(s+"T12:00:00"),b=new Date(e+"T12:00:00");return a.toLocaleDateString("es-ES",{day:"2-digit",month:"short"})+" \u2014 "+b.toLocaleDateString("es-ES",{day:"2-digit",month:"short",year:"numeric"});}
@@ -654,8 +1301,8 @@ function callupTableRow(c){
 function callupDetail(c){
   var pc=(c.players&&c.players.length)||0,rows="";
   for(var i=0;i<pc;i++){rows+='<li class="pl-item"><span class="pl-num">'+(i+1)+'</span><div class="pl-info"><span class="pl-name">'+esc(c.players[i].fullName)+'</span><span class="pl-team">'+esc(c.players[i].teamName)+"</span></div></li>";}
-  var editBtn=canWrite()?'<button class="btn btn-ghost btn-sm" data-edit="'+c.id+'" style="flex:1">\u270E Editar</button>':"";
-  var delBtn=canWrite()?'<button class="btn btn-danger btn-sm" data-del="'+c.id+'" style="flex:1">\uD83D\uDDD1 Eliminar</button>':"";
+  var editBtn=canEdit()?'<button class="btn btn-ghost btn-sm" data-edit="'+c.id+'" style="flex:1">\u270E Editar</button>':"";
+  var delBtn=canEdit()?'<button class="btn btn-danger btn-sm" data-del="'+c.id+'" style="flex:1">\uD83D\uDDD1 Eliminar</button>':"";
   return'<div class="dp-hdr">'+
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'+
     '<div class="dp-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+"</div>"+
@@ -723,14 +1370,11 @@ function route(v){
   document.querySelectorAll(".nb").forEach(function(b){b.classList.toggle("active",b.dataset.v===v);});
   // Hide Nueva if not logged in
   var nbNew=document.querySelector(".nb-new");
-  if(nbNew)nbNew.style.display="";
+  if(nbNew)nbNew.style.display=canEdit()?"":"none";
   var views={agenda:renderAgenda,nueva:renderNueva,madrilena:function(){renderSel("madrilena");},espanola:function(){renderSel("espanola");},internacional:function(){renderSel("internacional");},calendario:renderCalendario,planificacion:renderPlanificacion,jugadores:renderJugadores,stats:renderStats};
   (views[v]||renderAgenda)();
 }
-document.querySelector(".nav").addEventListener("click",function(e){
-  var btn=e.target.closest("[data-v]");
-  if(btn)route(btn.dataset.v);
-});
+document.querySelectorAll("[data-v]").forEach(function(b){b.addEventListener("click",function(){route(b.dataset.v);});});
 
 // ── BIND CARDS ──
 function bindCards(){
@@ -856,7 +1500,7 @@ function bindCatTabs(){
 
 // ── NUEVA / EDITAR ──
 function renderNueva(){
-  if(!canWrite()){$("main").innerHTML=emptyState("Inicia sesi\u00f3n para crear convocatorias","\uD83D\uDD12");return;}
+  if(!canEdit()){$("main").innerHTML=emptyState("Inicia sesi\u00f3n para crear convocatorias","\uD83D\uDD12");return;}
   var players=getPlayersBySeason(S.season).filter(function(p){return p.active;});
   var byTeam={},tord={};TEAMS.forEach(function(t){tord[t.name]=t.order;});
   players.forEach(function(p){var per=teamInSeason(p,S.season)||teamNow(p);if(!per)return;if(!byTeam[per.teamName])byTeam[per.teamName]=[];byTeam[per.teamName].push({id:p.id,fullName:p.fullName,teamName:per.teamName});});
@@ -1049,6 +1693,7 @@ function bindAiParser(){
 
 // ── JUGADORES ──
 function renderJugadores(){
+  if(!canWrite()){$("main").innerHTML=emptyState("Inicia sesi\u00f3n para ver los jugadores","\uD83D\uDD12");return;}
   var players=getPlayersBySeason(S.season);
   var q=(S.jugSearch||"").toLowerCase();
   var filtered=q?players.filter(function(p){return p.fullName.toLowerCase().indexOf(q)!==-1;}):players;
@@ -1057,19 +1702,85 @@ function renderJugadores(){
   var sortedTeams=Object.keys(byTeam).sort(function(a,b){return(tord[b]||0)-(tord[a]||0);});
   var callups=getCallups({season:S.season});
   var callupCount={};callups.forEach(function(c){c.players.forEach(function(cp){callupCount[cp.playerId]=(callupCount[cp.playerId]||0)+1;});});
-  var h='<div class="vh"><h1 class="vt">Jugadores</h1><span class="vs">'+filtered.length+" activos</span></div>"+
-    '<input class="fi" id="jug-search" type="text" placeholder="\uD83D\uDD0D Buscar jugador..." value="'+esc(S.jugSearch||"")+'" style="margin-bottom:12px" autocomplete="off"/>';
+  var h='<div class="vh"><h1 class="vt">Jugadores</h1><span class="vs">'+filtered.filter(function(p){return p.active;}).length+" activos</span></div>"+
+    '<input class="fi" id="jug-search" type="text" placeholder="\uD83D\uDD0D Buscar jugador..." value="'+esc(S.jugSearch||"")+'" style="margin-bottom:12px" autocomplete="off"/>'+
+    '<button class="btn btn-gold" id="btn-add-player" style="width:100%;margin-bottom:12px">+ A\u00f1adir jugador</button>';
   h+=sortedTeams.map(function(team){
     var ps=byTeam[team];
-    return'<div class="tb"><div class="tb-hdr"><span class="tb-name">'+esc(team)+'</span><span class="tb-cnt">'+ps.length+'</span></div>'+
+    return'<div class="tb"><div class="tb-hdr"><span class="tb-name">'+esc(team)+'</span><span class="tb-cnt">'+ps.filter(function(p){return p.active;}).length+'</span></div>'+
       '<ul class="tpl">'+ps.map(function(p){
         var n=callupCount[p.id]||0;
-        return'<li class="tpl-item" data-pid="'+p.id+'"><span class="tpl-name">'+esc(p.fullName)+"</span>"+(n?'<span class="tpl-badge">'+n+"</span>":"")+"</li>";
+        return'<li class="tpl-item">'+
+          '<div style="flex:1;min-width:0"><span class="tpl-name"'+(!p.active?' style="opacity:.4;text-decoration:line-through"':'')+">"+ esc(p.fullName)+"</span></div>"+
+          (n?'<span class="tpl-badge">'+n+"</span>":"")+
+          '<button class="jug-edit-btn" data-pid="'+p.id+'">✎</button>'+
+          "</li>";
       }).join("")+"</ul></div>";
   }).join("");
   $("main").innerHTML=h;
   var inp=$("jug-search");
   if(inp){inp.addEventListener("input",function(){S.jugSearch=inp.value;renderJugadores();});if(S.jugSearch)setTimeout(function(){inp.focus();inp.setSelectionRange(9999,9999);},50);}
+  document.querySelectorAll(".jug-edit-btn").forEach(function(btn){btn.addEventListener("click",function(e){e.stopPropagation();openPlayerEdit(btn.dataset.pid);});});
+  var addBtn=$("btn-add-player");if(addBtn)addBtn.addEventListener("click",openPlayerAdd);
+}
+
+function openPlayerEdit(pid){
+  var p=null;for(var i=0;i<_players.length;i++){if(_players[i].id===pid){p=_players[i];break;}}
+  if(!p)return;
+  var cur=teamInSeason(p,S.season)||teamNow(p);
+  var teamOpts=TEAMS.map(function(t){return'<option value="'+t.id+'"'+(cur&&cur.teamId===t.id?" selected":"")+">"+esc(t.name)+"</option>";}).join("");
+  var mo=document.createElement("div");mo.className="mo";
+  mo.innerHTML='<div class="modal"><button class="mcl" id="pe-close">\u00d7</button>'+
+    '<div class="mtitle">Editar jugador</div>'+
+    '<div class="fg"><label class="fl">Nombre</label><input class="fi" id="pe-name" type="text" value="'+esc(p.fullName)+'"/></div>'+
+    '<div class="fg"><label class="fl">Equipo</label><select class="fsel" id="pe-team">'+teamOpts+"</select></div>"+
+    '<div style="display:flex;gap:8px;margin-top:8px">'+
+    '<button class="btn btn-danger btn-sm" id="pe-toggle" style="flex:1">'+(p.active?"\uD83D\uDEAB Dar de baja":"\u2705 Reactivar")+'</button>'+
+    '<button class="btn btn-ghost btn-sm" id="pe-cancel" style="flex:1">Cancelar</button>'+
+    '<button class="btn btn-primary btn-sm" id="pe-save" style="flex:1">Guardar</button>'+
+    '</div></div>';
+  document.body.appendChild(mo);
+  function closeMo(){if(mo.parentNode)mo.parentNode.removeChild(mo);}
+  $("pe-close").addEventListener("click",closeMo);$("pe-cancel").addEventListener("click",closeMo);
+  mo.addEventListener("click",function(e){if(e.target===mo)closeMo();});
+  $("pe-toggle").addEventListener("click",function(){p.active=!p.active;toast(p.active?"\u2705 Reactivado":"\uD83D\uDEAB Dado de baja");closeMo();renderJugadores();});
+  $("pe-save").addEventListener("click",function(){
+    var newName=($("pe-name").value||"").trim();
+    var newTeamId=$("pe-team").value;
+    var newTeam=null;for(var i=0;i<TEAMS.length;i++){if(TEAMS[i].id===newTeamId){newTeam=TEAMS[i];break;}}
+    if(!newName||!newTeam)return;
+    p.fullName=newName;
+    p.teamHistory=p.teamHistory.map(function(h){return h.to===null?Object.assign({},h,{to:new Date().toISOString().slice(0,10)}):h;});
+    p.teamHistory.push({teamId:newTeam.id,teamName:newTeam.name,season:S.season,from:new Date().toISOString().slice(0,10),to:null});
+    toast("\u2705 Jugador actualizado");closeMo();renderJugadores();
+  });
+}
+
+function openPlayerAdd(){
+  var teamOpts=TEAMS.map(function(t){return'<option value="'+t.id+'">'+esc(t.name)+"</option>";}).join("");
+  var mo=document.createElement("div");mo.className="mo";
+  mo.innerHTML='<div class="modal"><button class="mcl" id="pa-close">\u00d7</button>'+
+    '<div class="mtitle">Nuevo jugador</div>'+
+    '<div class="fg"><label class="fl">Nombre completo</label><input class="fi" id="pa-name" type="text" placeholder="Nombre Apellido" autocomplete="off"/></div>'+
+    '<div class="fg"><label class="fl">Equipo</label><select class="fsel" id="pa-team">'+teamOpts+"</select></div>"+
+    '<div style="display:flex;gap:8px;margin-top:8px">'+
+    '<button class="btn btn-ghost btn-sm" id="pa-cancel" style="flex:1">Cancelar</button>'+
+    '<button class="btn btn-primary btn-sm" id="pa-save" style="flex:1">A\u00f1adir</button>'+
+    '</div></div>';
+  document.body.appendChild(mo);
+  setTimeout(function(){var n=$("pa-name");if(n)n.focus();},100);
+  function closeMo(){if(mo.parentNode)mo.parentNode.removeChild(mo);}
+  $("pa-close").addEventListener("click",closeMo);$("pa-cancel").addEventListener("click",closeMo);
+  mo.addEventListener("click",function(e){if(e.target===mo)closeMo();});
+  $("pa-save").addEventListener("click",function(){
+    var name=($("pa-name").value||"").trim();
+    var teamId=$("pa-team").value;
+    var team=null;for(var i=0;i<TEAMS.length;i++){if(TEAMS[i].id===teamId){team=TEAMS[i];break;}}
+    if(!name){$("pa-name").style.borderColor="red";return;}
+    var newP={id:gid(),fullName:name,active:true,teamHistory:[{teamId:team.id,teamName:team.name,season:S.season,from:new Date().toISOString().slice(0,10),to:null}]};
+    _players.push(newP);
+    toast("\u2705 "+name+" a\u00f1adido");closeMo();renderJugadores();
+  });
 }
 
 // ── STATS ──
@@ -1238,16 +1949,12 @@ function bindLoginBtn(){
 // ── AUTH STATE ──
 window._onAuthChange=function(user){
   var lb=$("hdr-login-btn");
-  if(lb){if(user){lb.textContent="🔓";lb.title="Sesión: "+user.email;lb.classList.add("logged");}else{lb.textContent="🔒";lb.title="Iniciar sesión";lb.classList.remove("logged");}}
-  // Solo re-renderizar la vista actual si es "nueva" para desbloquear el form
-  // Nunca redirigir al usuario a otra pantalla
-  if(S.view==="nueva" && document.getElementById("cf")===null){route("nueva");}
+  if(lb){if(user){lb.textContent="\uD83D\uDD13";lb.title="Sesi\u00f3n: "+user.email;lb.classList.add("logged");}else{lb.textContent="\uD83D\uDD12";lb.title="Iniciar sesi\u00f3n";lb.classList.remove("logged");}}
+  route(S.view||"agenda");
 };
 
 // ── BOOT ──
 window._onCallupsLoaded=function(){renderSeasonSel();route(S.view||"agenda");};
-// Mark boot complete
-window._bootDone=true;
 renderSeasonSel();
 bindLoginBtn();
 route("agenda");
