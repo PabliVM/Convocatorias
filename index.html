@@ -1666,7 +1666,7 @@ function bindAiParser(){
         "\"notes\":\"estado D/P/E + alojamiento + obs\"}",
         "TEXTO:",text
       ].join("\n");
-      fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,messages:[{role:"user",content:prompt}]})})
+      fetch("/api/parse-convocatoria",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:prompt})})
       .then(function(r){return r.json();})
       .then(function(data){
         var raw=(data.content&&data.content[0]&&data.content[0].text)||"";
