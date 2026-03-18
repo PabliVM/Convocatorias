@@ -1239,11 +1239,15 @@ function bindLoginBtn(){
 window._onAuthChange=function(user){
   var lb=$("hdr-login-btn");
   if(lb){if(user){lb.textContent="🔓";lb.title="Sesión: "+user.email;lb.classList.add("logged");}else{lb.textContent="🔒";lb.title="Iniciar sesión";lb.classList.remove("logged");}}
-  if(S.view==="nueva")route("nueva");
+  // Solo re-renderizar la vista actual si es "nueva" para desbloquear el form
+  // Nunca redirigir al usuario a otra pantalla
+  if(S.view==="nueva" && document.getElementById("cf")===null){route("nueva");}
 };
 
 // ── BOOT ──
 window._onCallupsLoaded=function(){renderSeasonSel();route(S.view||"agenda");};
+// Mark boot complete
+window._bootDone=true;
 renderSeasonSel();
 bindLoginBtn();
 route("agenda");
