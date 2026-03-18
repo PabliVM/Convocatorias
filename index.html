@@ -27,7 +27,7 @@ html{font-size:16px;-webkit-text-size-adjust:100%}
 body{font-family:'Inter',system-ui,sans-serif;background:#13131A;color:var(--text);min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased;color-scheme:dark}
 .app{display:flex;flex-direction:column;min-height:100dvh}
 
-.hdr-emblem{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--navy);letter-spacing:.5px;box-shadow:0 0 0 2px rgba(255,255,255,.2)}
+.hdr-emblem-img{width:36px;height:36px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 0 4px rgba(200,169,110,.4))}
 /* HEADER — azul marino sólido */
 .hdr{position:sticky;top:0;z-index:100;background:var(--navy);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,.25)}
 .hdr-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
@@ -524,7 +524,7 @@ details[open] .fin-summary__label::before{transform:rotate(90deg)}
 <div class="app">
   <header class="hdr">
     <div class="hdr-logo">
-      <div class="hdr-emblem">RM</div>
+      <img src="https://raw.githubusercontent.com/PabliVM/PLANNING/main/assets/rm.png" class="hdr-emblem-img" alt="Real Madrid"/>
       <div>
         <div class="hdr-title">Convocatorias</div>
         <div class="hdr-sub">Real Madrid</div>
