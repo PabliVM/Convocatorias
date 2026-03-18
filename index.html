@@ -534,7 +534,8 @@ var _callups = [];
 var _seasons = ["2025-26"];
 
 // ── HELPERS ──
-function canEdit(){return !!window._fbUser;}
+function canEdit(){return true;}
+function canWrite(){return !!window._fbUser;}
 function esc(s){if(!s)return"";return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function calcStatus(s,e){var n=new Date();n.setHours(0,0,0,0);var a=new Date(s+"T00:00:00"),b=new Date(e+"T23:59:59");return n<a?"proxima":n>b?"finalizada":"en_curso";}
 function fmtRange(s,e){if(!s)return"\u2014";var a=new Date(s+"T12:00:00"),b=new Date(e+"T12:00:00");return a.toLocaleDateString("es-ES",{day:"2-digit",month:"short"})+" \u2014 "+b.toLocaleDateString("es-ES",{day:"2-digit",month:"short",year:"numeric"});}
@@ -653,8 +654,8 @@ function callupTableRow(c){
 function callupDetail(c){
   var pc=(c.players&&c.players.length)||0,rows="";
   for(var i=0;i<pc;i++){rows+='<li class="pl-item"><span class="pl-num">'+(i+1)+'</span><div class="pl-info"><span class="pl-name">'+esc(c.players[i].fullName)+'</span><span class="pl-team">'+esc(c.players[i].teamName)+"</span></div></li>";}
-  var editBtn=canEdit()?'<button class="btn btn-ghost btn-sm" data-edit="'+c.id+'" style="flex:1">\u270E Editar</button>':"";
-  var delBtn=canEdit()?'<button class="btn btn-danger btn-sm" data-del="'+c.id+'" style="flex:1">\uD83D\uDDD1 Eliminar</button>':"";
+  var editBtn=canWrite()?'<button class="btn btn-ghost btn-sm" data-edit="'+c.id+'" style="flex:1">\u270E Editar</button>':"";
+  var delBtn=canWrite()?'<button class="btn btn-danger btn-sm" data-del="'+c.id+'" style="flex:1">\uD83D\uDDD1 Eliminar</button>':"";
   return'<div class="dp-hdr">'+
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'+
     '<div class="dp-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+"</div>"+
@@ -722,11 +723,14 @@ function route(v){
   document.querySelectorAll(".nb").forEach(function(b){b.classList.toggle("active",b.dataset.v===v);});
   // Hide Nueva if not logged in
   var nbNew=document.querySelector(".nb-new");
-  if(nbNew)nbNew.style.display=canEdit()?"":"none";
+  if(nbNew)nbNew.style.display="";
   var views={agenda:renderAgenda,nueva:renderNueva,madrilena:function(){renderSel("madrilena");},espanola:function(){renderSel("espanola");},internacional:function(){renderSel("internacional");},calendario:renderCalendario,planificacion:renderPlanificacion,jugadores:renderJugadores,stats:renderStats};
   (views[v]||renderAgenda)();
 }
-document.querySelectorAll("[data-v]").forEach(function(b){b.addEventListener("click",function(){route(b.dataset.v);});});
+document.querySelector(".nav").addEventListener("click",function(e){
+  var btn=e.target.closest("[data-v]");
+  if(btn)route(btn.dataset.v);
+});
 
 // ── BIND CARDS ──
 function bindCards(){
@@ -852,7 +856,7 @@ function bindCatTabs(){
 
 // ── NUEVA / EDITAR ──
 function renderNueva(){
-  if(!canEdit()){$("main").innerHTML=emptyState("Inicia sesi\u00f3n para crear convocatorias","\uD83D\uDD12");return;}
+  if(!canWrite()){$("main").innerHTML=emptyState("Inicia sesi\u00f3n para crear convocatorias","\uD83D\uDD12");return;}
   var players=getPlayersBySeason(S.season).filter(function(p){return p.active;});
   var byTeam={},tord={};TEAMS.forEach(function(t){tord[t.name]=t.order;});
   players.forEach(function(p){var per=teamInSeason(p,S.season)||teamNow(p);if(!per)return;if(!byTeam[per.teamName])byTeam[per.teamName]=[];byTeam[per.teamName].push({id:p.id,fullName:p.fullName,teamName:per.teamName});});
@@ -1234,8 +1238,8 @@ function bindLoginBtn(){
 // ── AUTH STATE ──
 window._onAuthChange=function(user){
   var lb=$("hdr-login-btn");
-  if(lb){if(user){lb.textContent="\uD83D\uDD13";lb.title="Sesi\u00f3n: "+user.email;lb.classList.add("logged");}else{lb.textContent="\uD83D\uDD12";lb.title="Iniciar sesi\u00f3n";lb.classList.remove("logged");}}
-  route(S.view||"agenda");
+  if(lb){if(user){lb.textContent="🔓";lb.title="Sesión: "+user.email;lb.classList.add("logged");}else{lb.textContent="🔒";lb.title="Iniciar sesión";lb.classList.remove("logged");}}
+  if(S.view==="nueva")route("nueva");
 };
 
 // ── BOOT ──
