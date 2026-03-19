@@ -1121,6 +1121,73 @@ function renderPlayerDetail(pid){
   document.querySelectorAll(".pd-conv-item").forEach(function(el){el.addEventListener("click",function(){openDetail(el.dataset.id);});});
 }
 
+
+// ── CALENDARIO + PLANIFICACION ──
+function renderCalendarioPlan(){
+  if(!S.calPlanTab)S.calPlanTab="calendario";
+  var h='<div style="display:flex;background:var(--off-white-3);border-radius:8px;padding:3px;gap:2px;border:1px solid var(--border);margin-bottom:16px">'+
+    '<button class="plan-tbtn'+(S.calPlanTab==="calendario"?" on":"")+'" id="cpt-cal">?? Calendario</button>'+
+    '<button class="plan-tbtn'+(S.calPlanTab==="planificacion"?" on":"")+'" id="cpt-plan">?? Planificación</button>'+
+    '</div><div id="cpt-content"></div>';
+  $("main").innerHTML=h;
+  function renderTab(){if(S.calPlanTab==="calendario")renderCalendario();else renderPlanificacion();}
+  $("cpt-cal").addEventListener("click",function(){S.calPlanTab="calendario";document.querySelectorAll(".plan-tbtn").forEach(function(b){b.classList.remove("on");});this.classList.add("on");renderCalendario();});
+  $("cpt-plan").addEventListener("click",function(){S.calPlanTab="planificacion";document.querySelectorAll(".plan-tbtn").forEach(function(b){b.classList.remove("on");});this.classList.add("on");renderPlanificacion();});
+  renderTab();
+}
+
+
+// ── NUEVA TEMPORADA WIZARD ──
+function openNewSeasonWizard(curSea,newSea){
+  var roster=genRoster(getPlayersBySeason(curSea),curSea,newSea);
+  var ov=document.createElement("div");ov.className="mo";
+  var rows=roster.map(function(e,i){
+    var teamOpts=TEAMS.map(function(t){return'<option value="'+t.id+'"'+(t.id===e.teamId?" selected":"")+">"+esc(t.name)+"</option>";}).join("");
+    return'<div class="ri"><label class="ri-cl"><input type="checkbox" class="rk" data-i="'+i+'" checked/><span class="ri-name">'+esc(e.fullName)+"</span></label>"+
+      '<div class="ri-teams"><span class="ri-from">'+esc(e.curTeamName)+'</span><span class="ri-arr">'+(e.hasNext?'\u2192':'\u21BB')+'</span><select class="ri-sel" data-i="'+i+'">'+teamOpts+"</select></div></div>";
+  }).join("");
+  ov.innerHTML='<div class="modal modal-tall"><button class="mcl" id="ws-cl">×</button>'+
+    '<div class="mtitle">Nueva temporada '+newSea+'</div>'+
+    '<p class="msub">Revisa los ascensos. Desmarca los que no continúen.</p>'+
+    '<div class="rl">'+rows+'</div>'+
+    '<div class="mact"><button class="btn btn-ghost" id="ws-can">Cancelar</button>'+
+    '<button class="btn btn-gold" id="ws-ok">✓ Crear temporada '+newSea+'</button></div></div>';
+  document.body.appendChild(ov);
+  function closeOv(){if(ov.parentNode)ov.parentNode.removeChild(ov);}
+  document.getElementById("ws-cl").addEventListener("click",closeOv);
+  document.getElementById("ws-can").addEventListener("click",closeOv);
+  document.getElementById("ws-ok").addEventListener("click",function(){
+    var start=newSea.split("-")[0]+"-09-01";
+    roster.forEach(function(entry,i){
+      var cb=ov.querySelector('.rk[data-i="'+i+'"]');var sel=ov.querySelector('.ri-sel[data-i="'+i+'"]');
+      var keep=cb?cb.checked:true;var teamId=sel?sel.value:entry.teamId;
+      var teamName="";for(var t=0;t<TEAMS.length;t++){if(TEAMS[t].id===teamId){teamName=TEAMS[t].name;break;}}
+      var p=null;for(var j=0;j<_players.length;j++){if(_players[j].id===entry.playerId){p=_players[j];break;}}
+      if(!p)return;
+      if(!keep){p.active=false;p.teamHistory=p.teamHistory.map(function(h){return h.to===null?Object.assign({},h,{to:start}):h;});return;}
+      p.teamHistory=p.teamHistory.map(function(h){return h.to===null?Object.assign({},h,{to:start}):h;});
+      p.teamHistory.push({teamId:teamId,teamName:teamName,season:newSea,from:start,to:null});
+    });
+    if(_seasons.indexOf(newSea)===-1)_seasons.push(newSea);
+    S.season=newSea;renderSeasonSel();
+    toast("✅ Temporada "+newSea+" creada");closeOv();route("jugadores");
+  });
+}
+
+// ── CALENDARIO + PLANIFICACION ──
+function renderCalendarioPlan(){
+  if(!S.calPlanTab)S.calPlanTab="calendario";
+  var h='<div style="display:flex;background:var(--off-white-3);border-radius:8px;padding:3px;gap:2px;border:1px solid var(--border);margin-bottom:16px">'+
+    '<button class="plan-tbtn'+(S.calPlanTab==="calendario"?" on":"")+'" id="cpt-cal">?? Calendario</button>'+
+    '<button class="plan-tbtn'+(S.calPlanTab==="planificacion"?" on":"")+'" id="cpt-plan">?? Planificación</button>'+
+    '</div><div id="cpt-content"></div>';
+  $("main").innerHTML=h;
+  function renderTab(){if(S.calPlanTab==="calendario")renderCalendario();else renderPlanificacion();}
+  $("cpt-cal").addEventListener("click",function(){S.calPlanTab="calendario";document.querySelectorAll(".plan-tbtn").forEach(function(b){b.classList.remove("on");});this.classList.add("on");renderCalendario();});
+  $("cpt-plan").addEventListener("click",function(){S.calPlanTab="planificacion";document.querySelectorAll(".plan-tbtn").forEach(function(b){b.classList.remove("on");});this.classList.add("on");renderPlanificacion();});
+  renderTab();
+}
+
 // ── CALENDARIO ──
 function renderCalendario(){
   var season=S.season;var startYear=parseInt(season.split("-")[0]);
@@ -1149,8 +1216,9 @@ function renderCalendario(){
     h+="</div></div>";
   });
   h+='<div id="cal-panel" class="cal-panel" style="display:none"></div>';
-  $("main").innerHTML=h;
-  document.querySelectorAll(".cal-day").forEach(function(el){el.addEventListener("click",function(){
+  var calTarget=$("cpt-content")||$("main");
+  calTarget.innerHTML=h;
+  (calTarget||document).querySelectorAll(".cal-day").forEach(function(el){el.addEventListener("click",function(){
     var y=parseInt(el.dataset.y),mo=parseInt(el.dataset.m),d=parseInt(el.dataset.d);
     var ds=y+"-"+String(mo+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
     var evs=allEvs.filter(function(e){return e.startDate<=ds&&(e.endDate||e.startDate)>=ds;});
@@ -1213,8 +1281,9 @@ function renderPlanificacion(){
     activeMonths.forEach(function(mo){h+='<div class="gantt-ml">'+mo.label+"</div>";});
     h+="</div></div>";
   }
-  $("main").innerHTML=h;
-  document.querySelectorAll("[data-pv]").forEach(function(b){b.addEventListener("click",function(){S.planView=b.dataset.pv;renderPlanificacion();});});
+  var planTarget=$("cpt-content")||$("main");
+  planTarget.innerHTML=h;
+  (planTarget||document).querySelectorAll("[data-pv]").forEach(function(b){b.addEventListener("click",function(){S.planView=b.dataset.pv;renderPlanificacion();});});
 }
 
 // ── NUEVA TEMPORADA ──
