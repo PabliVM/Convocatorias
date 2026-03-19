@@ -486,6 +486,14 @@ details[open] .fin-summary__label::before{transform:rotate(90deg)}
 .fsec-vuelta{background:rgba(80,80,110,.15);border:1px solid rgba(100,100,140,.25)}.fsec-vuelta .fsec-lbl{color:var(--text-mid)}
 .tbtn-sm{padding:5px 11px;font-size:12px;min-height:30px}
 .tbar-wrap-sm{margin-bottom:12px}
+.jug-team-bar{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.jug-team-bar::-webkit-scrollbar{display:none}
+.jug-edit-btn{background:none;border:1px solid var(--border-strong);border-radius:6px;color:var(--gold);font-size:11px;padding:4px 8px;cursor:pointer;flex-shrink:0;font-family:inherit;font-weight:600;transition:all var(--t)}
+.jug-edit-btn:active{background:var(--off-white-3)}
+.conv-prov{background:rgba(251,191,36,.1);color:#FBBF24;border:1px solid rgba(251,191,36,.3);font-size:10px;padding:2px 8px}
+.conv-def{background:rgba(52,211,153,.1);color:#34D399;border:1px solid rgba(52,211,153,.3);font-size:10px;padding:2px 8px}
+.pl-rm-btn{background:none;border:none;color:var(--text-muted);font-size:16px;cursor:pointer;padding:4px 6px;border-radius:4px;line-height:1;flex-shrink:0;transition:all var(--t)}
+.pl-rm-btn:active{color:#EF4444;background:rgba(239,68,68,.1)}
 </style>
 <!-- Firebase SDK -->
 <script type="module">
@@ -696,7 +704,7 @@ function callupDetail(c){
 }
 
 // ── STATE ──
-var S={view:"agenda",season:"2025-26",filterType:null,agendaView:"fichas",finOpen:false,editingId:null,planView:"bloques",intlPais:null,statsSearch:"",statsPlayer:null};
+var S={view:"agenda",season:"2025-26",filterType:null,agendaView:"fichas",finOpen:false,editingId:null,planView:"bloques",intlPais:null,statsSearch:"",statsPlayer:null,jugTeam:"",jugSearch:"",calPlanTab:"calendario"};
 
 // ── SEASON SEL ──
 function renderSeasonSel(){
@@ -730,7 +738,7 @@ function route(v){
   var views={agenda:renderAgenda,nueva:renderNueva,madrilena:function(){renderSel("madrilena");},espanola:function(){renderSel("espanola");},internacional:function(){renderSel("internacional");},calendario:renderCalendarioPlan,planificacion:renderCalendarioPlan,jugadores:renderJugadores,stats:renderStats};
   (views[v]||renderAgenda)();
 }
-document.querySelector(".nav").addEventListener("click",function(e){var btn=e.target.closest("[data-v]");if(btn)route(btn.dataset.v);});
+document.querySelectorAll(".nb[data-v]").forEach(function(b){b.addEventListener("click",function(){route(b.dataset.v);});});
 
 // ── BIND CARDS ──
 function bindCards(){
@@ -1061,7 +1069,8 @@ function bindAiParser(){
 function renderJugadores(){
   var players=getPlayersBySeason(S.season);
   var q=(S.jugSearch||"").toLowerCase();
-  var filtered=q?players.filter(function(p){return p.fullName.toLowerCase().indexOf(q)!==-1;}):players;
+  if(!S.jugTeam)S.jugTeam="";
+  var filtered=players.filter(function(p){var per=teamInSeason(p,S.season)||teamNow(p);if(S.jugTeam&&(!per||per.teamName!==S.jugTeam))return false;if(q&&p.fullName.toLowerCase().indexOf(q)===-1)return false;return true;});
   var byTeam={};var tord={};TEAMS.forEach(function(t){tord[t.name]=t.order;});
   filtered.forEach(function(p){var per=teamInSeason(p,S.season)||teamNow(p);if(!per)return;if(!byTeam[per.teamName])byTeam[per.teamName]=[];byTeam[per.teamName].push(p);});
   var sortedTeams=Object.keys(byTeam).sort(function(a,b){return(tord[b]||0)-(tord[a]||0);});
