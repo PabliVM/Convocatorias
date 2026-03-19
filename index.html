@@ -17,7 +17,7 @@
   --border:rgba(255,255,255,.08);--border-strong:rgba(255,255,255,.14);
   --mad:#5B8FF9;--esp:#F87171;
   --s-prox:#FBBF24;--s-cur:#34D399;--s-fin:#6B7280;
-  --nav:64px;--r:12px;--r-sm:8px;--r-lg:16px;--t:200ms ease;
+  --nav:54px;--r:12px;--r-sm:8px;--r-lg:16px;--t:200ms ease;
   --shadow-sm:0 1px 4px rgba(0,0,0,.3);
   --shadow:0 4px 20px rgba(0,0,0,.4);
   --shadow-lg:0 8px 40px rgba(0,0,0,.5);
@@ -47,11 +47,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:#13131A;color:var(--tex
 .nb:active{background:rgba(255,255,255,.06)}
 .nb.active{color:var(--gold)}.nb.active .nl{color:var(--gold)}
 .nb.active::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:3px;background:var(--gold);border-radius:0 0 3px 3px}
-.nb-new .ni{width:42px;height:42px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:300;color:#fff;box-shadow:0 4px 16px rgba(200,169,110,.5);transition:transform var(--t)}
+.nb-new .ni{width:36px;height:36px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#fff;box-shadow:0 4px 16px rgba(200,169,110,.5);transition:transform var(--t)}
 .nb-new.active .ni{background:rgba(255,255,255,.9);color:var(--navy)}
 .nb-new:active .ni{transform:scale(.95)}
-.ni{font-size:20px;line-height:1;display:block}
-.nl{font-size:11px;font-weight:600;letter-spacing:.2px;line-height:1;color:rgba(255,255,255,.7)}
+.ni{font-size:17px;line-height:1;display:block}
+.nl{font-size:9px;font-weight:600;letter-spacing:.1px;line-height:1;color:rgba(255,255,255,.7)}
 
 /* VIEW */
 .vh{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
@@ -522,12 +522,11 @@ loadCallups();
   <nav class="nav">
     <button class="nb nb-new" data-v="nueva"><span class="ni">+</span><span class="nl">Nueva</span></button>
     <button class="nb" data-v="agenda"><span class="ni">📅</span><span class="nl">Agenda</span></button>
-    <button class="nb" data-v="madrilena"><span class="ni">🔵</span><span class="nl">Madrileña</span></button>
-    <button class="nb" data-v="espanola"><span class="ni">🔴</span><span class="nl">Española</span></button>
-    <button class="nb" data-v="internacional"><span class="ni">🟢</span><span class="nl">Intl.</span></button>
+    <button class="nb" data-v="madrilena"><span class="ni">🔵</span><span class="nl">RFFM</span></button>
+    <button class="nb" data-v="espanola"><span class="ni">🔴</span><span class="nl">RFEF</span></button>
+    <button class="nb" data-v="internacional"><span class="ni">🟢</span><span class="nl">OTRAS</span></button>
     <button class="nb" data-v="jugadores"><span class="ni">👥</span><span class="nl">Jugadores</span></button>
-    <button class="nb" data-v="calendario"><span class="ni">🗓</span><span class="nl">Calendario</span></button>
-    <button class="nb" data-v="planificacion"><span class="ni">📋</span><span class="nl">Plani.</span></button>
+    <button class="nb" data-v="calendario"><span class="ni">🗓</span><span class="nl">Cal/Plan</span></button>
     <button class="nb" data-v="stats"><span class="ni">📊</span><span class="nl">Stats</span></button>
   </nav>
 </div>
@@ -1370,7 +1369,7 @@ function route(v){
   S.view=v;
   document.querySelectorAll(".nb").forEach(function(b){b.classList.toggle("active",b.dataset.v===v);});
   document.querySelectorAll(".nb-new,.nb[data-v='jugadores']").forEach(function(b){b.style.display=canEdit()?"":"none";});
-  var views={agenda:renderAgenda,nueva:renderNueva,madrilena:function(){renderSel("madrilena");},espanola:function(){renderSel("espanola");},internacional:function(){renderSel("internacional");},calendario:renderCalendario,planificacion:renderPlanificacion,jugadores:renderJugadores,stats:renderStats};
+  var views={agenda:renderAgenda,nueva:renderNueva,madrilena:function(){renderSel("madrilena");},espanola:function(){renderSel("espanola");},internacional:function(){renderSel("internacional");},calendario:renderCalendarioPlan,planificacion:renderCalendarioPlan,jugadores:renderJugadores,stats:renderStats};
   (views[v]||renderAgenda)();
 }
 document.querySelector(".nav").addEventListener("click",function(e){var btn=e.target.closest("[data-v]");if(btn)route(btn.dataset.v);});
@@ -1666,7 +1665,10 @@ function bindAiParser(){
         "TEXTO:",text
       ].join("\n");
       fetch("/api/parse-convocatoria",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:prompt})})
-      .then(function(r){return r.json();})
+      .then(function(r){
+        if(!r.ok)return r.text().then(function(t){throw new Error("Servidor: "+t.slice(0,120));});
+        return r.json();
+      })
       .then(function(data){
         var raw=(data.content&&data.content[0]&&data.content[0].text)||"";
         raw=raw.replace(/```json|```/g,"").trim();
@@ -1821,6 +1823,23 @@ function renderPlayerDetail(pid){
   document.querySelectorAll(".pd-conv-item").forEach(function(el){el.addEventListener("click",function(){openDetail(el.dataset.id);});});
 }
 
+// ── CALENDARIO + PLANIFICACION ──
+function renderCalendarioPlan(){
+  if(!S.calPlanTab)S.calPlanTab="calendario";
+  var h='<div style="display:flex;background:var(--off-white-3);border-radius:8px;padding:3px;gap:2px;border:1px solid var(--border);margin-bottom:16px">'+
+    '<button class="plan-tbtn'+(S.calPlanTab==="calendario"?" on":"")+'" id="cpt-cal">?? Calendario</button>'+
+    '<button class="plan-tbtn'+(S.calPlanTab==="planificacion"?" on":"")+'" id="cpt-plan">?? Planificación</button>'+
+    '</div><div id="cpt-content"></div>';
+  $("main").innerHTML=h;
+  function renderTab(){
+    if(S.calPlanTab==="calendario")renderCalendario();
+    else renderPlanificacion();
+  }
+  $("cpt-cal").addEventListener("click",function(){S.calPlanTab="calendario";document.querySelectorAll(".plan-tbtn").forEach(function(b){b.classList.remove("on");});this.classList.add("on");renderCalendario();});
+  $("cpt-plan").addEventListener("click",function(){S.calPlanTab="planificacion";document.querySelectorAll(".plan-tbtn").forEach(function(b){b.classList.remove("on");});this.classList.add("on");renderPlanificacion();});
+  renderTab();
+}
+
 // ── CALENDARIO ──
 function renderCalendario(){
   var season=S.season;var startYear=parseInt(season.split("-")[0]);
@@ -1849,8 +1868,9 @@ function renderCalendario(){
     h+="</div></div>";
   });
   h+='<div id="cal-panel" class="cal-panel" style="display:none"></div>';
-  $("main").innerHTML=h;
-  document.querySelectorAll(".cal-day").forEach(function(el){el.addEventListener("click",function(){
+  var calTarget=$("cpt-content")||$("main");
+  calTarget.innerHTML=h;
+  (calTarget||document).querySelectorAll(".cal-day").forEach(function(el){el.addEventListener("click",function(){
     var y=parseInt(el.dataset.y),mo=parseInt(el.dataset.m),d=parseInt(el.dataset.d);
     var ds=y+"-"+String(mo+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
     var evs=allEvs.filter(function(e){return e.startDate<=ds&&(e.endDate||e.startDate)>=ds;});
@@ -1913,8 +1933,9 @@ function renderPlanificacion(){
     activeMonths.forEach(function(mo){h+='<div class="gantt-ml">'+mo.label+"</div>";});
     h+="</div></div>";
   }
-  $("main").innerHTML=h;
-  document.querySelectorAll("[data-pv]").forEach(function(b){b.addEventListener("click",function(){S.planView=b.dataset.pv;renderPlanificacion();});});
+  var planTarget=$("cpt-content")||$("main");
+  planTarget.innerHTML=h;
+  (planTarget||document).querySelectorAll("[data-pv]").forEach(function(b){b.addEventListener("click",function(){S.planView=b.dataset.pv;renderPlanificacion();});});
 }
 
 // ── NUEVA TEMPORADA ──
