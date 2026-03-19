@@ -71,6 +71,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:#13131A;color:var(--tex
 /* BADGES */
 .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
 .s-prox{background:rgba(217,119,6,.1);color:var(--s-prox);border:1px solid rgba(217,119,6,.3)}
+.conv-prov{background:rgba(251,191,36,.1);color:#FBBF24;border:1px solid rgba(251,191,36,.3);font-size:10px;padding:2px 8px}
+.conv-def{background:rgba(52,211,153,.1);color:#34D399;border:1px solid rgba(52,211,153,.3);font-size:10px;padding:2px 8px}
 .s-cur{background:rgba(5,150,105,.1);color:var(--s-cur);border:1px solid rgba(5,150,105,.3)}
 .s-fin{background:rgba(107,114,154,.1);color:var(--s-fin);border:1px solid rgba(107,114,154,.2)}
 
@@ -546,7 +548,7 @@ SELS["madrilena"] = {label:"Madrile\u00f1a",short:"MAD",cats:["sub12","sub14","s
 SELS["espanola"] = {label:"Espa\u00f1ola",short:"ESP",cats:["sub14","sub15","sub16","sub17","sub18","sub19","sub20","sub21","abs"],colors:{sub14:{badge:"#DC2626"},sub15:{badge:"#DC2626"},sub16:{badge:"#B91C1C"},sub17:{badge:"#B91C1C"},sub18:{badge:"#991B1B"},sub19:{badge:"#7F1D1D"},sub20:{badge:"#7F1D1D"},sub21:{badge:"#450A0A"},abs:{badge:"#1A0000"}}};
 SELS["internacional"] = {label:"Internacional",short:"INT",cats:["sub16","sub17","sub18","sub19","sub20","sub21","abs"],colors:{sub16:{badge:"#10B981"},sub17:{badge:"#10B981"},sub18:{badge:"#047857"},sub19:{badge:"#047857"},sub20:{badge:"#065F46"},sub21:{badge:"#065F46"},abs:{badge:"#064E3B"}}};
 
-var CAT={sub12:"Sub-12",sub13:"Sub-13",sub14:"Sub-14",sub15:"Sub-15",sub16:"Sub-16",sub17:"Sub-17",sub18:"Sub-18",sub19:"Sub-19",sub20:"Sub-20",sub21:"Sub-21",abs:"Absoluta"};
+var CAT={todas:"Todas",sub12:"Sub-12",sub13:"Sub-13",sub14:"Sub-14",sub15:"Sub-15",sub16:"Sub-16",sub17:"Sub-17",sub18:"Sub-18",sub19:"Sub-19",sub20:"Sub-20",sub21:"Sub-21",abs:"Absoluta"};
 
 var STATUS={proxima:{c:"s-prox",i:"\u23F0",l:"PR\u00d3XIMA"},en_curso:{c:"s-cur",i:"\u25CF",l:"EN CURSO"},finalizada:{c:"s-fin",i:"\u2713",l:"FINALIZADA"}};
 
@@ -1249,6 +1251,7 @@ function buildStats(callups){
 
 // ── BADGES ──
 function selBadge(type,cat,pais){var k=selKey(type);var s=SELS[k];if(!s)return"";var c=(s.colors&&s.colors[cat])?s.colors[cat]:{badge:"#666"};var label=k==="internacional"&&pais?(CAT[cat]||cat)+" "+paisAdj(pais):(CAT[cat]||cat)+" "+s.short;return'<span class="badge" style="background:'+c.badge+';color:#fff">'+label+"</span>";}
+function convTypeBadge(t){if(!t||t==="definitiva")return'<span class="badge conv-def">✅ DEFINITIVA</span>';if(t==="provisional")return'<span class="badge conv-prov">⏳ PROVISIONAL</span>';if(t==="entrenamiento")return'<span class="badge conv-prov" style="color:var(--text-muted)">🏋 ENTREN.</span>';return"";}
 function statusBadge(st){var c=STATUS[st]||STATUS.finalizada;return'<span class="badge '+c.c+'">'+c.i+" "+c.l+"</span>";}
 function emptyState(msg,ico){return'<div class="empty"><span class="empty-ico">'+(ico||"\uD83D\uDCCB")+'</span><p class="empty-t">'+msg+"</p></div>";}
 function toast(msg){var t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.classList.add("show");},10);setTimeout(function(){t.classList.remove("show");setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},300);},2800);}
@@ -1261,7 +1264,7 @@ function callupCard(c){
   var chips="";for(var i=0;i<Math.min(pc,3);i++){var pts=c.players[i].fullName.split(" ");chips+='<span class="chip">'+esc(pts[0]+(pts[1]?" "+pts[1]:""))+"</span>";}
   if(pc>3)chips+='<span class="chip chip-more">+'+(pc-3)+"</span>";
   return'<article class="cc" style="--ca:'+col.badge+'" data-id="'+c.id+'" tabindex="0" role="button">'+
-    '<div class="cc-hdr"><div class="cc-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+'</div><span class="cc-flag">'+flag+'</span></div>'+
+    '<div class="cc-hdr"><div class="cc-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+(c.convType?convTypeBadge(c.convType):"")+"</div>"+'<span class="cc-flag">'+flag+'</span></div>'+
     '<h3 class="cc-title">'+esc(c.title)+"</h3>"+
     '<div class="cc-meta">'+
     '<div class="cc-mi"><span class="mi">\uD83D\uDCC5</span><span>'+fmtRange(c.startDate,c.endDate)+"</span></div>"+
@@ -1306,11 +1309,13 @@ function callupDetail(c){
   var pc=(c.players&&c.players.length)||0,rows="";
   for(var i=0;i<pc;i++){rows+='<li class="pl-item" data-pidx="'+i+'"><span class="pl-num">'+(i+1)+'</span><div class="pl-info"><span class="pl-name">'+esc(c.players[i].fullName)+'</span><span class="pl-team">'+esc(c.players[i].teamName)+"</span></div>"+'<button class="pl-rm-btn" data-pidx="'+i+'" title="Eliminar">\u00d7</button>'+"</li>";
   }
+  var promBtn="";
+  if(canEdit()&&(!c.convType||c.convType==="provisional"))promBtn='<button class="btn btn-gold btn-sm" data-promote="'+c.id+'" style="flex:1">\u2705 Confirmar definitiva</button>';
   var editBtn=canEdit()?'<button class="btn btn-ghost btn-sm" data-edit="'+c.id+'" style="flex:1">\u270E Editar</button>':"";
   var delBtn=canEdit()?'<button class="btn btn-danger btn-sm" data-del="'+c.id+'" style="flex:1">\uD83D\uDDD1 Eliminar</button>':"";
   return'<div class="dp-hdr">'+
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'+
-    '<div class="dp-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+"</div>"+
+    '<div class="dp-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+(c.convType?convTypeBadge(c.convType):convTypeBadge("definitiva"))+"</div>"+
     '<span style="font-size:32px;line-height:1">'+getSelFlag(c.selectionType,c.pais)+"</span></div>"+
     '<h2 class="dp-title">'+esc(c.title)+"</h2>"+
     '<p class="dp-sea">Temporada '+c.season+"</p></div>"+
@@ -1340,7 +1345,7 @@ function callupDetail(c){
     return'<div class="dp-match-item"><span class="dp-match-ball">\u26BD</span><div class="dp-match-info"><div class="dp-match-date">'+dt+'</div><div class="dp-match-rival">vs '+esc(m.rival||"Por confirmar")+"</div></div>"+(m.time?'<span class="dp-match-time">'+m.time+"h</span>":"")+"</div>";}).join("")+"</div>":"")+
     '<div style="margin-bottom:16px"><h4 class="dp-st">\uD83D\uDC55 Jugadores convocados ('+pc+")</h4><ul class=\"pl\">"+rows+"</ul></div>"+
     (c.notes?'<div class="dp-notes"><h4 class="dp-st">\uD83D\uDCDD Observaciones</h4><p class="notes-t">'+esc(c.notes)+"</p></div>":"")+
-    (editBtn||delBtn?'<div class="dp-act" style="display:flex;gap:8px">'+editBtn+delBtn+"</div>":"");
+    (editBtn||delBtn?'<div class="dp-act" style="display:flex;gap:8px;flex-wrap:wrap">'+promBtn+editBtn+delBtn+"</div>":"");
 }
 
 // ── STATE ──
@@ -1437,6 +1442,14 @@ function openDetail(id){
       },50);
     },50);
   });
+  var promBtn2=ov.querySelector("[data-promote]");
+  if(promBtn2)promBtn2.addEventListener("click",function(){
+    var conv=null;for(var i=0;i<_callups.length;i++){if(_callups[i].id===id){conv=_callups[i];break;}}
+    if(!conv)return;
+    conv.convType="definitiva";
+    if(window._db&&window._fbUser){var fns=window._fbFns;fns.setDoc(fns.doc(window._db,"callups",id),Object.assign({},conv)).catch(function(e){console.error(e);});}
+    toast("\u2705 Confirmada como definitiva");close();openDetail(id);
+  });
   var delBtn=ov.querySelector("[data-del]");
   if(delBtn)delBtn.addEventListener("click",function(){
     if(!confirm("\u00bfEliminar \""+c.title+"\"?"))return;
@@ -1477,9 +1490,13 @@ function renderSel(type){
   if(type==="internacional"){renderIntl();return;}
   var sel=SELS[type];
   var allC=sortDate(getCallups({season:S.season,type:type}),"desc");
-  var activeCats=sel.cats;
-  $("main").innerHTML='<div class="vh"><h1 class="vt">'+sel.label+"</h1></div>"+makeTabs(activeCats,activeCats[0])+'<div id="catc">'+renderCatCallups(allC,activeCats[0])+"</div>";
-  bindTabs(function(cat){$("catc").innerHTML=renderCatCallups(sortDate(getCallups({season:S.season,type:type,cat:cat}),"desc"),cat);bindCards();});
+  var activeCats=["todas"].concat(sel.cats);
+  $("main").innerHTML='<div class="vh"><h1 class="vt">'+sel.label+"</h1></div>"+makeTabs(activeCats,"todas")+'<div id="catc">'+(allC.length?'<div class="cl">'+allC.map(callupCard).join("")+"</div>":emptyState("Sin convocatorias","\uD83D\uDCCB"))+"</div>";
+  bindTabs(function(cat){
+    var cs=cat==="todas"?allC:sortDate(getCallups({season:S.season,type:type,cat:cat}),"desc");
+    $("catc").innerHTML=cat==="todas"?(cs.length?'<div class="cl">'+cs.map(callupCard).join("")+"</div>":emptyState("Sin convocatorias","\uD83D\uDCCB")):renderCatCallups(cs,cat);
+    bindCards();
+  });
   bindCards();
 }
 function renderCatCallups(cs,cat){var f=cs.filter(function(c){return c.selectionCategory===cat;});return f.length?'<div class="cl">'+f.map(callupCard).join("")+"</div>":emptyState("Sin convocatorias para "+(CAT[cat]||cat),"\uD83D\uDCCB");}
@@ -1548,7 +1565,7 @@ function renderNueva(){
     '<div class="fg" id="pais-g" style="display:none"><label class="fl">Pa\u00eds *</label><div id="pais-pills" class="pais-pills"></div><input class="fi" type="text" id="f-pais" name="pais" placeholder="Escribe el pa\u00eds..." style="display:none;margin-top:6px"/></div>'+
     '<div class="fg" id="cat-g" style="display:none"><label class="fl">Categor\u00eda *</label><select class="fsel" id="sel-cat" name="selCat"><option value="">Selecciona categor\u00eda</option></select></div>'+
     '<div class="fg"><label class="fl">T\u00edtulo *</label><input class="fi" type="text" name="title" placeholder="Ej: Concentraci\u00f3n Sub-17 Marzo"/></div>'+
-    '<div class="fg"><label class="fl">Rival / Torneo</label><input class="fi" type="text" name="rival" placeholder="Ej: Portugal, Francia"/></div>'+
+    '<div class="fg"><label class="fl">Rival / Torneo</label><input class="fi" type="text" name="rival" placeholder="Ej: Portugal, Francia"/></div>'+'<div class="fg"><label class="fl">Tipo de convocatoria</label><select class="fsel" name="convType"><option value="definitiva">✅ Definitiva</option><option value="provisional">⏳ Provisional</option><option value="entrenamiento">🏋 Entrenamiento</option></select></div>'+
     '<div class="frow"><div class="fg"><label class="fl">Inicio *</label><input class="fi" type="date" name="startDate"/></div><div class="fg"><label class="fl">Fin *</label><input class="fi" type="date" name="endDate"/></div></div>'+
     '<div class="fsec fsec-conc"><span class="fsec-ico">\uD83D\uDCCD</span><span class="fsec-lbl">Fecha convocatoria (ida)</span></div>'+
     '<div class="frow"><div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" name="concDate"/></div><div class="fg"><label class="fl">Hora</label><input class="fi" type="time" name="concTime"/></div></div>'+
@@ -1637,7 +1654,7 @@ function renderNueva(){
       return{playerId:cb.value,fullName:cb.dataset.n,teamId:per?per.teamId:"",teamName:cb.dataset.t};
     });
     var paisVal=(fd.get("pais")||"").trim()||($("f-pais")?$("f-pais").value.trim():"");
-    var data={selectionType:fd.get("selType")||"",selectionCategory:fd.get("selCat")||"",pais:paisVal,title:fd.get("title")||"",startDate:fd.get("startDate")||"",endDate:fd.get("endDate")||"",rival:fd.get("rival")||"",location:fd.get("location")||"",notes:fd.get("notes")||"",
+    var data={selectionType:fd.get("selType")||"",selectionCategory:fd.get("selCat")||"",pais:paisVal,title:fd.get("title")||"",startDate:fd.get("startDate")||"",endDate:fd.get("endDate")||"",rival:fd.get("rival")||"",convType:fd.get("convType")||"definitiva",location:fd.get("location")||"",notes:fd.get("notes")||"",
       conc:{date:fd.get("concDate")||"",time:fd.get("concTime")||"",lugar:fd.get("concLugar")||"",transporte:fd.get("concTransporte")||""},
       vuelta:{date:fd.get("vueltaDate")||"",time:fd.get("vueltaTime")||"",lugar:fd.get("vueltaLugar")||"",transporte:fd.get("vueltaTransporte")||""},
       matches:matchesData,players:players};
@@ -1736,7 +1753,7 @@ function bindAiParser(){
         "vuelta.transporte = vuelo regreso. vuelta.date/time del vuelo regreso.",
         "matches: cada fila con fecha+lugar+oponente. rival: oponentes separados por coma.",
         "JSON:",
-        "{\"selectionType\":\"madrilena|espanola|internacional\",",
+        "{\"selectionType\":\"madrilena|espanola|internacional\",\"convType\":\"definitiva|provisional|entrenamiento\",",
         "\"selectionCategory\":\"sub12|sub13|sub14|sub15|sub16|sub17|sub18|sub19|sub20|sub21|abs\",",
         "\"pais\":\"pais si internacional sino null\",",
         "\"title\":\"titulo descriptivo\",",
