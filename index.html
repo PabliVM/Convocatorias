@@ -1276,7 +1276,7 @@ function callupCard(c){
     (c.rival?'<div class="cc-mi"><span class="mi">\uD83C\uDD9A</span><span>'+esc(c.rival)+"</span></div>":"")+
     (c.conc&&(c.conc.date||c.conc.time||c.conc.lugar)?'<div class="cc-mi cc-mi-conc"><span class="mi">\uD83D\uDCCD</span><div class="cc-mi-block"><span class="cc-mi-label">Convocatoria</span><span>'+(c.conc.date?fmtDateShort(c.conc.date)+" ":"")+(c.conc.time?c.conc.time+"h ":"")+(c.conc.lugar?"\u00b7 "+esc(c.conc.lugar):"")+"</span>"+(c.conc.transporte?'<span class="cc-mi-sub">'+esc(c.conc.transporte)+"</span>":"")+"</div></div>":"")+
     (c.vuelta&&(c.vuelta.date||c.vuelta.time||c.vuelta.lugar)?'<div class="cc-mi cc-mi-vuelta"><span class="mi">\uD83D\uDD19</span><div class="cc-mi-block"><span class="cc-mi-label">Vuelta</span><span>'+(c.vuelta.date?fmtDateShort(c.vuelta.date)+" ":"")+(c.vuelta.time?c.vuelta.time+"h ":"")+(c.vuelta.lugar?"\u00b7 "+esc(c.vuelta.lugar):"")+"</span>"+(c.vuelta.transporte?'<span class="cc-mi-sub">'+esc(c.vuelta.transporte)+"</span>":"")+"</div></div>":"")+
-    (c.matches&&c.matches.length?c.matches.map(function(m){return'<div class="cc-mi"><span class="mi">'+(m.matchType==="oficial"?"\uD83C\uDFC6":"\u26BD")+'</span><span style="font-weight:600">'+(m.rival?esc(m.rival):"Rival TBD")+'</span>'+(m.date||m.time?'<span style="color:var(--text-muted);margin-left:4px">'+(m.date?fmtDateShort(m.date)+" ":"")+(m.time?m.time+"h":"")+"</span>":"")+"</div>";}).join(""):"")+
+    (c.matches&&c.matches.length?c.matches.map(function(m){return'<div class="cc-mi"><span class="mi">\u2694\uFE0F</span><span>vs '+(m.rival?esc(m.rival):"TBD")+' '+(m.matchType==="oficial"?"\uD83C\uDFC6":"\u26BD")+(m.date||m.time?' <span style="color:var(--text-muted)">'+(m.date?fmtDateShort(m.date)+" ":"")+(m.time?m.time+"h":"")+"</span>":"")+"</span></div>";}).join(""):"")+
     "</div>"+(pc>0?'<div class="cc-players">'+chips+"</div>":"")+
     "</article>";
 }
@@ -1296,7 +1296,7 @@ function callupTableRow(c){
       (obj.transporte?'<span class="td-log-trans">'+esc(obj.transporte)+"</span>":"");
   }
   var matchCell=c.matches&&c.matches.length?c.matches.map(function(m){
-    return'<div class="td-match"><span class="td-match-rival">'+(m.matchType==="oficial"?"\uD83C\uDFC6 ":"\u26BD ")+esc(m.rival||"?")+"</span>"+(m.date||m.time?'<span class="td-match-sub">'+(m.date?fmtDateShort(m.date)+" ":"")+(m.time?m.time+"h":"")+"</span>":"")+"</div>";
+    return'<div class="td-match"><span class="td-match-rival">vs '+esc(m.rival||"?")+' '+(m.matchType==="oficial"?"\uD83C\uDFC6":"\u26BD")+"</span>"+(m.date||m.time?'<span class="td-match-sub">'+(m.date?fmtDateShort(m.date)+" ":"")+(m.time?m.time+"h":"")+"</span>":"")+"</div>";
   }).join(""):'<span class="td-log-empty">\u2014</span>';
   return'<tr class="trow" data-id="'+c.id+'">'+
     '<td class="td-flag">'+flag+"</td>"+
