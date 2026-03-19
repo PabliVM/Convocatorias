@@ -1640,14 +1640,52 @@ function bindAiParser(){
   var btn=$("btn-ai-parser");if(!btn)return;
   btn.addEventListener("click",function(){
     var mo=document.createElement("div");mo.className="mo";
-    mo.innerHTML='<div class="modal modal-tall" style="padding-bottom:40px"><button class="mcl" id="aip-close">\u00d7</button><div class="mtitle">\u2728 Nota de prensa</div><p class="msub">Pega el texto de la convocatoria RFEF o Excel oficial. Claude extraer\u00e1 los datos autom\u00e1ticamente.</p><div class="ai-modal-body"><textarea class="ai-textarea" id="aip-text" placeholder="Pega aqu\u00ed el texto..."></textarea><div class="ai-status" id="aip-status"></div></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-ghost" id="aip-cancel" style="flex:1">Cancelar</button><button class="btn btn-gold" id="aip-ok" style="flex:1">\u2728 Extraer datos</button></div></div>';
+    mo.innerHTML='<div class="modal modal-tall" style="padding-bottom:40px"><button class="mcl" id="aip-close">\u00d7</button><div class="mtitle">\u2728 Rellenar con IA</div><p class="msub">Pega texto o sube una foto del documento.</p>'+
+      '<div style="display:flex;gap:6px;margin-bottom:12px">'+
+      '<button class="plan-tbtn on" id="aip-tab-text" style="flex:1">\uD83D\uDCDD Texto</button>'+
+      '<button class="plan-tbtn" id="aip-tab-img" style="flex:1">\uD83D\uDCF7 Foto</button>'+
+      '</div>'+
+      '<div id="aip-text-panel"><textarea class="ai-textarea" id="aip-text" placeholder="Pega aqu\u00ed el texto de la convocatoria..."></textarea></div>'+
+      '<div id="aip-img-panel" style="display:none">'+
+        '<label style="display:block;border:2px dashed var(--gold);border-radius:10px;padding:24px;text-align:center;cursor:pointer;color:var(--gold);font-weight:600;font-size:14px" id="aip-img-label">'+
+          '\uD83D\uDCF7 Toca para subir foto<br><span style="font-size:11px;color:var(--text-muted);font-weight:400">JPG, PNG, PDF</span>'+
+          '<input type="file" id="aip-file" accept="image/*,.pdf" style="display:none"/>'+
+        '</label>'+
+        '<div id="aip-img-preview" style="margin-top:8px;text-align:center"></div>'+
+      '</div>'+
+      '<div class="ai-status" id="aip-status" style="margin-top:8px"></div>'+
+      '<div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-ghost" id="aip-cancel" style="flex:1">Cancelar</button><button class="btn btn-gold" id="aip-ok" style="flex:1">\u2728 Extraer datos</button></div></div>';
     document.body.appendChild(mo);
     function closeMo(){if(mo.parentNode)mo.parentNode.removeChild(mo);}
     $("aip-close").addEventListener("click",closeMo);$("aip-cancel").addEventListener("click",closeMo);
     mo.addEventListener("click",function(e){if(e.target===mo)closeMo();});
+    // Tab switching
+    var tabText=$("aip-tab-text"),tabImg=$("aip-tab-img");
+    var panelText=$("aip-text-panel"),panelImg=$("aip-img-panel");
+    if(tabText)tabText.addEventListener("click",function(){tabText.classList.add("on");tabImg.classList.remove("on");panelText.style.display="";panelImg.style.display="none";});
+    if(tabImg)tabImg.addEventListener("click",function(){tabImg.classList.add("on");tabText.classList.remove("on");panelText.style.display="none";panelImg.style.display="";});
+    // File input
+    var fileInput=$("aip-file");
+    var imgLabel=$("aip-img-label");
+    if(fileInput)fileInput.addEventListener("change",function(){
+      var f=fileInput.files[0];if(!f)return;
+      var preview=$("aip-img-preview");
+      if(f.type.indexOf("image")===0){
+        var url=URL.createObjectURL(f);
+        preview.innerHTML='<img src="'+url+'" style="max-width:100%;max-height:160px;border-radius:8px;border:1px solid var(--border)"/><div style="font-size:12px;color:var(--text-muted);margin-top:4px">'+esc(f.name)+"</div>";
+      } else {
+        preview.innerHTML='<div style="font-size:13px;color:var(--gold);padding:8px">\uD83D\uDCC4 '+esc(f.name)+"</div>";
+      }
+      if(imgLabel)imgLabel.querySelector("span:first-child")||imgLabel;
+    });
     $("aip-ok").addEventListener("click",function(){
-      var text=($("aip-text").value||"").trim();if(!text){$("aip-status").textContent="Pega un texto primero.";return;}
       var status=$("aip-status"),okBtn=$("aip-ok");
+      var isImg=document.getElementById("aip-img-panel")&&document.getElementById("aip-img-panel").style.display!=="none";
+      var text=($("aip-text")?$("aip-text").value||"":"").trim();
+      var fileInput=$("aip-file");
+      var imgFile=fileInput&&fileInput.files&&fileInput.files[0]?fileInput.files[0]:null;
+      if(!isImg&&!text){$("aip-status").textContent="Pega un texto primero.";return;}
+      if(isImg&&!imgFile){$("aip-status").textContent="Sube una foto primero.";return;}
       status.className="ai-status";status.textContent="\u23F3 Analizando...";okBtn.disabled=true;okBtn.textContent="Analizando...";
       var today=new Date().toISOString().slice(0,10);
       var prompt=[
@@ -1673,11 +1711,26 @@ function bindAiParser(){
         "Adem\u00e1s extrae en el campo \"players\" la lista de nombres de los jugadores convocados del Real Madrid (solo apellidos o nombre+apellido como aparecen en el texto). Devuelve players como array de strings, ej: [\"YEREMAIAH RAMOS\",\"ENZO ALVES\"].",
         "TEXTO:",text
       ].join("\n");
-      fetch("/api/parse-convocatoria",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:prompt})})
-      .then(function(r){
-        if(!r.ok)return r.text().then(function(t){throw new Error("Servidor: "+t.slice(0,120));});
-        return r.json();
-      })
+      function doFetch(body){
+        return fetch("/api/parse-convocatoria",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+          .then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error("Servidor: "+t.slice(0,120));});return r.json();});
+      }
+      var fetchPromise;
+      if(isImg&&imgFile){
+        var reader=new FileReader();
+        fetchPromise=new Promise(function(resolve,reject){
+          reader.onload=function(e){
+            var b64=e.target.result.split(",")[1];
+            var mime=imgFile.type||"image/jpeg";
+            resolve(doFetch({prompt:prompt,image:b64,imageType:mime}));
+          };
+          reader.onerror=reject;
+          reader.readAsDataURL(imgFile);
+        }).then(function(p){return p;});
+      } else {
+        fetchPromise=doFetch({prompt:prompt});
+      }
+      fetchPromise
       .then(function(data){
         var raw=(data.content&&data.content[0]&&data.content[0].text)||"";
         raw=raw.replace(/```json|```/g,"").trim();
