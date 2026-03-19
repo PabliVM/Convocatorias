@@ -1231,10 +1231,15 @@ function deleteCallup(id,cb){
   }
 }
 function updateCallup(id,data,cb){
-  var obj=Object.assign({},data,{status:calcStatus(data.startDate,data.endDate)});
+  // Merge with existing local data to avoid overwriting fields not in form
+  var existing=null;for(var i=0;i<_callups.length;i++){if(_callups[i].id===id){existing=_callups[i];break;}}
+  var obj=Object.assign({},existing||{},data,{status:calcStatus(data.startDate,data.endDate)});
+  // Remove undefined/null fields that might corrupt
+  Object.keys(obj).forEach(function(k){if(obj[k]===undefined)delete obj[k];});
   if(window._db&&window._fbUser){
     var fns=window._fbFns;
-    fns.setDoc(fns.doc(window._db,"callups",id),obj).then(function(){
+    // Use merge:true so Firestore only updates changed fields
+    fns.setDoc(fns.doc(window._db,"callups",id),obj,{merge:true}).then(function(){
       for(var i=0;i<_callups.length;i++){if(_callups[i].id===id){Object.assign(_callups[i],obj);break;}}if(cb)cb();
     }).catch(function(e){console.error(e);alert("Error actualizando: "+e.message);});
   } else {
@@ -1431,8 +1436,8 @@ function openDetail(id){
         var cat=$("sel-cat");if(cat)cat.value=c.selectionCategory;
         var pf=$("f-pais");if(pf&&c.pais)pf.value=c.pais;
         var pg=$("pais-g");if(pg&&selKey(c.selectionType)==="internacional")pg.style.display="block";
-        var fields={title:c.title,startDate:c.startDate,endDate:c.endDate,rival:c.rival||"",location:c.location||"",notes:c.notes||""};
-        Object.keys(fields).forEach(function(k){if(!fields[k])return;var el=form.querySelector('[name="'+k+'"]');if(el)el.value=fields[k];});
+        var fields={title:c.title,startDate:c.startDate,endDate:c.endDate,rival:c.rival||"",location:c.location||"",notes:c.notes||"",convType:c.convType||"provisional"};
+        Object.keys(fields).forEach(function(k){if(fields[k]===undefined||fields[k]===null)return;var el=form.querySelector('[name="'+k+'"]');if(el)el.value=fields[k];});
         if(c.conc){var cf2={concDate:c.conc.date,concTime:c.conc.time,concLugar:c.conc.lugar,concTransporte:c.conc.transporte};Object.keys(cf2).forEach(function(k){if(!cf2[k])return;var el=form.querySelector('[name="'+k+'"]');if(el)el.value=cf2[k];});}
         if(c.vuelta){var vf={vueltaDate:c.vuelta.date,vueltaTime:c.vuelta.time,vueltaLugar:c.vuelta.lugar,vueltaTransporte:c.vuelta.transporte};Object.keys(vf).forEach(function(k){if(!vf[k])return;var el=form.querySelector('[name="'+k+'"]');if(el)el.value=vf[k];});}
         if(c.matches&&c.matches.length){var ml=$("matches-list");if(ml){ml.innerHTML="";c.matches.forEach(function(m,i){var row=document.createElement("div");row.className="match-row";row.innerHTML='<input class="fi" type="date" name="mdate_'+i+'" value="'+(m.date||"")+'" style="flex:1.2"/><input class="fi" type="time" name="mtime_'+i+'" value="'+(m.time||"")+'" style="flex:.8"/><input class="fi" type="text" name="mrival_'+i+'" value="'+esc(m.rival||"")+'" placeholder="Rival" style="flex:1.5"/><button type="button" class="btn-rm">\u00d7</button>';row.querySelector(".btn-rm").addEventListener("click",function(){row.remove();});ml.appendChild(row);});}}
