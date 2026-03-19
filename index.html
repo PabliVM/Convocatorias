@@ -130,6 +130,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:#13131A;color:var(--tex
 .pl-info{display:flex;flex-direction:column;gap:1px}
 .pl-name{font-size:14px;font-weight:600;color:var(--text)}
 .pl-team{font-size:11px;color:var(--text-muted)}
+.pl-rm-btn{background:none;border:none;color:var(--text-muted);font-size:16px;cursor:pointer;padding:4px 6px;border-radius:4px;line-height:1;flex-shrink:0;transition:all var(--t)}
+.pl-rm-btn:active{color:#EF4444;background:rgba(239,68,68,.1)}
 .dp-notes{margin-bottom:16px}
 .notes-t{font-size:13px;color:var(--text-mid);line-height:1.5;background:var(--off-white-3);padding:12px;border-radius:var(--r-sm);border:1px solid var(--border)}
 .dp-act{padding-top:12px;border-top:1px solid var(--border)}
@@ -1302,7 +1304,8 @@ function callupTableRow(c){
 // ── DETAIL ──
 function callupDetail(c){
   var pc=(c.players&&c.players.length)||0,rows="";
-  for(var i=0;i<pc;i++){rows+='<li class="pl-item"><span class="pl-num">'+(i+1)+'</span><div class="pl-info"><span class="pl-name">'+esc(c.players[i].fullName)+'</span><span class="pl-team">'+esc(c.players[i].teamName)+"</span></div></li>";}
+  for(var i=0;i<pc;i++){rows+='<li class="pl-item" data-pidx="'+i+'"><span class="pl-num">'+(i+1)+'</span><div class="pl-info"><span class="pl-name">'+esc(c.players[i].fullName)+'</span><span class="pl-team">'+esc(c.players[i].teamName)+"</span></div>"+(canEdit()?'<button class="pl-rm-btn" data-pidx="'+i+'" title="Eliminar">\u00d7</button>':"")+"</li>";
+  }
   var editBtn=canEdit()?'<button class="btn btn-ghost btn-sm" data-edit="'+c.id+'" style="flex:1">\u270E Editar</button>':"";
   var delBtn=canEdit()?'<button class="btn btn-danger btn-sm" data-del="'+c.id+'" style="flex:1">\uD83D\uDDD1 Eliminar</button>':"";
   return'<div class="dp-hdr">'+
@@ -1391,6 +1394,27 @@ function openDetail(id){
   function close(){if(ov.parentNode)ov.parentNode.removeChild(ov);}
   document.getElementById("mo-cl").addEventListener("click",close);
   ov.addEventListener("click",function(e){if(e.target===ov)close();});
+  // Bind player remove buttons
+  ov.querySelectorAll(".pl-rm-btn").forEach(function(btn){
+    btn.addEventListener("click",function(e){
+      e.stopPropagation();
+      var idx=parseInt(btn.dataset.pidx);
+      var conv=null;for(var i=0;i<_callups.length;i++){if(_callups[i].id===id){conv=_callups[i];break;}}
+      if(!conv||!conv.players)return;
+      var pname=conv.players[idx]?conv.players[idx].fullName:"jugador";
+      if(!confirm("\u00bfEliminar a "+pname+" de esta convocatoria?"))return;
+      conv.players.splice(idx,1);
+      // Save to Firebase if logged
+      if(window._db&&window._fbUser){
+        var fns=window._fbFns;
+        fns.setDoc(fns.doc(window._db,"callups",id),Object.assign({},conv)).catch(function(e){console.error(e);});
+      }
+      toast("\uD83D\uDDD1 "+pname+" eliminado");
+      close();
+      // Reopen detail to refresh
+      openDetail(id);
+    });
+  });
   var editBtn=ov.querySelector("[data-edit]");
   if(editBtn)editBtn.addEventListener("click",function(){
     close();S.editingId=id;route("nueva");
@@ -2173,4 +2197,3 @@ route("agenda");
 </script>
 </body>
 </html>
-
