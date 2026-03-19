@@ -9,8 +9,32 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(500).json({ error: "API key not configured" });
 
   try {
-    const { prompt } = req.body;
-    if (!prompt) return res.status(400).json({ error: "Missing prompt" });
+    const { prompt, image, imageType } = req.body;
+    if (!prompt && !image) return res.status(400).json({ error: "Missing prompt or image" });
+
+    let messages;
+    if (image) {
+      // Image mode: send image + prompt
+      messages = [{
+        role: "user",
+        content: [
+          {
+            type: "image",
+            source: {
+              type: "base64",
+              media_type: imageType || "image/jpeg",
+              data: image
+            }
+          },
+          {
+            type: "text",
+            text: prompt || "Analiza esta imagen de una convocatoria de fútbol y extrae los datos en JSON según el formato indicado."
+          }
+        ]
+      }];
+    } else {
+      messages = [{ role: "user", content: prompt }];
+    }
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -22,7 +46,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
         max_tokens: 2000,
-        messages: [{ role: "user", content: prompt }]
+        messages
       })
     });
 
