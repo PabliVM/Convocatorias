@@ -1511,7 +1511,7 @@ function renderNueva(){
   players.forEach(function(p){var per=teamInSeason(p,S.season)||teamNow(p);if(!per)return;if(!byTeam[per.teamName])byTeam[per.teamName]=[];byTeam[per.teamName].push({id:p.id,fullName:titleCase(p.fullName),teamName:per.teamName});});
   Object.keys(byTeam).forEach(function(t){byTeam[t].sort(function(a,b){return a.fullName.localeCompare(b.fullName,"es");});});
   var sortedTeams=Object.keys(byTeam).sort(function(a,b){return(tord[b]||0)-(tord[a]||0);});
-  var pselHTML=sortedTeams.map(function(team){return'<div class="pg"><div class="pg-hdr" data-team="'+esc(team)+'"><span>'+esc(team)+'</span><span class="pg-cnt" id="pgc-'+esc(team)+'">0</span></div><div class="pg-body" id="pgb-'+esc(team)+'">'+byTeam[team].map(function(p){return'<label class="po" data-pn="'+esc(p.fullName.toLowerCase())+'" data-pt="'+esc(team)+'"><input type="checkbox" name="pids" value="'+p.id+'" data-n="'+esc(p.fullName)+'" data-t="'+esc(team)+'"/><span class="po-n">'+esc(p.fullName)+'</span><span class="po-t">'+esc(team)+"</span></label>";}).join("")+"</div></div>";}).join("");
+  var pselHTML=sortedTeams.map(function(team){return'<div class="pg"><div class="pg-hdr" data-team="'+esc(team)+'"><span>'+esc(team)+'</span><span class="pg-cnt" style="display:none" id="pgc-'+esc(team)+'">0</span></div><div class="pg-body" id="pgb-'+esc(team)+'">'+byTeam[team].map(function(p){return'<label class="po" data-pn="'+esc(p.fullName.toLowerCase())+'" data-pt="'+esc(team)+'"><input type="checkbox" name="pids" value="'+p.id+'" data-n="'+esc(p.fullName)+'" data-t="'+esc(team)+'"/><span class="po-n">'+esc(p.fullName)+'</span><span class="po-t">'+esc(team)+"</span></label>";}).join("")+"</div></div>";}).join("");
   $("main").innerHTML=
     '<div class="vh" style="margin-bottom:8px"><h1 class="vt">'+(S.editingId?"Editar Convocatoria":"Nueva Convocatoria")+'</h1><span class="vs">'+S.season+"</span></div>"+
     '<div id="ai-parser-wrap" style="margin-bottom:12px"><button type="button" class="btn-ai-parser" id="btn-ai-parser">\u2728 Rellenar con nota de prensa</button></div>'+
@@ -1754,6 +1754,7 @@ function renderJugadores(){
   });
   var byTeam={};var tord={};TEAMS.forEach(function(t){tord[t.name]=t.order;});
   filtered.forEach(function(p){var per=teamInSeason(p,S.season)||teamNow(p);if(!per)return;if(!byTeam[per.teamName])byTeam[per.teamName]=[];byTeam[per.teamName].push(p);});
+  Object.keys(byTeam).forEach(function(t){byTeam[t].sort(function(a,b){return titleCase(a.fullName).localeCompare(titleCase(b.fullName),"es");});});
   var sortedTeams=Object.keys(byTeam).sort(function(a,b){return(tord[b]||0)-(tord[a]||0);});
   var callups=getCallups({season:S.season});
   var callupCount={};callups.forEach(function(c){c.players.forEach(function(cp){callupCount[cp.playerId]=(callupCount[cp.playerId]||0)+1;});});
@@ -1776,7 +1777,7 @@ function renderJugadores(){
       '<ul class="tpl">'+ps.map(function(p){
         var n=callupCount[p.id]||0;
         return'<li class="tpl-item">'+
-          '<div style="flex:1;min-width:0"><span class="tpl-name"'+(!p.active?' style="opacity:.4;text-decoration:line-through"':'')+">"+esc(p.fullName)+"</span></div>"+
+          '<div style="flex:1;min-width:0"><span class="tpl-name"'+(!p.active?' style="opacity:.4;text-decoration:line-through"':'')+">"+esc(titleCase(p.fullName))+"</span></div>"+
           (n?'<span class="tpl-badge">'+n+"</span>":"")+
           '<button class="jug-edit-btn" data-pid="'+p.id+'">\u270E</button>'+
           "</li>";
