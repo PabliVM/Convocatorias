@@ -1304,7 +1304,7 @@ function callupTableRow(c){
 // ── DETAIL ──
 function callupDetail(c){
   var pc=(c.players&&c.players.length)||0,rows="";
-  for(var i=0;i<pc;i++){rows+='<li class="pl-item" data-pidx="'+i+'"><span class="pl-num">'+(i+1)+'</span><div class="pl-info"><span class="pl-name">'+esc(c.players[i].fullName)+'</span><span class="pl-team">'+esc(c.players[i].teamName)+"</span></div>"+(canEdit()?'<button class="pl-rm-btn" data-pidx="'+i+'" title="Eliminar">\u00d7</button>':"")+"</li>";
+  for(var i=0;i<pc;i++){rows+='<li class="pl-item" data-pidx="'+i+'"><span class="pl-num">'+(i+1)+'</span><div class="pl-info"><span class="pl-name">'+esc(c.players[i].fullName)+'</span><span class="pl-team">'+esc(c.players[i].teamName)+"</span></div>"+'<button class="pl-rm-btn" data-pidx="'+i+'" title="Eliminar">\u00d7</button>'+"</li>";
   }
   var editBtn=canEdit()?'<button class="btn btn-ghost btn-sm" data-edit="'+c.id+'" style="flex:1">\u270E Editar</button>':"";
   var delBtn=canEdit()?'<button class="btn btn-danger btn-sm" data-del="'+c.id+'" style="flex:1">\uD83D\uDDD1 Eliminar</button>':"";
@@ -1787,22 +1787,44 @@ function bindAiParser(){
           // ── Player matching ──
           if(parsed.players&&parsed.players.length){
             function normalize(s){return(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9 ]/g,"").trim();}
+            // Levenshtein distance for fuzzy matching
+            function lev(a,b){
+              var m=a.length,n=b.length,dp=[];
+              for(var i=0;i<=m;i++){dp[i]=[i];for(var j=1;j<=n;j++)dp[i][j]=0;}
+              for(var j=0;j<=n;j++)dp[0][j]=j;
+              for(var i=1;i<=m;i++)for(var j=1;j<=n;j++){
+                dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+              }
+              return dp[m][n];
+            }
+            // Fuzzy word match: exact or 1-2 char edit distance proportional to length
+            function fuzzyWord(a,b){
+              if(a===b)return true;
+              if(a.length<3||b.length<3)return false;
+              var maxDist=a.length<=5?1:2;
+              return lev(a,b)<=maxDist;
+            }
             var matched=[],unmatched=[];
             parsed.players.forEach(function(rawName){
               var normRaw=normalize(rawName);
-              var rawParts=normRaw.split(" ");
+              var rawParts=normRaw.split(" ").filter(function(w){return w.length>1;});
               var best=null,bestScore=0;
               _players.forEach(function(p){
                 if(!p.active)return;
                 var normP=normalize(p.fullName);
-                var pParts=normP.split(" ");
-                // Score: count matching words
+                var pParts=normP.split(" ").filter(function(w){return w.length>1;});
                 var score=0;
-                rawParts.forEach(function(w){if(w.length>2&&pParts.indexOf(w)!==-1)score++;});
-                // Bonus for matching last name (last word)
+                // For each raw word, check if any player word matches (exact or fuzzy)
+                rawParts.forEach(function(rw){
+                  pParts.forEach(function(pw){
+                    if(rw===pw)score+=2;
+                    else if(rw.length>=4&&pw.length>=4&&fuzzyWord(rw,pw))score+=1.5;
+                  });
+                });
+                // Bonus: last word match (apellido)
                 var rawLast=rawParts[rawParts.length-1];
                 var pLast=pParts[pParts.length-1];
-                if(rawLast&&rawLast.length>2&&pLast===rawLast)score+=2;
+                if(rawLast&&pLast&&fuzzyWord(rawLast,pLast))score+=1;
                 if(score>bestScore){bestScore=score;best=p;}
               });
               if(best&&bestScore>=2){
