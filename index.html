@@ -1,508 +1,13 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-<meta name="theme-color" content="#001489"/>
-<title>RM Convocatorias</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<style>
-/* ── Real Madrid corporativo: Blanco · Azul marino #001489 · Dorado #C8A96E ── */
-:root{
-  --navy:#1A3A8F;--navy-2:#153078;--navy-3:#0F2460;
-  --gold:#C8A96E;--gold-light:#E8D5A3;--gold-dim:#A8894E;
-  --white:#1C1C26;--off-white:#13131A;--off-white-2:#1E1E2A;--off-white-3:#252535;
-  --text:#F0F0F0;--text-mid:#B0B0C0;--text-muted:#707080;
-  --border:rgba(255,255,255,.08);--border-strong:rgba(255,255,255,.14);
-  --mad:#5B8FF9;--esp:#F87171;
-  --s-prox:#FBBF24;--s-cur:#34D399;--s-fin:#6B7280;
-  --nav:54px;--r:12px;--r-sm:8px;--r-lg:16px;--t:200ms ease;
-  --shadow-sm:0 1px 4px rgba(0,0,0,.3);
-  --shadow:0 4px 20px rgba(0,0,0,.4);
-  --shadow-lg:0 8px 40px rgba(0,0,0,.5);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:16px;-webkit-text-size-adjust:100%}
-body{font-family:'Inter',system-ui,sans-serif;background:#13131A;color:var(--text);min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased;color-scheme:dark}
-.app{display:flex;flex-direction:column;min-height:100dvh}
+<!DOCTYPE html> <html lang="es"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/> <meta name="theme-color" content="#001489"/> <title>RM Convocatorias</title> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/> <style> :root{   --navy:#1A3A8F;--navy-2:#153078;--navy-3:#0F2460;   --gold:#C8A96E;--gold-light:#E8D5A3;--gold-dim:#A8894E;   --white:#1C1C26;--off-white:#13131A;--off-white-2:#1E1E2A;--off-white-3:#252535;   --text:#F0F0F0;--text-mid:#B0B0C0;--text-muted:#707080;   --border:rgba(255,255,255,.08);--border-strong:rgba(255,255,255,.14);   --mad:#5B8FF9;--esp:#F87171;   --s-prox:#FBBF24;--s-cur:#34D399;--s-fin:#6B7280;   --nav:54px;--r:12px;--r-sm:8px;--r-lg:16px;--t:200ms ease;   --shadow-sm:0 1px 4px rgba(0,0,0,.3);   --shadow:0 4px 20px rgba(0,0,0,.4);   --shadow-lg:0 8px 40px rgba(0,0,0,.5); } *,*::before,*::after{box-sizing:border-box;margin:0;padding:0} html{font-size:16px;-webkit-text-size-adjust:100%} body{font-family:'Inter',system-ui,sans-serif;background:#13131A;color:var(--text);min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased;color-scheme:dark} .app{display:flex;flex-direction:column;min-height:100dvh}  .hdr-emblem{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--navy);letter-spacing:.5px;box-shadow:0 0 0 2px rgba(255,255,255,.2)} .hdr{position:sticky;top:0;z-index:100;background:var(--navy);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,.25)} .hdr-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}  .hdr-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#ffffff;line-height:1} .hdr-sub{font-size:10px;color:#ffffff;letter-spacing:1.5px;text-transform:uppercase;opacity:.85} .season-sel{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:20px;color:#ffffff;font-family:inherit;font-size:12px;font-weight:600;padding:6px 26px 6px 12px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,.7)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;min-height:34px;transition:all var(--t)} .season-sel:focus{outline:none;border-color:var(--gold);background:rgba(255,255,255,.18)} .season-sel option{background:var(--navy);color:var(--white)}  .main{flex:1;padding:16px 16px calc(var(--nav) + 16px);max-width:640px;margin:0 auto;width:100%}  .nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--navy);border-top:2px solid rgba(255,255,255,.1);display:flex;height:var(--nav);box-shadow:0 -4px 20px rgba(0,20,137,.3);padding-bottom:env(safe-area-inset-bottom)} .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.7);padding:8px 4px;transition:all var(--t);-webkit-tap-highlight-color:transparent;position:relative;min-height:44px} .nb:active{background:rgba(255,255,255,.06)} .nb.active{color:var(--gold)}.nb.active .nl{color:var(--gold)} .nb.active::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:3px;background:var(--gold);border-radius:0 0 3px 3px} .nb-new .ni{width:36px;height:36px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#fff;box-shadow:0 4px 16px rgba(200,169,110,.5);transition:transform var(--t)} .nb-new.active .ni{background:rgba(255,255,255,.9);color:var(--navy)} .nb-new:active .ni{transform:scale(.95)} .ni{font-size:17px;line-height:1;display:block} .nl{font-size:9px;font-weight:600;letter-spacing:.2px;line-height:1;color:rgba(255,255,255,.7)}  .vh{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)} .vt{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;line-height:1;color:#FFFFFF} .vs{font-size:12px;color:var(--text-mid);letter-spacing:1px;text-transform:uppercase;margin-top:4px;display:block;font-weight:600} .st{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;color:#FFFFFF} .st::after{content:"";flex:1;height:1px;background:var(--border)}  .fb{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch} .fb::-webkit-scrollbar{display:none} .fbtn{flex-shrink:0;padding:8px 16px;border-radius:20px;border:1px solid var(--border-strong);background:var(--off-white-2);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:all var(--t);min-height:36px;box-shadow:var(--shadow-sm)} .fbtn.on{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:600;box-shadow:0 2px 8px rgba(26,58,143,.4)}  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase} .s-prox{background:rgba(217,119,6,.1);color:var(--s-prox);border:1px solid rgba(217,119,6,.3)} .s-cur{background:rgba(5,150,105,.1);color:var(--s-cur);border:1px solid rgba(5,150,105,.3)} .s-fin{background:rgba(107,114,154,.1);color:var(--s-fin);border:1px solid rgba(107,114,154,.2)} .conv-prov{background:rgba(251,191,36,.1);color:#FBBF24;border:1px solid rgba(251,191,36,.3);font-size:10px;padding:2px 8px} .conv-def{background:rgba(52,211,153,.1);color:#34D399;border:1px solid rgba(52,211,153,.3);font-size:10px;padding:2px 8px}  .cl{display:flex;flex-direction:column;gap:10px} .cc{background:var(--off-white-2);border:1px solid var(--border);border-left:4px solid var(--ca,var(--navy));border-radius:var(--r);padding:16px;cursor:pointer;transition:all var(--t);-webkit-tap-highlight-color:transparent;user-select:none;box-shadow:var(--shadow-sm)} .cc:active,.cc:focus-visible{background:var(--off-white-3);outline:none;transform:scale(.99);box-shadow:var(--shadow)} .cc-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px} .cc-badges{display:flex;gap:6px;flex-wrap:wrap} .cc-title{font-size:16px;font-weight:700;margin-bottom:10px;line-height:1.3;color:var(--text)} .cc-meta{display:flex;flex-direction:column;gap:4px;margin-bottom:10px} .cc-mi{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text)} .mi{font-size:13px;flex-shrink:0} .cc-players{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)} .chip{padding:3px 8px;background:var(--off-white-2);border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--text-mid)} .chip-more{background:var(--navy);color:#fff;font-weight:600;border-color:var(--navy)} .cc-flag{font-size:22px;line-height:1;flex-shrink:0}  .empty{text-align:center;padding:48px 24px;color:var(--text-muted)} .empty-ico{font-size:48px;display:block;margin-bottom:12px;opacity:.4} .empty-t{font-size:14px} .loading{display:flex;flex-direction:column;align-items:center;gap:16px;padding:64px 24px;color:var(--text-muted);font-size:14px} .spinner{width:32px;height:32px;border:3px solid var(--border-strong);border-top-color:var(--navy);border-radius:50%;animation:spin .8s linear infinite}  .toast{position:fixed;bottom:calc(var(--nav) + 16px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:var(--off-white-3);border:1px solid var(--navy-2);color:var(--white);padding:12px 20px;border-radius:24px;font-size:14px;font-weight:500;opacity:0;transition:all 300ms ease;z-index:300;white-space:nowrap;box-shadow:var(--shadow-lg)} .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}  .mo{position:fixed;inset:0;z-index:200;background:rgba(0,10,60,.5);backdrop-filter:blur(4px);display:flex;align-items:flex-end;animation:fadeIn 150ms ease} .modal{background:var(--off-white-2);border-radius:var(--r-lg) var(--r-lg) 0 0;width:100%;max-height:90dvh;overflow-y:auto;padding:24px 16px;padding-bottom:calc(24px + env(safe-area-inset-bottom));position:relative;animation:slideUp 200ms ease;box-shadow:0 -8px 40px rgba(0,20,137,.2)} .modal-tall{max-height:95dvh} .mcl{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--off-white-3);color:var(--text-muted);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--t);z-index:1} .mtitle{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1.5px;margin-bottom:8px;padding-right:40px;color:#FFFFFF} .msub{font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:20px}  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;border-radius:var(--r);border:none;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:all var(--t);min-height:48px;-webkit-tap-highlight-color:transparent} .btn-primary{background:var(--navy);color:#fff;width:100%;box-shadow:0 4px 16px rgba(26,58,143,.35)} .btn-gold{background:var(--gold);color:var(--navy);font-weight:700} .btn-ghost{background:transparent;color:var(--text-mid);border:1px solid var(--border-strong)}  .tbar-wrap{position:relative;display:flex;align-items:center;gap:0;margin-bottom:16px} .tbar-arrow{flex-shrink:0;background:var(--navy);border:none;color:#fff;width:30px;height:36px;border-radius:8px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity var(--t);z-index:1;padding:0} .tbar-arrow:disabled{opacity:.2;cursor:default} .tbar{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;-webkit-overflow-scrolling:touch;scroll-behavior:smooth} .tbar::-webkit-scrollbar{display:none} .tbtn{flex-shrink:0;padding:8px 14px;border-radius:8px;border:1px solid var(--border-strong);background:var(--off-white-2);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:all var(--t);min-height:36px;box-shadow:var(--shadow-sm)} .tbtn.on{background:var(--navy);color:#fff !important;border-color:var(--navy);font-weight:600;box-shadow:0 2px 8px rgba(26,58,143,.35)}  .hdr-emblem-img{width:36px;height:36px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 0 4px rgba(200,169,110,.4))} .hdr-login-btn{background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer;transition:all var(--t);flex-shrink:0;display:flex;align-items:center;justify-content:center} .hdr-login-btn.logged{border-color:var(--gold);color:var(--gold)}
 
-.hdr-emblem{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--navy);letter-spacing:.5px;box-shadow:0 0 0 2px rgba(255,255,255,.2)}
-/* HEADER */
-.hdr{position:sticky;top:0;z-index:100;background:var(--navy);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,.25)}
-.hdr-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.hdr-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#ffffff;line-height:1}
-.hdr-sub{font-size:10px;color:#ffffff;letter-spacing:1.5px;text-transform:uppercase;opacity:.85}
-.season-sel{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:20px;color:#ffffff;font-family:inherit;font-size:12px;font-weight:600;padding:6px 26px 6px 12px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,.7)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;min-height:34px;transition:all var(--t)}
-.season-sel:focus{outline:none;border-color:var(--gold);background:rgba(255,255,255,.18)}
-.season-sel option{background:var(--navy);color:var(--white)}
+.ss{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px} .sc{background:var(--off-white-2);border:1px solid var(--border);border-radius:var(--r);padding:16px;text-align:center;box-shadow:var(--shadow-sm)} .sc-mad{border-top:3px solid var(--mad)}.sc-esp{border-top:3px solid var(--esp)} .sc-n{font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--text);line-height:1;margin-bottom:4px;font-weight:400} .sc-l{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
 
-/* MAIN */
-.main{flex:1;padding:16px 16px calc(var(--nav) + 16px);max-width:640px;margin:0 auto;width:100%}
+.view-toggle{display:flex;background:var(--off-white-3);border-radius:8px;padding:3px;gap:2px;border:1px solid var(--border)} .vtbtn{background:none;border:none;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all var(--t);white-space:nowrap} .vtbtn.on{background:var(--navy);color:#fff;box-shadow:var(--shadow-sm)}
 
-/* NAV */
-.nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--navy);border-top:2px solid rgba(255,255,255,.1);display:flex;height:var(--nav);box-shadow:0 -4px 20px rgba(0,20,137,.3);padding-bottom:env(safe-area-inset-bottom)}
-.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.7);padding:8px 4px;transition:all var(--t);-webkit-tap-highlight-color:transparent;position:relative;min-height:44px}
-.nb:active{background:rgba(255,255,255,.06)}
-.nb.active{color:var(--gold)}.nb.active .nl{color:var(--gold)}
-.nb.active::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:3px;background:var(--gold);border-radius:0 0 3px 3px}
-.nb-new .ni{width:36px;height:36px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#fff;box-shadow:0 4px 16px rgba(200,169,110,.5);transition:transform var(--t)}
-.nb-new.active .ni{background:rgba(255,255,255,.9);color:var(--navy)}
-.nb-new:active .ni{transform:scale(.95)}
-.ni{font-size:17px;line-height:1;display:block}
-.nl{font-size:9px;font-weight:600;letter-spacing:.1px;line-height:1;color:rgba(255,255,255,.7)}
+.fin-details{margin-top:20px} .fin-summary{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--off-white-2);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;list-style:none;box-shadow:var(--shadow-sm)} .fin-summary::-webkit-details-marker{display:none} .fin-summary__label{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;color:var(--text-muted);display:flex;align-items:center;gap:8px} .fin-summary__label::before{content:"▶";font-size:10px;color:var(--text-muted);transition:transform 200ms ease} details[open] .fin-summary__label::before{transform:rotate(90deg)} .fin-summary__count{background:var(--off-white-2);border:1px solid var(--border);color:var(--text-muted);font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px}
 
-/* VIEW */
-.vh{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
-.vt{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;line-height:1;color:#FFFFFF}
-.vs{font-size:12px;color:var(--text-mid);letter-spacing:1px;text-transform:uppercase;margin-top:4px;display:block;font-weight:600}
-.st{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;color:#FFFFFF}
-.st::after{content:"";flex:1;height:1px;background:var(--border)}
-.st-m{color:var(--text-muted)}
-.st-m::after{background:var(--border)}
-
-/* FILTER BAR */
-.fb{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.fb::-webkit-scrollbar{display:none}
-.fbtn{flex-shrink:0;padding:8px 16px;border-radius:20px;border:1px solid var(--border-strong);background:var(--off-white-2);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:all var(--t);min-height:36px;box-shadow:var(--shadow-sm)}
-.fbtn.on{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:600;box-shadow:0 2px 8px rgba(26,58,143,.4)}
-
-/* BADGES */
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
-.s-prox{background:rgba(217,119,6,.1);color:var(--s-prox);border:1px solid rgba(217,119,6,.3)}
-.conv-prov{background:rgba(251,191,36,.1);color:#FBBF24;border:1px solid rgba(251,191,36,.3);font-size:10px;padding:2px 8px}
-.conv-def{background:rgba(52,211,153,.1);color:#34D399;border:1px solid rgba(52,211,153,.3);font-size:10px;padding:2px 8px}
-.s-cur{background:rgba(5,150,105,.1);color:var(--s-cur);border:1px solid rgba(5,150,105,.3)}
-.s-fin{background:rgba(107,114,154,.1);color:var(--s-fin);border:1px solid rgba(107,114,154,.2)}
-
-/* CALLUP CARDS */
-.cl{display:flex;flex-direction:column;gap:10px}
-.cl-past{opacity:.65}
-.cc{background:var(--off-white-2);border:1px solid var(--border);border-left:4px solid var(--ca,var(--navy));border-radius:var(--r);padding:16px;cursor:pointer;transition:all var(--t);-webkit-tap-highlight-color:transparent;user-select:none;box-shadow:var(--shadow-sm)}
-.cc:active,.cc:focus-visible{background:var(--off-white-3);outline:none;transform:scale(.99);box-shadow:var(--shadow)}
-.cc-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.cc-badges{display:flex;gap:6px;flex-wrap:wrap}
-.cc-season{font-size:11px;color:var(--text-mid);font-weight:700;letter-spacing:.5px}
-.cc-title{font-size:16px;font-weight:700;margin-bottom:10px;line-height:1.3;color:var(--text)}
-.cc-meta{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
-.cc-mi{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text)}
-.mi{font-size:13px;flex-shrink:0}
-.cc-players{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
-
-/* CHIPS */
-.chip{padding:3px 8px;background:var(--off-white-2);border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--text-mid)}
-.chip-more{background:var(--navy);color:#fff;font-weight:600;border-color:var(--navy)}
-.chip-sel{background:rgba(0,20,137,.08);border-color:var(--navy);color:var(--text);font-weight:600}
-
-/* TABS */
-.tbar-wrap{position:relative;display:flex;align-items:center;gap:0;margin-bottom:16px}
-.tbar-arrow{flex-shrink:0;background:var(--navy);border:none;color:#fff;width:30px;height:36px;border-radius:8px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity var(--t);z-index:1;padding:0}
-.tbar-arrow:disabled{opacity:.2;cursor:default}
-.tbar-arrow-l{border-radius:8px 0 0 8px;margin-right:2px}
-.tbar-arrow-r{border-radius:0 8px 8px 0;margin-left:2px}
-.tbar{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
-.tbar::-webkit-scrollbar{display:none}
-.tbtn{flex-shrink:0;padding:8px 14px;border-radius:8px;border:1px solid var(--border-strong);background:var(--off-white-2);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:all var(--t);min-height:36px;box-shadow:var(--shadow-sm)}
-.tbtn.on{background:var(--navy);color:#fff !important;border-color:var(--navy);font-weight:600;box-shadow:0 2px 8px rgba(26,58,143,.35)}
-
-/* MODAL */
-.mo{position:fixed;inset:0;z-index:200;background:rgba(0,10,60,.5);backdrop-filter:blur(4px);display:flex;align-items:flex-end;animation:fadeIn 150ms ease}
-.modal{background:var(--off-white-2);border-radius:var(--r-lg) var(--r-lg) 0 0;width:100%;max-height:90dvh;overflow-y:auto;padding:24px 16px;padding-bottom:calc(24px + env(safe-area-inset-bottom));position:relative;animation:slideUp 200ms ease;box-shadow:0 -8px 40px rgba(0,20,137,.2)}
-.modal-tall{max-height:95dvh}
-.mcl{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--off-white-3);color:var(--text-muted);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--t);z-index:1}
-.mcl:active{background:var(--off-white-3)}
-.mtitle{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1.5px;margin-bottom:8px;padding-right:40px;color:#FFFFFF}
-.msub{font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:20px}
-.mact{display:flex;gap:10px;padding-top:16px;border-top:1px solid var(--border);margin-top:16px}
-
-/* DETAIL */
-.dp-hdr{margin-bottom:20px;padding-right:40px}
-.dp-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.dp-title{font-size:20px;font-weight:700;line-height:1.3;margin-bottom:4px;color:var(--text)}
-.dp-sea{font-size:12px;color:var(--text-muted);font-weight:600;letter-spacing:.5px}
-.dp-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;background:var(--off-white-3);border-radius:var(--r-sm);padding:14px;border:1px solid var(--border)}
-.di{display:flex;flex-direction:column;gap:2px}
-.di-l{font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:.5px;text-transform:uppercase}
-.di-v{font-size:14px;color:var(--text);font-weight:500}
-.dp-st{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
-.pl{list-style:none;display:flex;flex-direction:column;gap:6px}
-.pl-item{display:flex;align-items:center;gap:12px;background:var(--off-white-3);border-radius:var(--r-sm);padding:10px 12px;border:1px solid var(--border)}
-.pl-num{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text-mid);min-width:24px;text-align:center;opacity:.8}
-.pl-info{display:flex;flex-direction:column;gap:1px}
-.pl-name{font-size:14px;font-weight:600;color:var(--text)}
-.pl-team{font-size:11px;color:var(--text-muted)}
-.pl-rm-btn{background:none;border:none;color:var(--text-muted);font-size:16px;cursor:pointer;padding:4px 6px;border-radius:4px;line-height:1;flex-shrink:0;transition:all var(--t)}
-.pl-rm-btn:active{color:#EF4444;background:rgba(239,68,68,.1)}
-.dp-notes{margin-bottom:16px}
-.notes-t{font-size:13px;color:var(--text-mid);line-height:1.5;background:var(--off-white-3);padding:12px;border-radius:var(--r-sm);border:1px solid var(--border)}
-.dp-act{padding-top:12px;border-top:1px solid var(--border)}
-
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;border-radius:var(--r);border:none;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:all var(--t);min-height:48px;-webkit-tap-highlight-color:transparent}
-.btn-primary{background:var(--navy);color:#fff;width:100%;box-shadow:0 4px 16px rgba(26,58,143,.35)}
-.btn-primary:active{transform:scale(.99);background:var(--navy-2)}
-.btn-primary:disabled{opacity:.5;cursor:not-allowed}
-.btn-gold{background:var(--gold);color:var(--navy);font-weight:700}
-.btn-gold:active{background:var(--gold-light);transform:scale(.99)}
-.btn-gold:disabled{opacity:.6}
-.btn-ghost{background:transparent;color:var(--text-mid);border:1px solid var(--border-strong)}
-.btn-ghost:active{background:var(--off-white)}
-.btn-danger{background:rgba(220,38,38,.08);color:#B91C1C;border:1px solid rgba(220,38,38,.2)}
-.btn-danger:active{background:rgba(220,38,38,.15)}
-.btn-sm{padding:10px 16px;font-size:13px;min-height:40px}
-
-/* FORMS */
-.form{display:flex;flex-direction:column}
-.fg{margin-bottom:20px}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
-.fl{display:block;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px}
-.fi,.fsel,.fta{width:100%;background:var(--off-white-3);border:1.5px solid var(--border-strong);border-radius:var(--r-sm);color:var(--text);font-family:inherit;font-size:15px;padding:13px 14px;min-height:48px;transition:all var(--t);-webkit-appearance:none;appearance:none;box-shadow:var(--shadow-sm)}
-.fi:focus,.fsel:focus,.fta:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(0,20,137,.1),var(--shadow-sm)}
-.fi::placeholder{color:var(--text-muted);opacity:.7}
-.fsel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B729A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;cursor:pointer}
-.fsel option{background:var(--white);color:var(--text)}
-.fsel-sm{min-height:36px;padding:6px 32px 6px 10px;font-size:13px}
-.fta{resize:vertical;min-height:80px}
-.rg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.rc{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 12px;background:var(--off-white-2);border:2px solid var(--border-strong);border-radius:var(--r);cursor:pointer;transition:all var(--t);text-align:center;box-shadow:var(--shadow-sm)}
-.rc input{display:none}
-.rc.on{border-color:var(--navy);background:rgba(0,20,137,.04);box-shadow:0 0 0 3px rgba(0,20,137,.1)}
-.rc-ico{font-size:24px}
-.rc-lbl{font-size:14px;font-weight:600;color:var(--text)}
-.psel{background:var(--off-white-2);border:1.5px solid var(--border-strong);border-radius:var(--r-sm);max-height:260px;overflow-y:auto;overscroll-behavior:contain;box-shadow:var(--shadow-sm)}
-.pg-hdr{padding:8px 14px 6px;font-size:10px;font-weight:700;color:#fff;letter-spacing:1px;text-transform:uppercase;background:var(--navy);position:sticky;top:0;border-bottom:1px solid var(--border)}
-.po{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background var(--t);background:var(--off-white-2)}
-.po:last-child{border-bottom:none}
-.po:active,.po:has(input:checked){background:rgba(0,20,137,.05)}
-.po input{width:20px;height:20px;accent-color:var(--navy);flex-shrink:0;cursor:pointer}
-.po-n{flex:1;font-size:14px;font-weight:500;color:var(--text)}
-.po-t{font-size:11px;color:var(--text-muted)}
-.sp{margin-top:10px}
-.sp-hdr{font-size:12px;color:var(--text-muted);margin-bottom:6px}
-.sp-chips{display:flex;flex-wrap:wrap;gap:4px}
-.ferr{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.25);border-radius:var(--r-sm);padding:12px;margin-bottom:16px;color:#B91C1C;font-size:13px;line-height:1.6}
-.fact{display:flex;flex-direction:column;gap:10px;padding-top:8px}
-
-/* PLANTILLAS */
-.pl-actions{margin-bottom:20px}
-.tb{background:var(--off-white-2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow-sm)}
-.tb-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--navy);border-bottom:none}
-.tb-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#fff}
-.tb-cnt{font-size:12px;color:rgba(255,255,255,.7);background:rgba(255,255,255,.15);padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.2)}
-.tpl{list-style:none}
-.tpl-item{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--border);font-size:14px;color:var(--text);background:var(--off-white-2)}
-.tpl-item:last-child{border-bottom:none}
-
-/* ROSTER */
-.rl{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-.ri{background:var(--off-white-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;display:flex;flex-direction:column;gap:8px;transition:opacity var(--t)}
-.ri.off{opacity:.35}
-.ri-cl{display:flex;align-items:center;gap:10px;cursor:pointer}
-.ri-cl input{width:20px;height:20px;accent-color:var(--navy);flex-shrink:0}
-.ri-name{font-size:15px;font-weight:600;color:var(--text)}
-.ri-teams{display:flex;align-items:center;gap:8px;padding-left:30px}
-.ri-from{font-size:12px;color:var(--text-muted);min-width:80px}
-.ri-arr{font-size:14px;color:var(--gold-dim);flex-shrink:0;font-weight:700}
-.ri-sel{flex:1;background:var(--white);border:1px solid var(--border-strong);border-radius:var(--r-sm);color:var(--text);font-family:inherit;font-size:13px;padding:6px 28px 6px 10px;min-height:36px;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B729A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;cursor:pointer}
-.ri-sel option{background:var(--white)}
-
-/* STATS */
-.ss{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
-.sc{background:var(--off-white-2);border:1px solid var(--border);border-radius:var(--r);padding:16px;text-align:center;box-shadow:var(--shadow-sm)}
-.sc-mad{border-top:3px solid var(--mad)}.sc-int{border-top:3px solid #059669}
-.sc-esp{border-top:3px solid var(--esp)}
-.sc-n{font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--text);line-height:1;margin-bottom:4px;font-weight:400}
-.sc-l{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
-.sf{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-.stc{display:flex;align-items:center;gap:12px;background:var(--off-white-2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;box-shadow:var(--shadow-sm)}
-.stc-rk{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--text-muted);min-width:32px;text-align:center}
-.stc-info{flex:1;min-width:0}
-.stc-name{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
-.stc-team{font-size:11px;color:var(--text-muted)}
-.stc-nums{text-align:right;flex-shrink:0}
-.stc-tot{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--text);line-height:1;margin-bottom:4px;font-weight:400}
-.stc-bd{display:flex;gap:4px;justify-content:flex-end}
-.bb{padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
-.bb-m{background:rgba(29,78,216,.1);color:#1D4ED8}
-.bb-e{background:rgba(220,38,38,.1);color:#DC2626}
-
-/* EMPTY / LOADING */
-.empty{text-align:center;padding:48px 24px;color:var(--text-muted)}
-.empty-ico{font-size:48px;display:block;margin-bottom:12px;opacity:.4}
-.empty-t{font-size:14px}
-.loading{display:flex;flex-direction:column;align-items:center;gap:16px;padding:64px 24px;color:var(--text-muted);font-size:14px}
-.spinner{width:32px;height:32px;border:3px solid var(--border-strong);border-top-color:var(--navy);border-radius:50%;animation:spin .8s linear infinite}
-
-/* TOAST */
-.toast{position:fixed;bottom:calc(var(--nav) + 16px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:var(--off-white-3);border:1px solid var(--navy-2);color:var(--white);padding:12px 20px;border-radius:24px;font-size:14px;font-weight:500;opacity:0;transition:all 300ms ease;z-index:300;white-space:nowrap;box-shadow:var(--shadow-lg)}
-.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast-err{background:#B91C1C;border-color:#991B1B}
-
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes slideUp{from{transform:translateY(32px);opacity:0}to{transform:translateY(0);opacity:1}}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* FLAG on card */
-.cc-flag{font-size:22px;line-height:1;flex-shrink:0}
-
-/* PLANIFICACIÓN */
-.plan-toggle{display:flex;background:var(--off-white-3);border-radius:8px;padding:3px;gap:2px;border:1px solid var(--border);margin-bottom:16px}
-.plan-tbtn{background:none;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all var(--t);flex:1;font-family:inherit}
-.plan-tbtn.on{background:var(--navy);color:#fff;box-shadow:var(--shadow-sm)}
-
-/* TABLA SEMANAL */
-.plan-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r);border:1px solid var(--border);margin-bottom:16px}
-.plan-table{width:100%;border-collapse:collapse;font-size:11px;min-width:600px}
-.plan-table th{background:var(--navy);color:#fff;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:6px 4px;text-align:center;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1)}
-.plan-table th:first-child{text-align:left;padding-left:8px;min-width:60px;position:sticky;left:0;background:var(--navy);z-index:2}
-.plan-table td{padding:2px 3px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);vertical-align:top;min-width:52px;height:22px}
-.plan-table td:first-child{padding:2px 6px;background:var(--off-white-2);font-size:10px;font-weight:600;color:var(--text-muted);white-space:nowrap;position:sticky;left:0;z-index:1;border-right:1px solid var(--border)}
-.plan-table tr.week-today td:first-child{color:var(--gold);font-weight:700}
-.plan-cell{border-radius:3px;padding:2px 4px;font-size:9px;font-weight:700;color:#fff;line-height:1.3;cursor:pointer;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.plan-cell:active{opacity:.7}
-.plan-cell-mad{background:#1A3A8F}
-.plan-cell-esp{background:#DC2626}
-.plan-cell-int{background:#047857}
-.plan-cell-ref{background:#6B7280}
-
-/* BLOQUES MENSUALES */
-.plan-month{margin-bottom:20px}
-.plan-month-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.plan-month-title::after{content:"";flex:1;height:1px;background:var(--border)}
-.plan-blocks{display:flex;flex-direction:column;gap:4px}
-.plan-block-row{display:flex;align-items:center;gap:6px;min-height:28px}
-.plan-block-cat{font-size:10px;font-weight:700;color:var(--text-muted);width:36px;text-align:right;flex-shrink:0;letter-spacing:.3px}
-.plan-block-track{flex:1;position:relative;height:22px;background:var(--off-white-3);border-radius:4px;overflow:hidden}
-.plan-block-ev{position:absolute;top:2px;height:18px;border-radius:3px;display:flex;align-items:center;padding:0 5px;font-size:9px;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity var(--t)}
-.plan-block-ev:active{opacity:.7}
-
-/* PARTIDOS */
-.matches-wrap{margin-bottom:16px}
-.match-row{display:flex;align-items:center;gap:8px;background:var(--off-white-3);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:6px;border:1px solid var(--border)}
-.match-row .fi{flex:1;min-height:38px;font-size:13px;padding:8px 10px}
-.match-row .btn-rm{background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;padding:4px;flex-shrink:0;line-height:1}
-.match-row .btn-rm:active{color:#F87171}
-.btn-add-match{background:none;border:1.5px dashed var(--border-strong);border-radius:var(--r-sm);color:var(--text-muted);font-size:13px;font-weight:600;padding:10px;width:100%;cursor:pointer;transition:all var(--t);margin-top:4px}
-.btn-add-match:active{border-color:var(--gold);color:var(--gold)}
-.dp-matches{margin-bottom:16px}
-.dp-match-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--off-white-3);border-radius:var(--r-sm);border:1px solid var(--border);margin-bottom:6px}
-.dp-match-item:last-child{margin-bottom:0}
-.dp-match-ball{font-size:18px;flex-shrink:0}
-.dp-match-info{flex:1}
-.dp-match-date{font-size:13px;font-weight:700;color:var(--text)}
-.dp-match-rival{font-size:12px;color:var(--text-muted)}
-.dp-match-time{font-size:12px;color:var(--gold);font-weight:600;flex-shrink:0}
-
-/* CALENDARIO */
-.cal-wrap{margin-bottom:8px}
-.cal-month{margin-bottom:20px}
-.cal-month-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px;color:var(--gold);margin-bottom:8px;text-transform:uppercase}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-.cal-dow{font-size:9px;font-weight:700;color:var(--text-muted);text-align:center;padding:4px 0;letter-spacing:.5px;text-transform:uppercase}
-.cal-day{min-height:36px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:3px 2px;cursor:default;position:relative;transition:background var(--t)}
-.cal-day.empty{background:none}
-.cal-day.today{background:rgba(200,169,110,.15);border:1px solid var(--gold)}
-.cal-day.has-ev{cursor:pointer}
-.cal-day.has-ev:active{background:var(--off-white-3)}
-.cal-dn{font-size:11px;font-weight:600;color:var(--text-muted);line-height:1;margin-bottom:2px}
-.cal-day.today .cal-dn{color:var(--gold);font-weight:700}
-.cal-dots{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;margin-top:1px}
-.cal-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.cal-dot-mad{background:#5B8FF9}
-.cal-dot-esp{background:#F87171}
-.cal-dot-int{background:#34D399}
-.cal-ev-list{background:var(--off-white-2);border-radius:var(--r-sm);padding:12px;margin-bottom:12px;border:1px solid var(--border)}
-.cal-ev-list-title{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
-.cal-ev-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer}
-.cal-ev-item:last-child{border-bottom:none}
-.cal-ev-flag{font-size:16px;flex-shrink:0}
-.cal-ev-info{flex:1;min-width:0}
-.cal-ev-title{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cal-ev-dates{font-size:11px;color:var(--text-muted)}
-.cal-panel{background:var(--off-white-2);border-radius:var(--r-sm);padding:12px;margin-bottom:12px;border:1px solid var(--border)}
-.cal-panel-date{font-size:12px;font-weight:700;color:var(--gold);text-transform:capitalize;margin-bottom:8px;letter-spacing:.5px}
-
-/* AI PARSER */
-.ai-panel{background:var(--off-white-2);border:1.5px solid var(--gold);border-radius:var(--r);padding:16px;margin-bottom:20px}
-.ai-panel h3{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:8px}
-.ai-panel p{font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.5}
-.ai-textarea{width:100%;background:var(--off-white-3);border:1px solid var(--border-strong);border-radius:var(--r-sm);color:var(--text);font-family:inherit;font-size:13px;padding:12px;min-height:100px;resize:vertical;line-height:1.5}
-.ai-textarea:focus{outline:none;border-color:var(--gold)}
-.ai-textarea::placeholder{color:var(--text-muted);opacity:.6}
-.ai-result{background:var(--off-white-3);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;margin-top:10px;font-size:13px;color:var(--text-muted);font-style:italic;display:none}
-.btn-ai{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);font-weight:700;border:none;border-radius:var(--r-sm);padding:10px 18px;font-size:14px;cursor:pointer;width:100%;margin-top:8px;min-height:44px;font-family:inherit;transition:opacity .2s}
-.btn-ai:disabled{opacity:.5;cursor:not-allowed}
-.ai-divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--text-muted);font-size:12px;font-weight:600;letter-spacing:.5px}
-.ai-divider::before,.ai-divider::after{content:"";flex:1;height:1px;background:var(--border)}
-
-/* FINALIZADAS */
-.fin-details{margin-top:20px}
-.fin-summary{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--off-white-2);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;list-style:none;-webkit-tap-highlight-color:transparent;box-shadow:var(--shadow-sm)}
-.fin-summary::-webkit-details-marker{display:none}
-.fin-summary__label{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;color:var(--text-muted);display:flex;align-items:center;gap:8px}
-.fin-summary__label::before{content:"\25B6";font-size:10px;color:var(--text-muted);transition:transform 200ms ease}
-details[open] .fin-summary__label::before{transform:rotate(90deg)}
-.fin-summary__count{background:var(--off-white-2);border:1px solid var(--border);color:var(--text-muted);font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px}
-
-/* VIEW TOGGLE */
-.view-toggle{display:flex;background:var(--off-white-3);border-radius:8px;padding:3px;gap:2px;border:1px solid var(--border)}
-.vtbtn{background:none;border:none;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all var(--t);white-space:nowrap}
-.vtbtn.on{background:var(--navy);color:#fff;box-shadow:var(--shadow-sm)}
-
-/* TABLE */
-.tabla-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow-sm)}
-.tabla{width:100%;border-collapse:collapse;background:var(--off-white-2);font-size:13px}
-.tabla thead tr{background:var(--navy)}
-.tabla thead th{color:#fff;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:10px 10px;text-align:left;white-space:nowrap}
-.tabla thead th:first-child{padding-left:14px}
-.trow{border-bottom:1px solid var(--border);cursor:pointer;transition:background var(--t);background:var(--off-white-2)}
-.trow:last-child{border-bottom:none}
-.trow:active{background:var(--off-white-3)}
-.trow td{padding:10px 8px;vertical-align:middle}
-.trow td:first-child{padding-left:14px}
-.td-flag{font-size:20px;width:32px}
-.td-date-start{display:block;font-weight:700;color:var(--text);font-size:13px}
-.td-date-end{display:block;font-size:11px;color:var(--text-muted)}
-.td-sel{font-weight:600;color:var(--text);font-size:13px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.td-players{text-align:center;font-weight:700;color:var(--text);font-size:14px}
-.td-status{white-space:nowrap}
-.td-log{vertical-align:top;padding:8px 10px;min-width:110px}
-.td-log-date{display:block;font-size:13px;font-weight:700;color:var(--text);white-space:nowrap}
-.td-log-sub{display:block;font-size:10px;color:var(--text-muted);white-space:nowrap;margin-top:2px}
-.td-log-trans{display:block;font-size:10px;color:var(--text-muted);white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis}
-.td-log-empty{font-size:12px;color:var(--text-muted)}
-.td-sel-sub{font-size:10px;color:var(--text-muted);margin-top:3px;white-space:nowrap}
-.td-matches{vertical-align:top;padding:8px 10px;min-width:100px}
-.th-ida{color:#7BA4F8 !important}.th-vuelta{color:#A0A0C0 !important}.th-matches{color:#C8A96E !important}
-.td-match{margin-bottom:5px}.td-match:last-child{margin-bottom:0}
-.td-match-rival{display:block;font-size:12px;font-weight:700;color:var(--text);white-space:nowrap}
-.td-match-sub{display:block;font-size:10px;color:var(--text-muted);white-space:nowrap;margin-top:1px}
-
-/* LOGÍSTICA */
-.dp-logistica{background:var(--off-white-3);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:10px;border:1px solid var(--border)}
-.dp-log-hdr{display:flex;align-items:center;gap:6px;margin-bottom:8px}
-.dp-log-ico{font-size:14px}
-.dp-log-title{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;text-transform:uppercase}
-.dp-log-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--border)}
-.dp-log-row:last-child{border-bottom:none}
-.dp-log-l{color:var(--text-muted)}
-.dp-log-v{color:var(--text);font-weight:500;text-align:right;max-width:60%}
-
-/* cc-mi logística */
-.cc-mi-conc{background:rgba(26,58,143,.10);border-radius:6px;padding:5px 8px;margin-top:2px;align-items:flex-start}
-.cc-mi-vuelta{background:rgba(80,80,100,.10);border-radius:6px;padding:5px 8px;margin-top:2px;align-items:flex-start}
-.cc-mi-block{display:flex;flex-direction:column;gap:1px}
-.cc-mi-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em}
-.cc-mi-sub{font-size:11px;color:var(--gold);font-weight:500}
-.fsec{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;margin-top:14px;margin-bottom:8px}
-.fsec-ico{font-size:16px}.fsec-lbl{font-size:13px;font-weight:700;letter-spacing:.03em}
-.fsec-conc{background:rgba(26,58,143,.18);border:1px solid rgba(26,58,143,.35)}.fsec-conc .fsec-lbl{color:#7BA4F8}
-.fsec-vuelta{background:rgba(80,80,110,.15);border:1px solid rgba(100,100,140,.25)}.fsec-vuelta .fsec-lbl{color:var(--text-mid)}
-.tbtn-sm{padding:5px 11px;font-size:12px;min-height:30px}
-.tbar-wrap-sm{margin-bottom:12px}
-
-/* JUGADORES */
-.jug-team-bar{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px;-webkit-overflow-scrolling:touch;padding-bottom:2px}
-.jug-team-bar::-webkit-scrollbar{display:none}
-.jug-edit-btn{background:none;border:1px solid var(--border-strong);border-radius:6px;color:var(--gold);font-size:11px;padding:4px 8px;cursor:pointer;flex-shrink:0;font-family:inherit;font-weight:600;transition:all var(--t)}
-.jug-edit-btn:active{background:var(--off-white-3)}
-.tpl-name{font-size:14px;color:var(--text)}
-.tpl-badge{font-size:12px;color:var(--text-muted);font-weight:600;margin-right:8px}
-
-/* STATS extras */
-.stc2{background:var(--off-white-2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all var(--t)}
-.stc2:active{background:var(--off-white-3)}
-.stc2-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.stc2-rank{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text-muted);min-width:28px;text-align:center}
-.stc2-info{flex:1;min-width:0}
-.stc2-name{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stc2-team{font-size:11px;color:var(--text-muted)}
-.stc2-right{text-align:right;flex-shrink:0}
-.stc2-tot{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--text);line-height:1;margin-bottom:3px}
-.stc2-chips{display:flex;gap:3px;justify-content:flex-end}
-.stc2-bar{height:3px;background:var(--off-white-3);border-radius:2px;overflow:hidden}
-.stc2-bar-fill{height:100%;background:var(--navy);border-radius:2px}
-.btn-back{background:none;border:none;color:var(--gold);font-size:13px;font-weight:700;cursor:pointer;padding:0;font-family:inherit}
-.bb-i{background:rgba(16,185,129,.1);color:#10B981}
-.pd-summary{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto}
-.pd-sum-item{flex:1;min-width:60px;background:var(--off-white-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 8px;text-align:center}
-.pd-sum-mad{border-color:rgba(37,99,235,.35);background:rgba(37,99,235,.08)}
-.pd-sum-esp{border-color:rgba(220,38,38,.35);background:rgba(220,38,38,.08)}
-.pd-sum-int{border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.08)}
-.pd-sum-n{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--text);line-height:1}
-.pd-sum-l{font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:3px}
-.pd-section{margin-bottom:20px}
-.pd-sec-title{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-.pd-cats{display:flex;flex-wrap:wrap;gap:7px}
-.pd-cat-pill{display:flex;align-items:center;gap:5px;border:1px solid;border-radius:20px;padding:5px 10px 5px 8px;background:var(--off-white-2)}
-.pd-cat-flag{font-size:16px}.pd-cat-label{font-size:12px;font-weight:600;color:var(--text)}
-.pd-cat-count{font-size:11px;font-weight:700;color:#fff;border-radius:10px;padding:1px 7px;margin-left:2px}
-.pd-seasbars{display:flex;align-items:flex-end;gap:10px;height:100px;padding:8px 0;overflow-x:auto}
-.pd-sb{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:44px;flex:1}
-.pd-sb-bar-wrap{flex:1;width:100%;display:flex;align-items:flex-end}
-.pd-sb-bar{width:100%;display:flex;flex-direction:column;overflow:hidden;border-radius:4px 4px 0 0;min-height:4px}
-.pd-sb-seg{min-height:3px}
-.pd-sb-mad{background:#2563EB}.pd-sb-esp{background:#DC2626}.pd-sb-int{background:#10B981}
-.pd-sb-n{font-size:13px;font-weight:700;color:var(--text)}
-.pd-sb-sea{font-size:10px;color:var(--text-muted);white-space:nowrap}
-.pd-list{display:flex;flex-direction:column;gap:8px}
-.pd-conv-item{display:flex;align-items:center;gap:10px;background:var(--off-white-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;cursor:pointer;transition:background var(--t)}
-.pd-conv-item:active{background:var(--off-white-3)}
-.pd-conv-flag{font-size:22px;flex-shrink:0}
-.pd-conv-info{flex:1;min-width:0}
-.pd-conv-title{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pd-conv-meta{font-size:11px;color:var(--text-muted);margin-top:3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.pd-conv-sea{font-size:11px;color:var(--text-muted);flex-shrink:0;font-weight:600}
-
-/* IBTN */
-.ibar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-.ibtn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;border:1px solid var(--border-strong);background:var(--off-white-2);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:all var(--t);min-height:38px;box-shadow:var(--shadow-sm)}
-.ibtn.on{background:var(--navy);color:#fff;border-color:var(--navy);box-shadow:0 2px 8px rgba(26,58,143,.35)}
-.ibtn-add{background:transparent;border-style:dashed;border-color:var(--gold);color:var(--gold)}
-
-/* PAIS PILLS */
-.pais-pills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:2px}
-.pais-pill{display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:20px;border:1px solid var(--border-strong);background:var(--off-white-2);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:all var(--t);font-family:inherit}
-.pais-pill.on{background:var(--navy);border-color:var(--navy);color:#fff}
-.pais-pill-other{border-style:dashed;border-color:var(--gold);color:var(--gold);background:transparent}
-.pais-pill-other.on{background:rgba(200,169,110,.12);color:var(--gold)}
-.btn-ai-parser{width:100%;padding:12px 16px;border-radius:10px;border:1.5px dashed var(--gold);background:rgba(200,169,110,.07);color:var(--gold);font-size:14px;font-weight:700;cursor:pointer;transition:all var(--t);letter-spacing:.02em;font-family:inherit}
-.ai-status{font-size:13px;color:var(--text-muted);margin-top:10px;min-height:20px;text-align:center}
-.ai-status.ok{color:#10B981}.ai-status.err{color:#EF4444}
-
-/* RC GROUP */
-.rc-group{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-
-/* HDREMBLEM IMG */
-.hdr-emblem-img{width:36px;height:36px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 0 4px rgba(200,169,110,.4))}
-.hdr-login-btn{background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer;transition:all var(--t);flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.hdr-login-btn.logged{border-color:var(--gold);color:var(--gold)}
-
-@media(min-width:640px){
-  .main{padding:24px 24px calc(var(--nav) + 24px)}
-  .mo{align-items:center}
-  .modal{border-radius:var(--r-lg);max-width:560px;margin:0 auto;max-height:85dvh}
-  .fact{flex-direction:row-reverse}
-  .btn-primary{width:auto;min-width:200px}
-  .sf{flex-direction:row}
-  .ri{flex-direction:row;align-items:center;gap:12px}
-  .ri-teams{padding-left:0}
-}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes slideUp{from{transform:translateY(32px);opacity:0}to{transform:translateY(0);opacity:1}} @keyframes spin{to{transform:rotate(360deg)}}
 </style>
-<!-- Firebase SDK -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, setDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-const firebaseConfig={apiKey:"AIzaSyCPcij56A4Gc-sgqcVQ4Lj3N1bQtsVFGKU",authDomain:"convocatorias-51f3e.firebaseapp.com",projectId:"convocatorias-51f3e",storageBucket:"convocatorias-51f3e.firebasestorage.app",messagingSenderId:"275421566007",appId:"1:275421566007:web:c6655499e8e5e89503dbb2"};
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);const auth=getAuth(app);
-window._db=db;window._auth=auth;
-window._fbFns={collection,getDocs,addDoc,setDoc,deleteDoc,doc,signInWithEmailAndPassword,signOut,onAuthStateChanged};
-onAuthStateChanged(auth,function(user){window._fbUser=user||null;if(typeof window._onAuthChange==="function")window._onAuthChange(user);});
-async function loadCallups(){try{const snap=await getDocs(collection(db,"callups"));window._callups=[];snap.forEach(function(d){window._callups.push(Object.assign({id:d.id},d.data()));});if(typeof window._onCallupsLoaded==="function")window._onCallupsLoaded();}catch(e){console.error("Firestore error:",e);if(typeof window._onCallupsLoaded==="function")window._onCallupsLoaded();}}
-loadCallups();
-</script>
 </head>
 <body>
 <div class="app">
@@ -515,900 +20,217 @@ loadCallups();
         <div class="hdr-sub">Real Madrid</div>
       </div>
     </div>
-    <div id="season-sel"></div>
-    <button id="hdr-login-btn" class="hdr-login-btn" title="Iniciar sesión">🔒</button>
+    <select class="season-sel">
+      <option>2025-26</option>
+      <option>2024-25</option>
+    </select>
+    <button class="hdr-login-btn" title="Iniciar sesión">🔒</button>
   </header>
+
   <main class="main" id="main">
-    <div class="loading"><div class="spinner"></div><p>Cargando...</p></div>
+    <!-- Agenda view -->
+    <div>
+      <div class="vh" style="margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <h1 class="vt">Agenda</h1>
+          <div class="view-toggle">
+            <button class="vtbtn on" onclick="setView('fichas',this)">⊢□ Fichas</button>
+            <button class="vtbtn" onclick="setView('tabla',this)">≡ Tabla</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="fb">
+        <button class="fbtn on" onclick="filterType(null,this)">Todas</button>
+        <button class="fbtn" onclick="filterType('mad',this)">🔵 MAD</button>
+        <button class="fbtn" onclick="filterType('esp',this)">🔴 ESP</button>
+        <button class="fbtn" onclick="filterType('int',this)">🟢 INT</button>
+      </div>
+
+      <h2 style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        Próximas y en curso
+        <span style="flex:1;height:1px;background:var(--border);display:block"></span>
+      </h2>
+
+      <div class="cl" id="cards-container">
+
+        <!-- Card 1 -->
+        <article class="cc" style="--ca:#1A3A8F" onclick="openDemo('Sub-17 RFEF — Concentración Marzo 2026')">
+          <div class="cc-hdr">
+            <div class="cc-badges">
+              <span class="badge" style="background:#1A3A8F;color:#fff">SUB17 ESP</span>
+              <span class="badge s-cur">▶ EN CURSO</span>
+              <span class="badge conv-def">✅ DEFINITIVA</span>
+            </div>
+            <span class="cc-flag">🇪🇸</span>
+          </div>
+          <h3 class="cc-title">Sub-17 RFEF — Concentración Marzo 2026</h3>
+          <div class="cc-meta">
+            <div class="cc-mi"><span class="mi">📅</span><span>17 mar — 25 mar 2026</span></div>
+            <div class="cc-mi"><span class="mi">📍</span><span>Ciudad del Fútbol, Las Rozas</span></div>
+            <div class="cc-mi"><span class="mi">⚽</span><span style="font-weight:600">vs Francia </span><span>🏆</span><span style="color:var(--text-muted);font-size:12px"> 22 mar · 18:00h</span></div>
+          </div>
+          <div class="cc-players">
+            <span class="chip">García J.</span>
+            <span class="chip">Martínez P.</span>
+            <span class="chip">López A.</span>
+            <span class="chip chip-more">+9</span>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="cc" style="--ca:#DC2626" onclick="openDemo('Sub-16 RFFM — Torneo Primavera')">
+          <div class="cc-hdr">
+            <div class="cc-badges">
+              <span class="badge" style="background:#DC2626;color:#fff">SUB16 MAD</span>
+              <span class="badge s-prox">⏳ PRÓXIMA</span>
+              <span class="badge conv-prov">⏳ PROVISIONAL</span>
+            </div>
+            <span class="cc-flag">🏙️</span>
+          </div>
+          <h3 class="cc-title">Sub-16 RFFM — Torneo Primavera</h3>
+          <div class="cc-meta">
+            <div class="cc-mi"><span class="mi">📅</span><span>28 mar — 30 mar 2026</span></div>
+            <div class="cc-mi" style="background:rgba(26,58,143,.10);border-radius:6px;padding:5px 8px;align-items:flex-start">
+              <span class="mi">📍</span>
+              <div style="display:flex;flex-direction:column;gap:1px">
+                <span style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em">Convocatoria</span>
+                <span>27 mar · 14:00h · Estadio Alfredo Di Stéfano</span>
+                <span style="font-size:11px;color:var(--gold);font-weight:500">Autobús club</span>
+              </div>
+            </div>
+          </div>
+          <div class="cc-players">
+            <span class="chip">Rodríguez C.</span>
+            <span class="chip">Fernández M.</span>
+            <span class="chip chip-more">+10</span>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="cc" style="--ca:#047857" onclick="openDemo('Sub-19 Portugal — Fase de grupos UEFA')">
+          <div class="cc-hdr">
+            <div class="cc-badges">
+              <span class="badge" style="background:#047857;color:#fff">SUB19 INT</span>
+              <span class="badge s-prox">⏳ PRÓXIMA</span>
+              <span class="badge conv-def">✅ DEFINITIVA</span>
+            </div>
+            <span class="cc-flag">🇵🇹</span>
+          </div>
+          <h3 class="cc-title">Sub-19 Portugal — Fase de grupos UEFA</h3>
+          <div class="cc-meta">
+            <div class="cc-mi"><span class="mi">📅</span><span>01 abr — 07 abr 2026</span></div>
+            <div class="cc-mi"><span class="mi">✈️</span><span>Vuelo IB1234 · 30 mar 07:30h</span></div>
+            <div class="cc-mi"><span class="mi">⚽</span><span style="font-weight:600">vs España, Croacia</span></div>
+          </div>
+          <div class="cc-players">
+            <span class="chip">Silva T.</span>
+            <span class="chip">Costa R.</span>
+            <span class="chip">Pereira N.</span>
+            <span class="chip chip-more">+15</span>
+          </div>
+        </article>
+
+      </div>
+
+      <details class="fin-details">
+        <summary class="fin-summary">
+          <span class="fin-summary__label">Finalizadas</span>
+          <span class="fin-summary__count">8</span>
+        </summary>
+        <div class="cl" style="margin-top:10px;opacity:.65">
+          <article class="cc" style="--ca:#6B7280">
+            <div class="cc-hdr">
+              <div class="cc-badges">
+                <span class="badge" style="background:#1A3A8F;color:#fff">SUB17 ESP</span>
+                <span class="badge s-fin">✓ FINALIZADA</span>
+              </div>
+              <span class="cc-flag">🇪🇸</span>
+            </div>
+            <h3 class="cc-title">Sub-17 RFEF — Concentración Febrero</h3>
+            <div class="cc-meta">
+              <div class="cc-mi"><span class="mi">📅</span><span>10 feb — 18 feb 2026</span></div>
+            </div>
+            <div class="cc-players">
+              <span class="chip">García J.</span>
+              <span class="chip chip-more">+11</span>
+            </div>
+          </article>
+        </div>
+      </details>
+
+    </div>
   </main>
+
   <nav class="nav">
-    <button class="nb nb-new" data-v="nueva"><span class="ni">+</span><span class="nl">Nueva</span></button>
-    <button class="nb" data-v="agenda"><span class="ni">📅</span><span class="nl">Agenda</span></button>
-    <button class="nb" data-v="madrilena"><span class="ni">🔵</span><span class="nl">RFFM</span></button>
-    <button class="nb" data-v="espanola"><span class="ni">🔴</span><span class="nl">RFEF</span></button>
-    <button class="nb" data-v="internacional"><span class="ni">🌍</span><span class="nl">OTRAS</span></button>
-    <button class="nb" data-v="jugadores"><span class="ni">👥</span><span class="nl">Jugadores</span></button>
-    <button class="nb" data-v="calendario"><span class="ni">🗓</span><span class="nl">Cal/Plan</span></button>
-    <button class="nb" data-v="stats"><span class="ni">📊</span><span class="nl">Stats</span></button>
+    <button class="nb nb-new" onclick="navClick(this,'nueva')"><span class="ni">+</span><span class="nl">Nueva</span></button>
+    <button class="nb active" onclick="navClick(this,'agenda')"><span class="ni">📅</span><span class="nl">Agenda</span></button>
+    <button class="nb" onclick="navClick(this,'madrilena')"><span class="ni">🔵</span><span class="nl">RFFM</span></button>
+    <button class="nb" onclick="navClick(this,'espanola')"><span class="ni">🔴</span><span class="nl">RFEF</span></button>
+    <button class="nb" onclick="navClick(this,'internacional')"><span class="ni">🌍</span><span class="nl">OTRAS</span></button>
+    <button class="nb" onclick="navClick(this,'jugadores')"><span class="ni">👥</span><span class="nl">Jugadores</span></button>
+    <button class="nb" onclick="navClick(this,'calendario')"><span class="ni">🗓</span><span class="nl">Cal/Plan</span></button>
+    <button class="nb" onclick="navClick(this,'stats')"><span class="ni">📊</span><span class="nl">Stats</span></button>
   </nav>
 </div>
+
+<!-- Demo modal -->
+<div id="demo-modal" style="display:none" class="mo" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal modal-tall">
+    <button class="mcl" onclick="document.getElementById('demo-modal').style.display='none'">×</button>
+    <div id="demo-content"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
 <script>
-var _callups=[];
-var _seasons=["2025-26"];
-
-var SELS={};
-SELS["madrilena"]={label:"Madrileña",short:"MAD",cats:["sub12","sub14","sub16"],colors:{sub12:{badge:"#2563EB"},sub14:{badge:"#1D4ED8"},sub16:{badge:"#1E3A8A"}}};
-SELS["espanola"]={label:"Española",short:"ESP",cats:["sub14","sub15","sub16","sub17","sub18","sub19","sub20","sub21","abs"],colors:{sub14:{badge:"#DC2626"},sub15:{badge:"#DC2626"},sub16:{badge:"#B91C1C"},sub17:{badge:"#B91C1C"},sub18:{badge:"#991B1B"},sub19:{badge:"#7F1D1D"},sub20:{badge:"#7F1D1D"},sub21:{badge:"#450A0A"},abs:{badge:"#1A0000"}}};
-SELS["internacional"]={label:"Internacional",short:"INT",cats:["sub16","sub17","sub18","sub19","sub20","sub21","abs"],colors:{sub16:{badge:"#10B981"},sub17:{badge:"#10B981"},sub18:{badge:"#047857"},sub19:{badge:"#047857"},sub20:{badge:"#065F46"},sub21:{badge:"#065F46"},abs:{badge:"#064E3B"}}};
-
-var CAT={todas:"Todas",sub12:"Sub-12",sub13:"Sub-13",sub14:"Sub-14",sub15:"Sub-15",sub16:"Sub-16",sub17:"Sub-17",sub18:"Sub-18",sub19:"Sub-19",sub20:"Sub-20",sub21:"Sub-21",abs:"Absoluta"};
-var STATUS={proxima:{c:"s-prox",i:"⏰",l:"PRÓXIMA"},en_curso:{c:"s-cur",i:"●",l:"EN CURSO"},finalizada:{c:"s-fin",i:"✓",l:"FINALIZADA"}};
-var TEAMS=[
-  {id:"t_castilla",name:"Castilla",order:12},{id:"t_rmc",name:"RMC",order:11},
-  {id:"t_ja",name:"JA",order:10},{id:"t_jb",name:"JB",order:9},{id:"t_jc",name:"JC",order:8},
-  {id:"t_ca",name:"CA",order:7},{id:"t_cb",name:"CB",order:6},
-  {id:"t_ia",name:"IA",order:5},{id:"t_ib",name:"IB",order:4},
-  {id:"t_aa",name:"AA",order:3},{id:"t_ab",name:"AB",order:2},{id:"t_ac",name:"AC",order:1}
-];
-var FLAGS={"España":"🇪🇸","Francia":"🇫🇷","Alemania":"🇩🇪","Portugal":"🇵🇹","Italia":"🇮🇹","Argentina":"🇦🇷","Brasil":"🇧🇷","Marruecos":"🇲🇦","Colombia":"🇨🇴","Suecia":"🇸🇪","Suiza":"🇨🇭","Holanda":"🇳🇱","Bélgica":"🇧🇪","Uruguay":"🇺🇾","Chile":"🇨🇱","México":"🇲🇽","Ecuador":"🇪🇨","Perú":"🇵🇪","Venezuela":"🇻🇪","Bolivia":"🇧🇴","Paraguay":"🇵🇾","Senegal":"🇸🇳","Nigeria":"🇳🇬","Ghana":"🇬🇭","Turquía":"🇹🇷","Polonia":"🇵🇱","Rumania":"🇷🇴","Ucrania":"🇺🇦","Croacia":"🇭🇷","Guinea Ecuatorial":"🇬🇶","Camerún":"🇨🇲"};
-var PAIS_ADJ={"Francia":"Francesa","Marruecos":"Marroquí","Argentina":"Argentina","Colombia":"Colombiana","Suecia":"Sueca","Suiza":"Suiza","Brasil":"Brasileña","Portugal":"Portuguesa","Alemania":"Alemana","Italia":"Italiana","Holanda":"Holandesa","Bélgica":"Belga","Uruguay":"Uruguaya","Chile":"Chilena","México":"Mexicana","Ecuador":"Ecuatoriana","Perú":"Peruana","Venezuela":"Venezolana","Bolivia":"Boliviana","Paraguay":"Paraguaya","Senegal":"Senegalesa","Nigeria":"Nigeriana","Ghana":"Ghanesa","Turquía":"Turca","Polonia":"Polaca","Rumania":"Rumana","Ucrania":"Ucraniana","Croacia":"Croata","Guinea Ecuatorial":"Ecuatoguineana","Camerún":"Camerunesa"};
-
-function selKey(type){if(!type)return"";var t=type.toLowerCase();if(t.indexOf("madril")!==-1)return"madrilena";if(t.indexOf("espa")!==-1)return"espanola";if(t.indexOf("intern")!==-1)return"internacional";return t;}
-function paisAdj(p){return PAIS_ADJ[p]||p;}
-function getFlag(p){return FLAGS[p]||"🏴";}
-function getSelFlag(type,pais){var k=selKey(type);if(k==="madrilena")return"📍";if(k==="espanola")return"🇪🇸";if(k==="internacional")return pais?getFlag(pais):"🌍";return"🏴";}
-function canEdit(){return!!window._fbUser;}
-function canWrite(){return!!window._fbUser;}
-function esc(s){if(!s)return"";return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
-function calcStatus(s,e){var n=new Date();n.setHours(0,0,0,0);var a=new Date(s+"T00:00:00"),b=new Date(e+"T23:59:59");return n<a?"proxima":n>b?"finalizada":"en_curso";}
-function fmtRange(s,e){if(!s)return"—";var a=new Date(s+"T12:00:00"),b=new Date(e+"T12:00:00");return a.toLocaleDateString("es-ES",{day:"2-digit",month:"short"})+" — "+b.toLocaleDateString("es-ES",{day:"2-digit",month:"short",year:"numeric"});}
-function fmtDateShort(d){if(!d)return"";var dt=new Date(d+"T12:00:00");return dt.toLocaleDateString("es-ES",{day:"2-digit",month:"short"});}
-function teamNow(p){if(!p||!p.teamHistory||!p.teamHistory.length)return null;for(var i=0;i<p.teamHistory.length;i++){if(p.teamHistory[i].to===null)return p.teamHistory[i];}return p.teamHistory[p.teamHistory.length-1];}
-function teamInSeason(p,sea){if(!p||!p.teamHistory)return null;var hs=p.teamHistory.filter(function(h){return h.season===sea;});if(!hs.length)return null;hs.sort(function(a,b){return new Date(b.from)-new Date(a.from);});return hs[0];}
-function nextSea(s){var y=parseInt(s.split("-")[0])+1;return y+"-"+String(y+1).slice(2);}
-function gid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
-function sortDate(arr,dir){dir=dir||"asc";return arr.slice().sort(function(a,b){return(dir==="asc"?1:-1)*(new Date(a.startDate)-new Date(b.startDate));});}
-function $(id){return document.getElementById(id);}
-
-var _players=[
-  {id:"rp1",fullName:"FRAN GONZÁLEZ",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp2",fullName:"SERGIO MESTRE",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp3",fullName:"GUILLE SÚNICO",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp4",fullName:"MARIO RIVAS",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp5",fullName:"MANU SERRANO",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp6",fullName:"CRISTIAN PEREA",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp7",fullName:"LAMINI FATI",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp8",fullName:"DAVID JIMÉNEZ",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp9",fullName:"VÍCTOR VALDEPEÑAS",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp10",fullName:"CÉSAR PALACIOS",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp11",fullName:"BRUNO IGLESIAS",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp12",fullName:"MANUEL ÁNGEL",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp13",fullName:"JORGE CESTERO",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp14",fullName:"JOAN MARTÍNEZ",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp15",fullName:"THIAGO PITARCH",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp16",fullName:"JESÚS FORTEA",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp17",fullName:"RACHAD FETAL",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp18",fullName:"POL FORTUNY",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp19",fullName:"DIEGO AGUADO",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp20",fullName:"HUGO DE LLANOS",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp21",fullName:"DANIEL YAÑEZ",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp22",fullName:"LORENZO ZÚÑIGA",active:true,teamHistory:[{teamId:"t_castilla",teamName:"Castilla",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp23",fullName:"FERRAN QUETGLAS",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp24",fullName:"ALEJANDRO MOYA",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp25",fullName:"ALFREDO SOTRES",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp26",fullName:"JAIME CALLEJA",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp27",fullName:"CARLOS RGUEZ.",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp28",fullName:"IZAN REGUEIRA",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp29",fullName:"ÁLVARO GINÉS",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp30",fullName:"JOAN MASCARÓ",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp31",fullName:"JACOBO ORTEGA",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp32",fullName:"DANIEL MESONERO",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp33",fullName:"DIEGO ARROYO",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp34",fullName:"ALEJANDRO PÉREZ",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp35",fullName:"YERAY LANCHA",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp36",fullName:"ÓSCAR MESA",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp37",fullName:"ÁLVARO LEIVA",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp38",fullName:"AIMAR SANTIAGO",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp39",fullName:"ERIC GÓMEZ",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp40",fullName:"EMANUEL SANTANA",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp41",fullName:"ROBERTO MARTÍN",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp42",fullName:"GABRIEL CASTRELO",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp43",fullName:"ÁLVARO GONZÁLEZ",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp44",fullName:"MANEX REZOLA",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp45",fullName:"ADRIÁN ARNUCIO",active:true,teamHistory:[{teamId:"t_rmc",teamName:"RMC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp46",fullName:"JAIME BARROSO",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp47",fullName:"POL DURÁN",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp48",fullName:"LIBERTO  NAV.",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp49",fullName:"JAVIER NAVARRO",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp50",fullName:"ILLIA VOLOSHYN",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp51",fullName:"DIEGO MTNEZ BETO",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp52",fullName:"JOSE A. REYES",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp53",fullName:"FERRAN SECO",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp54",fullName:"FCO. JAVIER BAILÓN",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp55",fullName:"ADRIÁN PÉREZ",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp56",fullName:"IGNACIO GASCÓN",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp57",fullName:"ÁLVARO LEZCANO",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp58",fullName:"CARLOS DÍEZ",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp59",fullName:"PAULO DE ALMEIDA",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp60",fullName:"ALEXIS CIRIA",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp61",fullName:"ALFONSO ROMERO",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp62",fullName:"MARCOS VIEGA",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp63",fullName:"ARIEL NKOGHE",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp64",fullName:"AARÓN GÓMEZ",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp65",fullName:"GABRIEL VALERO",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp66",fullName:"JOEL PLEGUEZUELOS",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp67",fullName:"MELVIN UKPEIGBE",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp68",fullName:"BRUNO GALASSI",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp69",fullName:"RUBÉN MARTÍNEZ",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp70",fullName:"JAVIER MENA",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp71",fullName:"GUILLE GONZÁLEZ",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp72",fullName:"IKER DOBLAS",active:true,teamHistory:[{teamId:"t_ja",teamName:"JA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp73",fullName:"DIEGO LACOSTA",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp74",fullName:"LUIS PAULO",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp75",fullName:"FERNANDO VEGA",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp76",fullName:"SANTIAGO DEL PINO",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp77",fullName:"YEREMAIAH RAMOS",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp78",fullName:"RODRIGO VELASCO",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp79",fullName:"ARES CAPATANA",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp80",fullName:"ENZO ALVES",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp81",fullName:"LÉO LEMAITRE",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp82",fullName:"MATEO GARRIDO",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp83",fullName:"MARCO COMPANY",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp84",fullName:"RAÚL ANDREI PERTEA",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp85",fullName:"BRYAN BUGARÍN",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp86",fullName:"GUILLERMO PONCE",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp87",fullName:"JUAN CASADO",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp88",fullName:"ANDRÉS CORCOBA",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp89",fullName:"PELAYO PALOMO",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp90",fullName:"RUBÉN LÓPEZ",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp91",fullName:"ALEJANDRO MORA",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp92",fullName:"NICOLÁS SAN PÍO",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp93",fullName:"CARLOS LARDÍN",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp94",fullName:"JL ESPINOSA",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp95",fullName:"RAFAEL SALES",active:true,teamHistory:[{teamId:"t_jb",teamName:"JB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp96",fullName:"BELTRÁN CAPOTE",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp97",fullName:"ALEJANDRO CASTAÑO",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp98",fullName:"J. ALBERTO CASTELAU",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp99",fullName:"EDUARDO VALENTIN",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp100",fullName:"MATEO POZO",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp101",fullName:"MATIAS MARTIN",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp102",fullName:"HUGO SARMIENTO",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp103",fullName:"OMAR CHAOUI",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp104",fullName:"MARIO BULLÓN",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp105",fullName:"PABLO IBAÑEZ",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp106",fullName:"HÉCTOR MARTÍNEZ",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp107",fullName:"IZAN MESA",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp108",fullName:"ÁLVARO RIVERA",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp109",fullName:"GUILLERMO DIAZ",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp110",fullName:"JESÚS PALACIOS",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp111",fullName:"RUBEN DÍAZ",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp112",fullName:"GUILLERMO LÓPEZ",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp113",fullName:"JENRY HERNANDEZ",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp114",fullName:"PABLO MARTINEZ",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp115",fullName:"DIEGO SANCHEZ",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp116",fullName:"MANUEL ROMERO",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp117",fullName:"MOCTAR CHERIF",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp118",fullName:"NILS LEON WESTIN",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp119",fullName:"JAIRO MORILLA",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp120",fullName:"VÍCTOR RIVAS",active:true,teamHistory:[{teamId:"t_jc",teamName:"JC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp121",fullName:"Iker Diepa",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp122",fullName:"Hugo Medina",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp123",fullName:"Unai Ordoñez",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp124",fullName:"Joel Pallé",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp125",fullName:"Fernando Pereira",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp126",fullName:"Adrián Talavera",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp127",fullName:"Ignacio Alameda",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp128",fullName:"Alvaro Barral",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp129",fullName:"Martin Espuela",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp130",fullName:"Aitor Gandia",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp131",fullName:"David Kravets",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp132",fullName:"Adrián Morales",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp133",fullName:"Victor Manuel Plazas",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp134",fullName:"Carlos Sánchez",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp135",fullName:"Francisco Asier Sanchez",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp136",fullName:"Asier Santoyo",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp137",fullName:"Alvaro Vega",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp138",fullName:"Daniel González",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp139",fullName:"Héctor Montero",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp140",fullName:"Izan Ramirez",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp141",fullName:"Hugo Torresano",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp142",fullName:"Iván Vázquez",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp143",fullName:"Gorka Abascal",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp144",fullName:"Aitor Torondel",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp145",fullName:"Hugo Moreno",active:true,teamHistory:[{teamId:"t_ca",teamName:"CA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp146",fullName:"Adrián Garcia",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp147",fullName:"Beltrán Guillén",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp148",fullName:"Rubén Lebrero",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp149",fullName:"Mikel López",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp150",fullName:"Luis Molina",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp151",fullName:"Alberto Ruiz",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp152",fullName:"Hugo Álvarez",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp153",fullName:"Iker Álvarez",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp154",fullName:"Marcos Carrasco",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp155",fullName:"Mauro Del Castillo",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp156",fullName:"Hugo Fernández",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp157",fullName:"David Garcia",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp158",fullName:"Juan Mairata",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp159",fullName:"Daniel Manzano",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp160",fullName:"Alonso Moreno",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp161",fullName:"Thiago Muñoz",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp162",fullName:"Marco Poyatos",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp163",fullName:"Izan Santamaria",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp164",fullName:"Noah Corona",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp165",fullName:"Adrian Velasco",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp166",fullName:"Marc Stefan Lorente",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp167",fullName:"Bame Tom Miller",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp168",fullName:"Thiago Iván Montes De Oca",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp169",fullName:"Dario Reina",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp170",fullName:"Alfred Mbella Kotto",active:true,teamHistory:[{teamId:"t_cb",teamName:"CB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp171",fullName:"Saul Aranda",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp172",fullName:"Guillermo Collado",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp173",fullName:"Daniel Diaz",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp174",fullName:"Iñigo Fresco",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp175",fullName:"Pablo Garcia",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp176",fullName:"Rubén Martín",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp177",fullName:"Victor Martín",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp178",fullName:"Gonzalo Martinez",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp179",fullName:"Mateo Soria",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp180",fullName:"Olivier Telus",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp181",fullName:"Lucas Gómez",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp182",fullName:"Pablo Martinez",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp183",fullName:"Aliaksei",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp184",fullName:"Fco Manuel Duarte",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp185",fullName:"Jorge Marti",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp186",fullName:"Mauro Miralles",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp187",fullName:"Anderson Jesús",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp188",fullName:"Carlos Colley",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp189",fullName:"Fernando Gómez",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp190",fullName:"Adrián Guerra",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp191",fullName:"Aleksandar Chobanov",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp192",fullName:"Simon Ondo Obama",active:true,teamHistory:[{teamId:"t_ia",teamName:"IA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp193",fullName:"Yago Nuñez",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp194",fullName:"Pablo De La Pedraja",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp195",fullName:"Enzo Martinez",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp196",fullName:"Hugo Navarro",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp197",fullName:"Alejandro Del Pino",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp198",fullName:"Alvaro Montoro",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp199",fullName:"Daniel Del Pino",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp200",fullName:"Aaron Krall",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp201",fullName:"Álvaro Cuervo",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp202",fullName:"Alexis Salado",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp203",fullName:"Daniel Buiza",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp204",fullName:"Pedro Adrián Alarcón",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp205",fullName:"Adrián Marrero",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp206",fullName:"Izan Garcia",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp207",fullName:"Hugo Fernández",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp208",fullName:"Luis Garcia",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp209",fullName:"Adrián Rodriguez",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp210",fullName:"Eduardo Malo",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp211",fullName:"Diego Gonzalez",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp212",fullName:"Andres Estaire",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp213",fullName:"Hugo Mora",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp214",fullName:"Hugo Álvarez",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp215",fullName:"Alejandro Martinez",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp216",fullName:"Ignacio Villanueva",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp217",fullName:"Samuel Aceves",active:true,teamHistory:[{teamId:"t_ib",teamName:"IB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp219",fullName:"Martin Casillas",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp220",fullName:"Marco Pérez",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp221",fullName:"Daniel De Ibar",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp222",fullName:"Manuel Morilla",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp223",fullName:"Nicolás Moreno",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp224",fullName:"Ethan Balboa",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp225",fullName:"Daniel Havrylyak",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp226",fullName:"Diego Fernández",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp227",fullName:"Hugo Grande",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp228",fullName:"Hugo Mateo",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp229",fullName:"David Sánchez",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp230",fullName:"Joel Mateo",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp231",fullName:"Carlos Calvo",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp232",fullName:"Antonio Gómez",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp233",fullName:"Ignacio Aguilar",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp234",fullName:"Mario De Andrés",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp235",fullName:"Roberto Jiménez",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp236",fullName:"Mario Abad",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp237",fullName:"Daniel Osayamen",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp238",fullName:"Guillermo Soriano",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp239",fullName:"Didac Gómez",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp240",fullName:"Pablo Morilla",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp241",fullName:"Moses Oriakhi",active:true,teamHistory:[{teamId:"t_aa",teamName:"AA",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp242",fullName:"Jaime Alameda",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp243",fullName:"Diego Alonso",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp244",fullName:"Liam Alves",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp245",fullName:"Adrián Badas",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp246",fullName:"Adrián Balsera",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp247",fullName:"Adrián Camacho",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp248",fullName:"Yago Carmona",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp249",fullName:"Hugo Herrero",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp250",fullName:"Liam Román",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp251",fullName:"Teo Galán",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp252",fullName:"Javier Martínez",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp253",fullName:"Eduard Andrei Ocheanu",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp255",fullName:"Alberto Gómez",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp256",fullName:"Enzo Guijosa",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp257",fullName:"Bruno Jiménez",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp258",fullName:"Pablo Martín",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp259",fullName:"Marco Medina",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp260",fullName:"Daniel Montoya",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp261",fullName:"Elias Peña",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp262",fullName:"Jorge Pérez",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp263",fullName:"Mateo Praja",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp264",fullName:"Daniel Rodriguez",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp265",fullName:"Hugo Terrón",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp266",fullName:"Mauro Urrutia",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp267",fullName:"Pablo Garcia",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp268",fullName:"Victor Rosado",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp269",fullName:"Jaime Crespo",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp270",fullName:"Marcos Blasco",active:true,teamHistory:[{teamId:"t_ab",teamName:"AB",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp271",fullName:"Ignacio García",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp272",fullName:"Joel Herráez",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp273",fullName:"Héctor Lorenzo",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp274",fullName:"Bruno Serrano",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp275",fullName:"Héctor Solis",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp276",fullName:"Daniel Mtez Leonidas",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp277",fullName:"Samuel Rodriguez",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp278",fullName:"Álvaro González",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp279",fullName:"Marcos Gómez",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp280",fullName:"Marco Alvarez",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp281",fullName:"Hugo Boch",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp282",fullName:"Joaquin Cordido",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp283",fullName:"Eitan Levinstein",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp284",fullName:"Gonzalo Paz",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp285",fullName:"Debutantes",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp286",fullName:"Aritz Diaz",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp287",fullName:"Héctor Miguel",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp288",fullName:"Nicolás Arizmendi",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp289",fullName:"Luca Díaz",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp290",fullName:"Ángel Baltasar",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp291",fullName:"Fernando Maillo",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]},
-  {id:"rp292",fullName:"Christian Salido",active:true,teamHistory:[{teamId:"t_ac",teamName:"AC",season:"2025-26",from:"2025-09-01",to:null}]}
-];
-
-function getCallups(f){
-  f=f||{};
-  var r=_callups.map(function(c){return Object.assign({},c,{status:calcStatus(c.startDate,c.endDate)});});
-  if(f.season)r=r.filter(function(c){return c.season===f.season;});
-  if(f.type)r=r.filter(function(c){return selKey(c.selectionType)===f.type;});
-  if(f.cat)r=r.filter(function(c){return c.selectionCategory===f.cat||(f.cat==="abs"&&!c.selectionCategory);});
-  return r;
+function navClick(btn, view) {
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  showToast('Vista: ' + view);
 }
-function addCallup(data,sea,cb){
-  var obj=Object.assign({},data,{season:sea,status:calcStatus(data.startDate,data.endDate),createdAt:new Date().toISOString()});
-  if(window._db&&window._fbUser){
-    var fns=window._fbFns;
-    fns.addDoc(fns.collection(window._db,"callups"),obj).then(function(ref){
-      obj.id=ref.id;_callups.push(obj);if(cb)cb();
-    }).catch(function(e){console.error(e);alert("Error guardando: "+e.message);});
-  } else {
-    obj.id=gid();_callups.push(obj);if(cb)cb();
-  }
+function filterType(type, btn) {
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
 }
-function deleteCallup(id,cb){
-  if(window._db&&window._fbUser){
-    var fns=window._fbFns;
-    fns.deleteDoc(fns.doc(window._db,"callups",id)).then(function(){
-      _callups=_callups.filter(function(c){return c.id!==id;});if(cb)cb();
-    }).catch(function(e){console.error(e);alert("Error eliminando: "+e.message);});
-  } else {
-    _callups=_callups.filter(function(c){return c.id!==id;});if(cb)cb();
-  }
+function setView(v, btn) {
+  document.querySelectorAll('.vtbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
 }
-function updateCallup(id,data,cb){
-  var existing=null;for(var i=0;i<_callups.length;i++){if(_callups[i].id===id){existing=_callups[i];break;}}
-  var obj=Object.assign({},existing||{},data,{status:calcStatus(data.startDate,data.endDate)});
-  Object.keys(obj).forEach(function(k){if(obj[k]===undefined)delete obj[k];});
-  if(window._db&&window._fbUser){
-    var fns=window._fbFns;
-    fns.setDoc(fns.doc(window._db,"callups",id),obj,{merge:true}).then(function(){
-      for(var i=0;i<_callups.length;i++){if(_callups[i].id===id){Object.assign(_callups[i],obj);break;}}if(cb)cb();
-    }).catch(function(e){console.error(e);alert("Error actualizando: "+e.message);});
-  } else {
-    for(var i=0;i<_callups.length;i++){if(_callups[i].id===id){Object.assign(_callups[i],obj);break;}}if(cb)cb();
-  }
+function openDemo(title) {
+  document.getElementById('demo-content').innerHTML = `
+    <div style="margin-bottom:20px;padding-right:40px">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+        <span class="badge" style="background:#1A3A8F;color:#fff">DETALLE</span>
+      </div>
+      <h2 style="font-size:20px;font-weight:700;line-height:1.3;margin-bottom:4px;color:var(--text)">${title}</h2>
+      <p style="font-size:12px;color:var(--text-muted);font-weight:600;letter-spacing:.5px">Temporada 2025-26</p>
+    </div>
+    <div style="background:var(--off-white-3);border-radius:var(--r-sm);padding:14px;border:1px solid var(--border);margin-bottom:16px">
+      <div style="margin-bottom:8px"><div style="font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:.5px;text-transform:uppercase">📅 Período</div><div style="font-size:14px;color:var(--text);font-weight:500;margin-top:3px">17 mar — 25 mar 2026</div></div>
+      <div style="margin-bottom:8px"><div style="font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:.5px;text-transform:uppercase">📍 Lugar</div><div style="font-size:14px;color:var(--text);font-weight:500;margin-top:3px">Ciudad del Fútbol, Las Rozas</div></div>
+    </div>
+    <div style="margin-bottom:16px">
+      <h4 style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;color:var(--text-muted);margin-bottom:10px">👕 JUGADORES CONVOCADOS (12)</h4>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:6px">
+        ${['García Jiménez, Juan','Martínez Pérez, Pablo','López Alonso, Adrián','Rodríguez Campos, Carlos','Fernández Mora, Mario','Sánchez Ruiz, Sergio','González Vega, Daniel','Herrero Blanco, Álvaro'].map((n,i) => `<li style="display:flex;align-items:center;gap:12px;background:var(--off-white-3);border-radius:var(--r-sm);padding:10px 12px;border:1px solid var(--border)"><span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text-mid);min-width:24px;text-align:center;opacity:.8">${i+1}</span><div><div style="font-size:14px;font-weight:600;color:var(--text)">${n}</div><div style="font-size:11px;color:var(--text-muted)">Real Madrid Juvenil A</div></div></li>`).join('')}
+      </ul>
+    </div>
+    <div style="padding-top:12px;border-top:1px solid var(--border);display:flex;gap:8px">
+      <button class="btn btn-ghost" style="flex:1;min-height:44px" onclick="document.getElementById('demo-modal').style.display='none'">Cerrar</button>
+      <button class="btn btn-gold" style="flex:1;min-height:44px" onclick="showToast('⚠️ Inicia sesión para editar')">✎ Editar</button>
+    </div>
+  `;
+  document.getElementById('demo-modal').style.display = 'flex';
 }
-function getPlayersBySeason(sea){return _players.filter(function(p){return p.teamHistory.some(function(h){return h.season===sea;});});}
-function buildStats(callups){
-  var s={};
-  _players.forEach(function(p){s[p.id]={player:p,total:0,mad:0,esp:0,intl:0,callups:[]};});
-  callups.forEach(function(c){if(!c.players)return;c.players.forEach(function(cp){if(!s[cp.playerId])return;s[cp.playerId].total++;var k=selKey(c.selectionType);if(k==="madrilena")s[cp.playerId].mad++;else if(k==="espanola")s[cp.playerId].esp++;else s[cp.playerId].intl++;s[cp.playerId].callups.push(c);});});
-  return Object.keys(s).map(function(k){return s[k];}).sort(function(a,b){return b.total-a.total;});
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 2500);
 }
-
-function selBadge(type,cat,pais){var k=selKey(type);var s=SELS[k];if(!s)return"";if(!cat)cat="abs";var c=(s.colors&&s.colors[cat])?s.colors[cat]:{badge:"#666"};var label=k==="internacional"&&pais?(CAT[cat]||cat)+" "+paisAdj(pais):(CAT[cat]||cat)+" "+s.short;return'<span class="badge" style="background:'+c.badge+';color:#fff">'+label+"</span>";}
-function convTypeBadge(t){if(t==="definitiva")return'<span class="badge conv-def">✅ DEFINITIVA</span>';if(!t||t==="provisional")return'<span class="badge conv-prov">⏳ PROVISIONAL</span>';if(t==="entrenamiento")return'<span class="badge conv-prov" style="color:var(--text-muted)">🏋 ENTREN.</span>';return"";}
-function statusBadge(st){var c=STATUS[st]||STATUS.finalizada;return'<span class="badge '+c.c+'">'+c.i+" "+c.l+"</span>";}
-function emptyState(msg,ico){return'<div class="empty"><span class="empty-ico">'+(ico||"📋")+'</span><p class="empty-t">'+msg+"</p></div>";}
-function toast(msg){var t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.classList.add("on");},10);setTimeout(function(){t.classList.remove("on");setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},300);},2800);}
-
-function titleCase(s){if(!s)return"";return s.toLowerCase().replace(/(?:^|\s|-)([a-záéíóúüñàèìòùâêîôûäëïöüçã])/g,function(m,l){return m.replace(l,l.toUpperCase());});}
-
-function callupCard(c){
-  var k=selKey(c.selectionType),sel=SELS[k];
-  var col=(sel&&sel.colors&&sel.colors[c.selectionCategory])?sel.colors[c.selectionCategory]:{badge:"#1A3A8F"};
-  var pc=(c.players&&c.players.length)||0,flag=getSelFlag(c.selectionType,c.pais);
-  var chips="";for(var i=0;i<Math.min(pc,3);i++){var pts=c.players[i].fullName.split(" ");chips+='<span class="chip">'+esc(pts[0]+(pts[1]?" "+pts[1]:""))+"</span>";}
-  if(pc>3)chips+='<span class="chip chip-more">+'+(pc-3)+"</span>";
-  return'<article class="cc" style="--ca:'+col.badge+'" data-id="'+c.id+'" tabindex="0" role="button">'+
-    '<div class="cc-hdr"><div class="cc-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+(c.convType?convTypeBadge(c.convType):"")+"</div>"+'<span class="cc-flag">'+flag+'</span></div>'+
-    '<h3 class="cc-title">'+esc(c.title)+"</h3>"+
-    '<div class="cc-meta">'+
-    '<div class="cc-mi"><span class="mi">📅</span><span>'+fmtRange(c.startDate,c.endDate)+"</span></div>"+
-    (c.rival?'<div class="cc-mi"><span class="mi">🆚</span><span>'+esc(c.rival)+"</span></div>":"")+
-    (c.conc&&(c.conc.date||c.conc.time||c.conc.lugar)?'<div class="cc-mi cc-mi-conc"><span class="mi">📍</span><div class="cc-mi-block"><span class="cc-mi-label">Convocatoria</span><span>'+(c.conc.date?fmtDateShort(c.conc.date)+" ":"")+(c.conc.time?c.conc.time+"h ":"")+(c.conc.lugar?"· "+esc(c.conc.lugar):"")+"</span>"+(c.conc.transporte?'<span class="cc-mi-sub">'+esc(c.conc.transporte)+"</span>":"")+"</div></div>":"")+
-    (c.vuelta&&(c.vuelta.date||c.vuelta.time||c.vuelta.lugar)?'<div class="cc-mi cc-mi-vuelta"><span class="mi">🔙</span><div class="cc-mi-block"><span class="cc-mi-label">Vuelta</span><span>'+(c.vuelta.date?fmtDateShort(c.vuelta.date)+" ":"")+(c.vuelta.time?c.vuelta.time+"h ":"")+(c.vuelta.lugar?"· "+esc(c.vuelta.lugar):"")+"</span>"+(c.vuelta.transporte?'<span class="cc-mi-sub">'+esc(c.vuelta.transporte)+"</span>":"")+"</div></div>":"")+
-    (c.matches&&c.matches.length?c.matches.map(function(m){return'<div class="cc-mi"><span class="mi">🆚</span><span style="font-weight:600">'+esc(m.rival||"Rival TBD")+'</span><span style="margin-left:5px">'+(m.matchType==="oficial"?"🏆":"⚽")+'</span>'+(m.date?'<span style="color:var(--text-muted);margin-left:5px;font-size:12px">'+fmtDateShort(m.date)+"</span>":"")+"</div>";}).join(""):"")+
-    "</div>"+(pc>0?'<div class="cc-players">'+chips+"</div>":"")+
-    "</article>";
-}
-
-function callupTableRow(c){
-  var k=selKey(c.selectionType);var sel=SELS[k];
-  var col=(sel&&sel.colors&&sel.colors[c.selectionCategory])?sel.colors[c.selectionCategory]:{badge:"#1A3A8F"};
-  var pc=(c.players&&c.players.length)||0,flag=getSelFlag(c.selectionType,c.pais);
-  var st=STATUS[c.status]||STATUS.finalizada;
-  var catLabel=CAT[c.selectionCategory]||c.selectionCategory;
-  var selLabel=k==="internacional"&&c.pais?paisAdj(c.pais):(sel?sel.label:c.selectionType);
-  function logCell(obj,fallbackDate){
-    if(!obj||(!obj.date&&!obj.time&&!obj.lugar&&!obj.transporte))return'<span class="td-log-date">'+fmtDateShort(fallbackDate)+"</span>";
-    return (obj.date?'<span class="td-log-date">'+fmtDateShort(obj.date)+"</span>":"")+
-      (obj.time||obj.lugar?'<span class="td-log-sub">'+(obj.time?obj.time+"h ":"")+esc(obj.lugar||"")+"</span>":"")+
-      (obj.transporte?'<span class="td-log-trans">'+esc(obj.transporte)+"</span>":"");
-  }
-  var matchCell=c.matches&&c.matches.length?c.matches.map(function(m){
-    return'<div class="td-match"><span class="td-match-rival">'+(m.matchType==="oficial"?"🏆 ":"⚽ ")+esc(m.rival||"?")+"</span>"+(m.date||m.time?'<span class="td-match-sub">'+(m.date?fmtDateShort(m.date)+" ":"")+(m.time?m.time+"h":"")+"</span>":"")+"</div>";
-  }).join(""):'<span class="td-log-empty">—</span>';
-  return'<tr class="trow" data-id="'+c.id+'">'+
-    '<td class="td-flag">'+flag+"</td>"+
-    '<td><span class="badge" style="background:'+col.badge+';color:#fff;font-size:10px">'+catLabel+"</span>"+
-    '<div class="td-sel-sub">'+esc(selLabel)+"</div></td>"+
-    '<td class="td-log">'+logCell(c.conc,c.startDate)+"</td>"+
-    '<td class="td-log">'+logCell(c.vuelta,c.endDate)+"</td>"+
-    '<td class="td-matches">'+matchCell+"</td>"+
-    '<td class="td-players">'+pc+"</td>"+
-    '<td class="td-status"><span class="badge '+st.c+'" style="font-size:9px;padding:2px 7px">'+st.l+"</span></td></tr>";
-}
-
-function callupDetail(c){
-  var pc=(c.players&&c.players.length)||0,rows="";
-  for(var i=0;i<pc;i++){rows+='<li class="pl-item" data-pidx="'+i+'"><span class="pl-num">'+(i+1)+'</span><div class="pl-info"><span class="pl-name">'+esc(c.players[i].fullName)+'</span><span class="pl-team">'+esc(c.players[i].teamName)+"</span></div>"+(canEdit()?'<button class="pl-rm-btn" data-pidx="'+i+'" title="Eliminar">×</button>':"")+"</li>";}
-  var promBtn=canEdit()&&c.convType!=="definitiva"?'<button class="btn btn-gold btn-sm" data-promote="'+c.id+'" style="flex:1">✅ Confirmar definitiva</button>':"";
-  var editBtn=canEdit()?'<button class="btn btn-ghost btn-sm" data-edit="'+c.id+'" style="flex:1">✎ Editar</button>':"";
-  var delBtn=canEdit()?'<button class="btn btn-danger btn-sm" data-del="'+c.id+'" style="flex:1">🗑 Eliminar</button>':"";
-  return'<div class="dp-hdr">'+
-    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'+
-    '<div class="dp-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+convTypeBadge(c.convType||"provisional")+"</div>"+
-    '<span style="font-size:32px;line-height:1">'+getSelFlag(c.selectionType,c.pais)+"</span></div>"+
-    '<h2 class="dp-title">'+esc(c.title)+"</h2>"+
-    '<p class="dp-sea">Temporada '+c.season+"</p></div>"+
-    '<div class="dp-grid">'+
-    '<div class="di"><span class="di-l">📅 Período</span><span class="di-v">'+fmtRange(c.startDate,c.endDate)+"</span></div>"+
-    (c.rival?'<div class="di"><span class="di-l">🆚 Rival/Torneo</span><span class="di-v">'+esc(c.rival)+"</span></div>":"")+
-    (c.location?'<div class="di"><span class="di-l">📍 Lugar</span><span class="di-v">'+esc(c.location)+"</span></div>":"")+
-    "</div>"+
-    (c.conc&&(c.conc.date||c.conc.time||c.conc.lugar||c.conc.transporte)?
-      '<div class="dp-logistica"><div class="dp-log-hdr"><span class="dp-log-ico">📍</span><span class="dp-log-title">Fecha convocatoria (ida)</span></div><div class="dp-log-body">'+
-      (c.conc.date||c.conc.time?'<div class="dp-log-row"><span class="dp-log-l">Fecha y hora</span><span class="dp-log-v">'+(c.conc.date?fmtDateShort(c.conc.date)+" ":"")+(c.conc.time?c.conc.time+"h":"")+"</span></div>":"")+
-      (c.conc.lugar?'<div class="dp-log-row"><span class="dp-log-l">Punto de encuentro</span><span class="dp-log-v">'+esc(c.conc.lugar)+"</span></div>":"")+
-      (c.conc.transporte?'<div class="dp-log-row"><span class="dp-log-l">Transporte</span><span class="dp-log-v">'+esc(c.conc.transporte)+"</span></div>":"")+
-      "</div></div>":"")+
-    (c.vuelta&&(c.vuelta.date||c.vuelta.time||c.vuelta.lugar||c.vuelta.transporte)?
-      '<div class="dp-logistica" style="margin-top:8px"><div class="dp-log-hdr"><span class="dp-log-ico">🔙</span><span class="dp-log-title">Fecha vuelta</span></div><div class="dp-log-body">'+
-      (c.vuelta.date||c.vuelta.time?'<div class="dp-log-row"><span class="dp-log-l">Fecha y hora</span><span class="dp-log-v">'+(c.vuelta.date?fmtDateShort(c.vuelta.date)+" ":"")+(c.vuelta.time?c.vuelta.time+"h":"")+"</span></div>":"")+
-      (c.vuelta.lugar?'<div class="dp-log-row"><span class="dp-log-l">Punto de llegada</span><span class="dp-log-v">'+esc(c.vuelta.lugar)+"</span></div>":"")+
-      (c.vuelta.transporte?'<div class="dp-log-row"><span class="dp-log-l">Transporte</span><span class="dp-log-v">'+esc(c.vuelta.transporte)+"</span></div>":"")+
-      "</div></div>":"")+
-    (c.matches&&c.matches.length?'<div class="dp-matches" style="margin-top:16px"><h4 class="dp-st">⚽ Partidos ('+c.matches.length+")</h4>"+
-    c.matches.map(function(m){var dt=m.date?new Date(m.date+"T12:00:00").toLocaleDateString("es-ES",{weekday:"short",day:"2-digit",month:"short"}):"";
-    return'<div class="dp-match-item"><span class="dp-match-ball">'+(m.matchType==="oficial"?"🏆":"⚽")+'</span><div class="dp-match-info"><div class="dp-match-date">'+dt+'</div><div class="dp-match-rival">vs '+esc(m.rival||"Por confirmar")+"</div></div>"+(m.time?'<span class="dp-match-time">'+m.time+"h</span>":"")+"</div>";}).join("")+"</div>":"")+
-    '<div style="margin-bottom:16px;margin-top:16px"><h4 class="dp-st">👕 Jugadores convocados ('+pc+")</h4><ul class=\"pl\">"+rows+"</ul></div>"+
-    (c.notes?'<div class="dp-notes"><h4 class="dp-st">📝 Observaciones</h4><p class="notes-t">'+esc(c.notes)+"</p></div>":"")+
-    (editBtn||delBtn?'<div class="dp-act" style="display:flex;gap:8px;flex-wrap:wrap">'+promBtn+editBtn+delBtn+"</div>":"");
-}
-
-var S={view:"agenda",season:"2025-26",filterType:null,agendaView:"fichas",finOpen:false,editingId:null,planView:"bloques",intlPais:null,statsSearch:"",statsPlayer:null,calPlanTab:"calendario",jugTeam:"",jugSearch:""};
-
-function renderSeasonSel(){
-  var opts=_seasons.slice().reverse().map(function(s){return'<option value="'+s+'"'+(s===S.season?" selected":"")+">"+s+"</option>";}).join("");
-  $("season-sel").innerHTML='<select class="season-sel" id="ss">'+opts+"</select>";
-  $("ss").addEventListener("change",function(e){S.season=e.target.value;route(S.view);});
-}
-
-function makeTabs(cats,activeCat){
-  var tabs=cats.map(function(c){return'<button class="tbtn'+(c===activeCat?" on":"")+'" data-c="'+c+'">'+(CAT[c]||c)+"</button>";}).join("");
-  return'<div class="tbar-wrap"><button class="tbar-arrow tbar-arrow-l" id="tbar-l">‹</button><div class="tbar" id="tbar-inner">'+tabs+'</div><button class="tbar-arrow tbar-arrow-r" id="tbar-r">›</button></div>';
-}
-function bindTabs(onSelect){
-  var tbar=$("tbar-inner"),btnL=$("tbar-l"),btnR=$("tbar-r");
-  if(tbar&&btnL&&btnR){
-    function upd(){btnL.disabled=tbar.scrollLeft<=0;btnR.disabled=tbar.scrollLeft+tbar.clientWidth>=tbar.scrollWidth-2;}
-    btnL.addEventListener("click",function(){tbar.scrollBy({left:-120,behavior:"smooth"});setTimeout(upd,300);});
-    btnR.addEventListener("click",function(){tbar.scrollBy({left:120,behavior:"smooth"});setTimeout(upd,300);});
-    tbar.addEventListener("scroll",upd);setTimeout(upd,50);
-  }
-  document.querySelectorAll(".tbtn").forEach(function(b){b.addEventListener("click",function(){document.querySelectorAll(".tbtn").forEach(function(x){x.classList.remove("on");});b.classList.add("on");if(onSelect)onSelect(b.dataset.c);});});
-}
-
-function route(v){
-  S.view=v;
-  document.querySelectorAll(".nb").forEach(function(b){b.classList.toggle("active",b.dataset.v===v);});
-  document.querySelectorAll(".nb-new,.nb[data-v='jugadores']").forEach(function(b){b.style.display=canEdit()?"":"none";});
-  var views={agenda:renderAgenda,nueva:renderNueva,madrilena:function(){renderSel("madrilena");},espanola:function(){renderSel("espanola");},internacional:function(){renderIntl();},calendario:renderCalendarioPlan,planificacion:renderCalendarioPlan,jugadores:renderJugadores,stats:renderStats};
-  (views[v]||renderAgenda)();
-}
-document.querySelector(".nav").addEventListener("click",function(e){var btn=e.target.closest("[data-v]");if(btn)route(btn.dataset.v);});
-
-function bindCards(){
-  document.querySelectorAll(".cc[data-id]").forEach(function(el){el.addEventListener("click",function(){openDetail(el.dataset.id);});});
-}
-
-function openDetail(id){
-  var c=null;for(var i=0;i<_callups.length;i++){if(_callups[i].id===id){c=Object.assign({},_callups[i],{status:calcStatus(_callups[i].startDate,_callups[i].endDate)});break;}}
-  if(!c)return;
-  var ov=document.createElement("div");ov.className="mo";
-  ov.innerHTML='<div class="modal modal-tall"><button class="mcl" id="mo-cl">×</button>'+callupDetail(c)+"</div>";
-  document.body.appendChild(ov);
-  function close(){if(ov.parentNode)ov.parentNode.removeChild(ov);}
-  document.getElementById("mo-cl").addEventListener("click",close);
-  ov.addEventListener("click",function(e){if(e.target===ov)close();});
-  ov.querySelectorAll(".pl-rm-btn").forEach(function(btn){
-    btn.addEventListener("click",function(e){
-      e.stopPropagation();var idx=parseInt(btn.dataset.pidx);
-      var conv=null;for(var i=0;i<_callups.length;i++){if(_callups[i].id===id){conv=_callups[i];break;}}
-      if(!conv||!conv.players)return;
-      var pname=conv.players[idx]?conv.players[idx].fullName:"jugador";
-      if(!confirm("¿Eliminar a "+pname+" de esta convocatoria?"))return;
-      conv.players.splice(idx,1);
-      if(window._db&&window._fbUser){var fns=window._fbFns;fns.setDoc(fns.doc(window._db,"callups",id),Object.assign({},conv)).catch(function(e){console.error(e);});}
-      toast("🗑 "+pname+" eliminado");close();openDetail(id);
-    });
-  });
-  var editBtn=ov.querySelector("[data-edit]");
-  if(editBtn)editBtn.addEventListener("click",function(){close();S.editingId=id;route("nueva");setTimeout(function(){prefillForm(c);},100);});
-  var promBtn=ov.querySelector("[data-promote]");
-  if(promBtn)promBtn.addEventListener("click",function(){
-    var conv=null;for(var i=0;i<_callups.length;i++){if(_callups[i].id===id){conv=_callups[i];break;}}
-    if(!conv)return;conv.convType="definitiva";
-    if(window._db&&window._fbUser){var fns=window._fbFns;fns.setDoc(fns.doc(window._db,"callups",id),Object.assign({},conv)).catch(function(e){console.error(e);});}
-    toast("✅ Confirmada como definitiva");close();openDetail(id);
-  });
-  var delBtn=ov.querySelector("[data-del]");
-  if(delBtn)delBtn.addEventListener("click",function(){
-    if(!confirm("¿Eliminar \""+c.title+"\"?"))return;
-    deleteCallup(id,function(){close();toast("🗑 Eliminada");route(S.view);});
-  });
-}
-
-function prefillForm(c){
-  var form=$("cf");if(!form)return;
-  var rb=form.querySelector('[name="selType"][value="'+c.selectionType+'"]');
-  if(rb){rb.checked=true;rb.dispatchEvent(new Event("change"));}
-  setTimeout(function(){
-    var cat=$("sel-cat");if(cat)cat.value=c.selectionCategory;
-    var pf=$("f-pais");if(pf&&c.pais)pf.value=c.pais;
-    var pg=$("pais-g");if(pg&&selKey(c.selectionType)==="internacional")pg.style.display="block";
-    var fields={title:c.title,startDate:c.startDate,endDate:c.endDate,rival:c.rival||"",location:c.location||"",notes:c.notes||"",convType:c.convType||"provisional"};
-    Object.keys(fields).forEach(function(k){var el=form.querySelector('[name="'+k+'"]');if(el)el.value=fields[k];});
-    if(c.conc){var cf2={concDate:c.conc.date,concTime:c.conc.time,concLugar:c.conc.lugar,concTransporte:c.conc.transporte};Object.keys(cf2).forEach(function(k){if(!cf2[k])return;var el=form.querySelector('[name="'+k+'"]');if(el)el.value=cf2[k];});}
-    if(c.vuelta){var vf={vueltaDate:c.vuelta.date,vueltaTime:c.vuelta.time,vueltaLugar:c.vuelta.lugar,vueltaTransporte:c.vuelta.transporte};Object.keys(vf).forEach(function(k){if(!vf[k])return;var el=form.querySelector('[name="'+k+'"]');if(el)el.value=vf[k];});}
-    if(c.matches&&c.matches.length){var ml=$("matches-list");if(ml){ml.innerHTML="";c.matches.forEach(function(m){addMatchRow(m.date||"",m.time||"",m.rival||"",m.matchType||"amistoso");});}}
-    if(c.players&&c.players.length){c.players.forEach(function(cp){var cb=form.querySelector('[name="pids"][value="'+cp.playerId+'"]');if(cb){cb.checked=true;cb.dispatchEvent(new Event("change"));}});}
-    var sb=form.querySelector('[type="submit"]');if(sb)sb.textContent="💾 Guardar";
-    var vt=document.querySelector(".vt");if(vt)vt.textContent="Editar Convocatoria";
-  },50);
-}
-
-function renderAgenda(viewMode){
-  viewMode=viewMode||S.agendaView||"fichas";S.agendaView=viewMode;
-  var all=sortDate(getCallups({season:S.season}),"asc");
-  var filtered=S.filterType?all.filter(function(c){return selKey(c.selectionType)===S.filterType;}):all;
-  var up=filtered.filter(function(c){return c.status!=="finalizada";});
-  var done=sortDate(filtered.filter(function(c){return c.status==="finalizada";}),"asc");
-  var h='<div class="vh" style="margin-bottom:12px"><div style="display:flex;align-items:center;justify-content:space-between"><h1 class="vt">Agenda</h1>'+
-    '<div class="view-toggle"><button class="vtbtn'+(viewMode==="fichas"?" on":"")+'" data-vm="fichas">⊢□ Fichas</button><button class="vtbtn'+(viewMode==="tabla"?" on":"")+'" data-vm="tabla">≡ Tabla</button></div></div></div>'+
-    '<div class="fb"><button class="fbtn'+(!S.filterType?" on":"")+'" data-f="">Todas</button><button class="fbtn'+(S.filterType==="madrilena"?" on":"")+'" data-f="madrilena">🔵 RFFM</button><button class="fbtn'+(S.filterType==="espanola"?" on":"")+'" data-f="espanola">🔴 RFEF</button><button class="fbtn'+(S.filterType==="internacional"?" on":"")+'" data-f="internacional">🟢 OTRAS</button></div>';
-  if(!filtered.length){h+=emptyState("Sin convocatorias en "+S.season,"📋");}
-  else if(viewMode==="tabla"){
-    var thead='<thead><tr><th></th><th>Categoría</th><th class="th-ida">📍 Ida</th><th class="th-vuelta">🔙 Vuelta</th><th class="th-matches">⚽ Partidos</th><th>👕</th><th>Estado</th></tr></thead>';
-    if(up.length)h+='<div class="tabla-wrap"><table class="tabla">'+thead+'<tbody>'+up.map(callupTableRow).join("")+"</tbody></table></div>";
-    if(done.length)h+='<details class="fin-details"'+(S.finOpen?" open":"")+'><summary class="fin-summary"><span class="fin-summary__label">Finalizadas</span><span class="fin-summary__count">'+done.length+'</span></summary><div style="margin-top:8px"><div class="tabla-wrap"><table class="tabla">'+thead+'<tbody>'+done.map(callupTableRow).join("")+"</tbody></table></div></div></details>";
-  } else {
-    if(up.length)h+='<h2 class="st" style="display:flex;align-items:center;gap:8px;margin-bottom:12px">Próximas y en curso</h2><div class="cl">'+up.map(callupCard).join("")+"</div>";
-    if(done.length)h+='<details class="fin-details"'+(S.finOpen?" open":"")+'><summary class="fin-summary"><span class="fin-summary__label">Finalizadas</span><span class="fin-summary__count">'+done.length+'</span></summary><div class="cl cl-past" style="margin-top:10px">'+done.map(callupCard).join("")+"</div></details>";
-  }
-  $("main").innerHTML=h;
-  var det=$("main").querySelector(".fin-details");
-  if(det)det.addEventListener("toggle",function(){S.finOpen=det.open;});
-  if(viewMode==="fichas")bindCards();
-  else document.querySelectorAll(".trow").forEach(function(row){row.addEventListener("click",function(){openDetail(row.dataset.id);});});
-  document.querySelectorAll("[data-f]").forEach(function(b){b.addEventListener("click",function(){S.filterType=b.dataset.f||null;renderAgenda(S.agendaView);});});
-  document.querySelectorAll("[data-vm]").forEach(function(b){b.addEventListener("click",function(){renderAgenda(b.dataset.vm);});});
-}
-
-function renderSel(type){
-  var sel=SELS[type];
-  var allC=sortDate(getCallups({season:S.season,type:type}),"desc");
-  var activeCats=["todas"].concat(sel.cats);
-  $("main").innerHTML='<div class="vh"><h1 class="vt">'+sel.label+"</h1></div>"+makeTabs(activeCats,"todas")+'<div id="catc">'+(allC.length?'<div class="cl">'+allC.map(callupCard).join("")+"</div>":emptyState("Sin convocatorias","📋"))+"</div>";
-  bindTabs(function(cat){
-    var cs=cat==="todas"?allC:sortDate(getCallups({season:S.season,type:type,cat:cat}),"desc");
-    $("catc").innerHTML=cat==="todas"?(cs.length?'<div class="cl">'+cs.map(callupCard).join("")+"</div>":emptyState("Sin convocatorias","📋")):renderCatCallups(cs,cat);
-    bindCards();
-  });
-  bindCards();
-}
-function renderCatCallups(cs,cat){var f=cs.filter(function(c){return c.selectionCategory===cat||(cat==="abs"&&!c.selectionCategory);});return f.length?'<div class="cl">'+f.map(callupCard).join("")+"</div>":emptyState("Sin convocatorias para "+(CAT[cat]||cat),"📋");}
-
-function renderIntl(){
-  var allC=sortDate(getCallups({season:S.season,type:"internacional"}),"desc");
-  var paisList=[],paisMap={};
-  allC.forEach(function(c){var p=c.pais||"Sin país";if(!paisMap[p])paisMap[p]=[];if(paisList.indexOf(p)===-1)paisList.push(p);paisMap[p].push(c);});
-  paisList.sort();
-  if(!S.intlPais||paisList.indexOf(S.intlPais)===-1)S.intlPais=paisList[0]||null;
-  function renderPaisContent(pais){
-    if(!pais)return emptyState("Sin selecciones internacionales","🌍");
-    var cs=paisMap[pais]||[];
-    return cs.length?'<div class="cl">'+cs.map(callupCard).join("")+"</div>":emptyState("Sin convocatorias","📋");
-  }
-  var paisBtns=paisList.map(function(p){return'<button class="ibtn'+(p===S.intlPais?" on":"")+'" data-pais="'+esc(p)+'">'+getFlag(p)+" "+esc(p)+"</button>";}).join("");
-  $("main").innerHTML='<div class="vh" style="margin-bottom:10px"><h1 class="vt">Internacional</h1></div>'+
-    '<div class="ibar">'+paisBtns+'</div>'+
-    '<div id="intl-content">'+renderPaisContent(S.intlPais)+"</div>";
-  document.querySelectorAll(".ibtn[data-pais]").forEach(function(b){b.addEventListener("click",function(){S.intlPais=b.dataset.pais;document.querySelectorAll(".ibtn[data-pais]").forEach(function(x){x.classList.remove("on");});b.classList.add("on");$("intl-content").innerHTML=renderPaisContent(S.intlPais);bindCards();});});
-  bindCards();
-}
-
-function renderNueva(){
-  if(!canEdit()){$("main").innerHTML=emptyState("Inicia sesión para crear convocatorias","🔒");return;}
-  $("main").innerHTML=
-    '<div class="vh" style="margin-bottom:8px"><h1 class="vt">'+(S.editingId?"Editar Convocatoria":"Nueva Convocatoria")+'</h1><span class="vs">'+S.season+"</span></div>"+
-    '<button type="button" class="btn-ai-parser" id="btn-ai-parser">✨ Rellenar con nota de prensa</button>'+
-    '<form id="cf" autocomplete="off" style="margin-top:16px">'+
-    '<div class="fg"><label class="fl">Tipo de selección *</label><div class="rc-group">'+
-    '<label class="rc"><input type="radio" name="selType" value="madrilena"/><span class="rc-ico">🔵</span><span class="rc-lbl">Madrileña</span></label>'+
-    '<label class="rc"><input type="radio" name="selType" value="espanola"/><span class="rc-ico">🔴</span><span class="rc-lbl">Española</span></label>'+
-    '<label class="rc"><input type="radio" name="selType" value="internacional"/><span class="rc-ico">🟢</span><span class="rc-lbl">Internacional</span></label>'+
-    "</div></div>"+
-    '<div class="fg" id="pais-g" style="display:none"><label class="fl">País *</label><div id="pais-pills" class="pais-pills"></div><input class="fi" type="text" id="f-pais" name="pais" placeholder="Escribe el país..." style="display:none;margin-top:6px"/></div>'+
-    '<div class="fg" id="cat-g" style="display:none"><label class="fl">Categoría *</label><select class="fsel" id="sel-cat" name="selCat"><option value="">Selecciona categoría</option></select></div>'+
-    '<div class="fg"><label class="fl">Título *</label><input class="fi" type="text" name="title" placeholder="Ej: Concentración Sub-17 Marzo"/></div>'+
-    '<div class="fg"><label class="fl">Rival / Torneo</label><input class="fi" type="text" name="rival" placeholder="Ej: Portugal, Francia"/></div>'+
-    '<div class="fg"><label class="fl">Tipo de convocatoria</label><select class="fsel" name="convType"><option value="provisional">⏳ Provisional</option><option value="definitiva">✅ Definitiva</option><option value="entrenamiento">🏋 Entrenamiento</option></select></div>'+
-    '<div class="frow"><div class="fg"><label class="fl">Inicio *</label><input class="fi" type="date" name="startDate"/></div><div class="fg"><label class="fl">Fin *</label><input class="fi" type="date" name="endDate"/></div></div>'+
-    '<div class="fsec fsec-conc"><span class="fsec-ico">📍</span><span class="fsec-lbl">Fecha convocatoria (ida)</span></div>'+
-    '<div class="frow"><div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" name="concDate"/></div><div class="fg"><label class="fl">Hora</label><input class="fi" type="time" name="concTime"/></div></div>'+
-    '<div class="fg"><label class="fl">Punto de encuentro</label><input class="fi" type="text" name="concLugar" placeholder="Ej: Aeropuerto T4..."/></div>'+
-    '<div class="fg"><label class="fl">Transporte</label><input class="fi" type="text" name="concTransporte" placeholder="Ej: Vuelo IB1234..."/></div>'+
-    '<div class="fsec fsec-vuelta"><span class="fsec-ico">🔙</span><span class="fsec-lbl">Fecha vuelta</span></div>'+
-    '<div class="frow"><div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" name="vueltaDate"/></div><div class="fg"><label class="fl">Hora</label><input class="fi" type="time" name="vueltaTime"/></div></div>'+
-    '<div class="fg"><label class="fl">Punto de llegada</label><input class="fi" type="text" name="vueltaLugar" placeholder="Ej: Aeropuerto T4..."/></div>'+
-    '<div class="fg"><label class="fl">Transporte vuelta</label><input class="fi" type="text" name="vueltaTransporte" placeholder="Ej: Vuelo IB5678..."/></div>'+
-    '<div class="fg"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><label class="fl" style="margin-bottom:0">Partidos</label><div style="display:flex;gap:6px"><button type="button" class="btn-add-typed" data-mtype="amistoso" style="background:rgba(255,255,255,.07);border:1px solid var(--border-strong);border-radius:8px;color:var(--text);font-size:12px;font-weight:700;padding:6px 12px;cursor:pointer;font-family:inherit">&#x26BD; Amistoso</button><button type="button" class="btn-add-typed" data-mtype="oficial" style="background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.3);border-radius:8px;color:var(--gold);font-size:12px;font-weight:700;padding:6px 12px;cursor:pointer;font-family:inherit">&#x1F3C6; Oficial</button></div></div><div id="matches-list"></div></div>'+
-    '<div class="fg"><label class="fl">Lugar de concentración</label><input class="fi" type="text" name="location" placeholder="Ej: Ciudad del Fútbol, Las Rozas"/></div>'+
-    '<div class="fg"><label class="fl">Observaciones</label><textarea class="fta" name="notes" rows="3" placeholder="Info adicional..."></textarea></div>'+
-    '<div id="ferr" class="ferr" style="display:none"></div>'+
-    '<div class="fact"><button type="button" class="btn btn-ghost" id="btn-cancel">Cancelar</button><button type="submit" class="btn btn-primary" id="btn-submit">✓ Guardar convocatoria</button></div>'+
-    "</form>";
-
-  $("btn-cancel").addEventListener("click",function(){S.editingId=null;route("agenda");});
-
-  document.querySelectorAll('[name="selType"]').forEach(function(r){r.addEventListener("change",function(){
-    var k=selKey(r.value);
-    var cs=$("sel-cat");cs.innerHTML='<option value="">Selecciona categoría</option>';
-    var cats=SELS[k]?SELS[k].cats:[];cats.forEach(function(c){cs.innerHTML+='<option value="'+c+'">'+(CAT[c]||c)+"</option>";});
-    $("cat-g").style.display="block";
-    var paisG=$("pais-g");if(paisG)paisG.style.display=(k==="internacional")?"block":"none";
-    if(k==="internacional"){
-      var existingPaises=[];_callups.forEach(function(cv){if(cv.pais&&existingPaises.indexOf(cv.pais)===-1)existingPaises.push(cv.pais);});existingPaises.sort();
-      var pillsDiv=$("pais-pills"),paisInput=$("f-pais");
-      if(pillsDiv&&paisInput){
-        pillsDiv.innerHTML=existingPaises.map(function(p){return'<button type="button" class="pais-pill" data-pais="'+esc(p)+'">'+getFlag(p)+" "+esc(p)+"</button>";}).join("")+'<button type="button" class="pais-pill pais-pill-other" id="pais-other">+ Otro</button>';
-        pillsDiv.querySelectorAll(".pais-pill[data-pais]").forEach(function(btn){btn.addEventListener("click",function(){pillsDiv.querySelectorAll(".pais-pill").forEach(function(b){b.classList.remove("on");});btn.classList.add("on");paisInput.style.display="none";paisInput.value=btn.dataset.pais;});});
-        var otherBtn=$("pais-other");
-        if(otherBtn)otherBtn.addEventListener("click",function(){pillsDiv.querySelectorAll(".pais-pill").forEach(function(b){b.classList.remove("on");});otherBtn.classList.add("on");paisInput.style.display="block";paisInput.value="";setTimeout(function(){paisInput.focus();},50);});
-      }
-    }
-    document.querySelectorAll(".rc").forEach(function(rc){rc.classList.remove("on");});
-    r.closest(".rc").classList.add("on");
-  });});
-
-  var matchCount=0;
-  function addMatchRow(date,time,rival,mtype){
-    var idx=matchCount++;mtype=mtype||"amistoso";
-    var row=document.createElement("div");row.className="match-row";
-    row.innerHTML='<input class="fi" type="date" name="mdate_'+idx+'" value="'+(date||"")+'" style="flex:1.2;min-height:40px;font-size:13px;padding:8px 10px"/>'+
-      '<input class="fi" type="time" name="mtime_'+idx+'" value="'+(time||"")+'" style="flex:.8;min-height:40px;font-size:13px;padding:8px 10px"/>'+
-      '<input class="fi" type="text" name="mrival_'+idx+'" value="'+esc(rival||"")+'" placeholder="Rival" style="flex:1.5;min-height:40px;font-size:13px;padding:8px 10px"/>'+
-      '<select class="fsel" name="mtype_'+idx+'" style="flex:.8;min-height:40px;font-size:12px;padding:6px 28px 6px 8px"><option value="amistoso"'+(mtype==="amistoso"?" selected":"")+'">⚽ Amistoso</option><option value="oficial"'+(mtype==="oficial"?" selected":"")+'">🏆 Oficial</option></select>'+
-      '<button type="button" class="btn-rm" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;padding:4px;flex-shrink:0;line-height:1">×</button>';
-    row.querySelector(".btn-rm").addEventListener("click",function(){row.remove();});
-    var ml=$("matches-list");if(ml)ml.appendChild(row);
-  }
-
-  $("cf").addEventListener("submit",function(e){
-    e.preventDefault();
-    var fd=new FormData($("cf"));
-    var matchesData=[];
-    document.querySelectorAll("#matches-list > div").forEach(function(row){
-      var d=row.querySelector('[type="date"]'),t=row.querySelector('[type="time"]'),r=row.querySelector('[type="text"]');
-      var tp=row.querySelector('[type="hidden"]');var rival=r?r.value.trim():"";if(rival||d&&d.value)matchesData.push({date:d?d.value:"",time:t?t.value:"",rival:rival,matchType:tp?tp.value:"amistoso"});
-    });
-    var paisVal=(fd.get("pais")||"").trim()||($("f-pais")?$("f-pais").value.trim():"");
-    var data={selectionType:fd.get("selType")||"",selectionCategory:fd.get("selCat")||"",pais:paisVal,title:fd.get("title")||"",startDate:fd.get("startDate")||"",endDate:fd.get("endDate")||"",rival:fd.get("rival")||"",convType:fd.get("convType")||"provisional",location:fd.get("location")||"",notes:fd.get("notes")||"",
-      conc:{date:fd.get("concDate")||"",time:fd.get("concTime")||"",lugar:fd.get("concLugar")||"",transporte:fd.get("concTransporte")||""},
-      vuelta:{date:fd.get("vueltaDate")||"",time:fd.get("vueltaTime")||"",lugar:fd.get("vueltaLugar")||"",transporte:fd.get("vueltaTransporte")||""},
-      matches:matchesData,players:[]};
-    var errs=[];
-    if(!data.selectionType)errs.push("Selecciona el tipo de selección");
-    if(!data.selectionCategory)errs.push("Selecciona la categoría");
-    if(data.selectionType==="internacional"&&!data.pais)errs.push("Introduce el país");
-    if(!data.title)errs.push("El título es obligatorio");
-    if(!data.startDate)errs.push("La fecha de inicio es obligatoria");
-    if(!data.endDate)errs.push("La fecha de fin es obligatoria");
-    if(data.startDate&&data.endDate&&data.startDate>data.endDate)errs.push("Fecha inicio no puede ser posterior a fin");
-    var errDiv=$("ferr");
-    if(errs.length){errDiv.style.display="block";errDiv.innerHTML=errs.map(function(x){return"<p>• "+x+"</p>";}).join("");errDiv.scrollIntoView({behavior:"smooth",block:"center"});return;}
-    errDiv.style.display="none";
-    var btn=$("btn-submit");btn.disabled=true;btn.textContent="Guardando...";
-    var eid=S.editingId;S.editingId=null;
-    if(eid){updateCallup(eid,data,function(){toast("✅ Convocatoria actualizada");route("agenda");});}
-    else{addCallup(data,S.season,function(){toast("✅ Convocatoria guardada");route("agenda");});}
-  });
-}
-
-function renderJugadores(){
-  if(!canWrite()){$("main").innerHTML=emptyState("Inicia sesión para ver los jugadores","🔒");return;}
-  if(!S.jugTeam)S.jugTeam="";
-  var players=getPlayersBySeason(S.season);
-  var q=(S.jugSearch||"").toLowerCase();
-  var filtered=players.filter(function(p){
-    var per=teamInSeason(p,S.season)||teamNow(p);
-    if(S.jugTeam&&(!per||per.teamName!==S.jugTeam))return false;
-    if(q&&p.fullName.toLowerCase().indexOf(q)===-1)return false;
-    return true;
-  });
-  var byTeam={};var tord={};TEAMS.forEach(function(t){tord[t.name]=t.order;});
-  filtered.forEach(function(p){var per=teamInSeason(p,S.season)||teamNow(p);if(!per)return;if(!byTeam[per.teamName])byTeam[per.teamName]=[];byTeam[per.teamName].push(p);});
-  Object.keys(byTeam).forEach(function(t){byTeam[t].sort(function(a,b){return titleCase(a.fullName).localeCompare(titleCase(b.fullName),"es");});});
-  var sortedTeams=Object.keys(byTeam).sort(function(a,b){return(tord[b]||0)-(tord[a]||0);});
-  var callups=getCallups({season:S.season});
-  var callupCount={};callups.forEach(function(c){if(!c.players)return;c.players.forEach(function(cp){callupCount[cp.playerId]=(callupCount[cp.playerId]||0)+1;});});
-  var allTeams=TEAMS.slice().reverse();
-  var teamPills='<div class="jug-team-bar">'+
-    '<button class="fbtn'+(S.jugTeam===""?" on":"")+'" data-jt="">Todos</button>'+
-    allTeams.map(function(t){return'<button class="fbtn'+(S.jugTeam===t.name?" on":"")+'" data-jt="'+esc(t.name)+'">'+esc(t.name)+'</button>';}).join("")+
-    '</div>';
-  var h='<div class="vh"><h1 class="vt">Jugadores</h1><span class="vs">'+filtered.filter(function(p){return p.active;}).length+" activos</span></div>"+
-    '<input class="fi" id="jug-search" type="text" placeholder="🔍 Buscar jugador..." value="'+esc(S.jugSearch||"")+'" style="margin-bottom:8px" autocomplete="off"/>'+
-    teamPills;
-  if(!_players.length){
-    h+=emptyState("Sin jugadores registrados","👥");
-  } else {
-    h+=sortedTeams.map(function(team){
-      var ps=byTeam[team];
-      return'<div class="tb"><div class="tb-hdr"><span class="tb-name">'+esc(team)+'</span><span class="tb-cnt">'+ps.filter(function(p){return p.active;}).length+'</span></div>'+
-        '<ul class="tpl">'+ps.map(function(p){var n=callupCount[p.id]||0;return'<li class="tpl-item"><div style="flex:1;min-width:0"><span class="tpl-name"'+(!p.active?' style="opacity:.4;text-decoration:line-through"':'')+">"+esc(titleCase(p.fullName))+"</span></div>"+(n?'<span class="tpl-badge">'+n+"</span>":"")+"</li>";}).join("")+"</ul></div>";
-    }).join("");
-    if(!sortedTeams.length)h+=emptyState("Sin jugadores"+(S.jugTeam?" en "+S.jugTeam:"")+(q?" con \""+q+"\"":""),"👥");
-  }
-  $("main").innerHTML=h;
-  var inp=$("jug-search");
-  if(inp){inp.addEventListener("input",function(){S.jugSearch=inp.value;renderJugadores();});if(S.jugSearch)setTimeout(function(){inp.focus();inp.setSelectionRange(9999,9999);},50);}
-  document.querySelectorAll("[data-jt]").forEach(function(btn){btn.addEventListener("click",function(){S.jugTeam=btn.dataset.jt;S.jugSearch="";renderJugadores();});});
-}
-
-function renderStats(){
-  S.statsSearch="";
-  var allCs=getCallups({});var allStats=buildStats(allCs).filter(function(s){return s.total>0;});
-  if(!allStats.length){$("main").innerHTML='<div class="vh"><h1 class="vt">Estadísticas</h1></div>'+emptyState("Sin convocatorias registradas","📊");return;}
-  var h='<div class="vh"><h1 class="vt">Estadísticas</h1></div>'+
-    '<input class="fi" id="stats-search" type="text" placeholder="🔍 Buscar jugador..." value="" style="margin-bottom:14px;font-size:15px" autocomplete="off"/>'+
-    '<div id="stats-list">';
-  h+=allStats.map(function(s,i){var cur=teamNow(s.player);var barW=allStats[0].total>0?Math.round((s.total/allStats[0].total)*100):100;
-    return'<div class="stc2" data-pid="'+s.player.id+'"><div class="stc2-top"><div class="stc2-rank">#'+(i+1)+'</div><div class="stc2-info"><div class="stc2-name">'+esc(titleCase(s.player.fullName))+'</div><div class="stc2-team">'+esc(cur?cur.teamName:"—")+"</div></div><div class=\"stc2-right\"><div class=\"stc2-tot\">"+s.total+"</div><div class=\"stc2-chips\">"+(s.mad?'<span class="bb bb-m">MAD '+s.mad+"</span>":"")+(s.esp?'<span class="bb bb-e">ESP '+s.esp+"</span>":"")+(s.intl?'<span class="bb bb-i">INT '+s.intl+"</span>":"")+"</div></div></div>"+
-    '<div class="stc2-bar"><div class="stc2-bar-fill" style="width:'+barW+'%"></div></div></div>';}).join("")+'</div>';
-  $("main").innerHTML=h;
-  var inp=$("stats-search");
-  if(inp){inp.addEventListener("input",function(){var q=inp.value.toLowerCase();var filtered=!q?allStats:allStats.filter(function(s){return s.player.fullName.toLowerCase().indexOf(q)!==-1;});var list=$("stats-list");if(list)list.innerHTML=filtered.map(function(s,i){var cur=teamNow(s.player);var barW=filtered[0].total>0?Math.round((s.total/filtered[0].total)*100):100;return'<div class="stc2"><div class="stc2-top"><div class="stc2-rank">#'+(i+1)+'</div><div class="stc2-info"><div class="stc2-name">'+esc(titleCase(s.player.fullName))+'</div><div class="stc2-team">'+esc(cur?cur.teamName:"—")+"</div></div><div class=\"stc2-right\"><div class=\"stc2-tot\">"+s.total+"</div><div class=\"stc2-chips\">"+(s.mad?'<span class="bb bb-m">MAD '+s.mad+"</span>":"")+(s.esp?'<span class="bb bb-e">ESP '+s.esp+"</span>":"")+(s.intl?'<span class="bb bb-i">INT '+s.intl+"</span>":"")+"</div></div></div>"+'<div class="stc2-bar"><div class="stc2-bar-fill" style="width:'+barW+'%"></div></div></div>';}).join("");});}
-}
-
-function renderCalendarioPlan(){
-  if(!S.calPlanTab)S.calPlanTab="calendario";
-  var h='<div class="vh"><h1 class="vt">Cal / Plan</h1></div>'+
-    '<div style="display:flex;background:var(--off-white-3);border-radius:8px;padding:3px;gap:2px;border:1px solid var(--border);margin-bottom:16px">'+
-    '<button class="plan-tbtn'+(S.calPlanTab==="calendario"?" on":"")+'" id="cpt-cal">🗓 Calendario</button>'+
-    '<button class="plan-tbtn'+(S.calPlanTab==="planificacion"?" on":"")+'" id="cpt-plan">📐 Planificación</button>'+
-    '</div><div id="cpt-content"></div>';
-  $("main").innerHTML=h;
-  function renderTab(){if(S.calPlanTab==="calendario")renderCalendario();else renderPlanificacion();}
-  $("cpt-cal").addEventListener("click",function(){S.calPlanTab="calendario";document.querySelectorAll(".plan-tbtn").forEach(function(b){b.classList.remove("on");});this.classList.add("on");renderCalendario();});
-  $("cpt-plan").addEventListener("click",function(){S.calPlanTab="planificacion";document.querySelectorAll(".plan-tbtn").forEach(function(b){b.classList.remove("on");});this.classList.add("on");renderPlanificacion();});
-  renderTab();
-}
-
-function renderCalendario(){
-  var season=S.season;var startYear=parseInt(season.split("-")[0]);
-  var months=[];for(var m=6;m<18;m++){var y=startYear+(m>=12?1:0);var mo=m%12;months.push({year:y,month:mo});}
-  var rmCallups=getCallups({season:season});
-  var allEvs=rmCallups;
-  function eventsForDay(y,mo,d){var ds=y+"-"+String(mo+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");return allEvs.filter(function(e){return e.startDate<=ds&&(e.endDate||e.startDate)>=ds;});}
-  function matchesForDay(y,mo,d){var ds=y+"-"+String(mo+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");var ms=[];rmCallups.forEach(function(c){if(c.matches)c.matches.forEach(function(m){if(m.date===ds)ms.push({conv:c,match:m});});});return ms;}
-  var today=new Date();var ty=today.getFullYear(),tm=today.getMonth(),td=today.getDate();
-  var monthNames=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-  var h='';
-  months.forEach(function(mn){
-    var y=mn.year,mo=mn.month;var first=new Date(y,mo,1).getDay();var fd=(first+6)%7;var days=new Date(y,mo+1,0).getDate();
-    var hasEvInMonth=false;for(var d=1;d<=days;d++){if(eventsForDay(y,mo,d).length||matchesForDay(y,mo,d).length){hasEvInMonth=true;break;}}
-    if(!hasEvInMonth)return;
-    h+='<div class="cal-month"><div class="cal-month-title">'+monthNames[mo]+" "+y+"</div>"+
-      '<div class="cal-grid"><div class="cal-dow">L</div><div class="cal-dow">M</div><div class="cal-dow">X</div><div class="cal-dow">J</div><div class="cal-dow">V</div><div class="cal-dow">S</div><div class="cal-dow">D</div>';
-    for(var i=0;i<fd;i++)h+='<div class="cal-day empty"></div>';
-    for(var d=1;d<=days;d++){
-      var evs=eventsForDay(y,mo,d);var ms=matchesForDay(y,mo,d);var isToday=(y===ty&&mo===tm&&d===td);
-      var dots=evs.map(function(e){var k=selKey(e.selectionType||e.type||"");var cls=k==="madrilena"?"cal-dot-mad":k==="espanola"?"cal-dot-esp":"cal-dot-int";return'<div class="cal-dot '+cls+'"></div>';}).join("");
-      var matchDot=ms.length?'<div class="cal-dot" style="background:var(--gold)"></div>':"";
-      h+='<div class="cal-day'+(isToday?" today":"")+(evs.length||ms.length?" has-ev":"")+'" data-y="'+y+'" data-m="'+mo+'" data-d="'+d+'">'+
-        '<span class="cal-dn">'+d+"</span>"+
-        (dots||matchDot?'<div class="cal-dots">'+dots+matchDot+"</div>":"")+
-        "</div>";
-    }
-    h+="</div></div>";
-  });
-  if(!h)h=emptyState("Sin convocatorias en "+season+" para mostrar","🗓");
-  h+='<div id="cal-panel" class="cal-panel" style="display:none"></div>';
-  var calTarget=$("cpt-content")||$("main");calTarget.innerHTML=h;
-  (calTarget||document).querySelectorAll(".cal-day.has-ev").forEach(function(el){el.addEventListener("click",function(){
-    var y=parseInt(el.dataset.y),mo=parseInt(el.dataset.m),d=parseInt(el.dataset.d);
-    var ds=y+"-"+String(mo+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
-    var evs=allEvs.filter(function(e){return e.startDate<=ds&&(e.endDate||e.startDate)>=ds;});
-    var ms=[];rmCallups.forEach(function(c){if(c.matches)c.matches.forEach(function(m){if(m.date===ds)ms.push({conv:c,match:m});});});
-    var panel=$("cal-panel");if(!evs.length&&!ms.length){panel.style.display="none";return;}
-    var rows=evs.map(function(e){var flag=getSelFlag(e.selectionType,e.pais);return'<div class="cal-ev-item" data-id="'+(e.id||"")+'"><span class="cal-ev-flag">'+flag+'</span><div class="cal-ev-info"><div class="cal-ev-title">'+esc(e.title)+'</div><div class="cal-ev-dates">'+fmtRange(e.startDate,e.endDate)+"</div></div></div>";}).join("");
-    var mrows=ms.map(function(x){return'<div class="cal-ev-item"><span class="cal-ev-flag">⚽</span><div class="cal-ev-info"><div class="cal-ev-title">vs '+esc(x.match.rival||"Por confirmar")+'</div><div class="cal-ev-dates">'+esc(x.conv.title)+(x.match.time?" · "+x.match.time+"h":"")+"</div></div></div>";}).join("");
-    panel.innerHTML='<div class="cal-panel-date">'+new Date(y,mo,d).toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"})+"</div>"+rows+mrows;
-    panel.style.display="block";
-    panel.querySelectorAll(".cal-ev-item[data-id]").forEach(function(ei){if(ei.dataset.id)ei.addEventListener("click",function(){openDetail(ei.dataset.id);});});
-  });});
-}
-
-function renderPlanificacion(){
-  var h='<div style="font-size:13px;color:var(--text-muted);text-align:center;padding:24px">'+
-    emptyState("Planificación disponible con convocatorias cargadas","📐")+"</div>";
-  var calTarget=$("cpt-content")||$("main");calTarget.innerHTML=h;
-}
-
-function bindLoginBtn(){
-  var btn=$("hdr-login-btn");if(!btn)return;
-  btn.addEventListener("click",function(){
-    if(window._fbUser){if(confirm("¿Cerrar sesión?"))window._fbFns.signOut(window._auth).then(function(){toast("Sesión cerrada");route(S.view);});return;}
-    var mo=document.createElement("div");mo.className="mo";
-    mo.innerHTML='<div class="modal" style="padding-bottom:40px"><button class="mcl" id="lm-close">×</button><div class="mtitle">Acceso editor</div><p class="msub">Solo para personal autorizado.</p><div class="fg"><label class="fl">Email</label><input class="fi" id="lm-email" type="email" placeholder="email@realmadrid.es" autocomplete="email"/></div><div class="fg"><label class="fl">Contraseña</label><input class="fi" id="lm-pass" type="password" placeholder="••••••••" autocomplete="current-password"/></div><div id="lm-err" style="color:#EF4444;font-size:12px;margin-top:6px;display:none"></div><div style="display:flex;gap:8px;margin-top:16px"><button class="btn btn-ghost" id="lm-cancel" style="flex:1">Cancelar</button><button class="btn btn-primary" id="lm-ok" style="flex:1">Entrar</button></div></div>';
-    document.body.appendChild(mo);
-    var emailEl=$("lm-email"),passEl=$("lm-pass"),errEl=$("lm-err");
-    setTimeout(function(){if(emailEl)emailEl.focus();},100);
-    function closeMo(){if(mo.parentNode)mo.parentNode.removeChild(mo);}
-    $("lm-close").addEventListener("click",closeMo);$("lm-cancel").addEventListener("click",closeMo);
-    mo.addEventListener("click",function(e){if(e.target===mo)closeMo();});
-    $("lm-ok").addEventListener("click",function(){
-      var email=(emailEl?emailEl.value:"").trim(),pass=passEl?passEl.value:"";
-      if(!email||!pass){errEl.style.display="block";errEl.textContent="Introduce email y contraseña.";return;}
-      var okBtn=$("lm-ok");okBtn.disabled=true;okBtn.textContent="Entrando...";
-      window._fbFns.signInWithEmailAndPassword(window._auth,email,pass)
-        .then(function(){closeMo();toast("🔓 Sesión iniciada");route(S.view);})
-        .catch(function(e){errEl.style.display="block";errEl.textContent=e.code==="auth/invalid-credential"?"Email o contraseña incorrectos.":"Error: "+e.message;okBtn.disabled=false;okBtn.textContent="Entrar";});
-    });
-    if(passEl)passEl.addEventListener("keydown",function(e){if(e.key==="Enter")$("lm-ok").click();});
-  });
-}
-
-window._onAuthChange=function(user){
-  var lb=$("hdr-login-btn");
-  if(lb){if(user){lb.textContent="🔓";lb.title="Sesión: "+user.email;lb.classList.add("logged");}else{lb.textContent="🔒";lb.title="Iniciar sesión";lb.classList.remove("logged");}}
-  route(S.view||"agenda");
-};
-
-window._onCallupsLoaded=function(){renderSeasonSel();route(S.view||"agenda");};
-renderSeasonSel();
-bindLoginBtn();
-route("agenda");
 </script>
 </body>
 </html>
