@@ -1251,7 +1251,7 @@ function buildStats(callups){
 
 // ── BADGES ──
 function selBadge(type,cat,pais){var k=selKey(type);var s=SELS[k];if(!s)return"";var c=(s.colors&&s.colors[cat])?s.colors[cat]:{badge:"#666"};var label=k==="internacional"&&pais?(CAT[cat]||cat)+" "+paisAdj(pais):(CAT[cat]||cat)+" "+s.short;return'<span class="badge" style="background:'+c.badge+';color:#fff">'+label+"</span>";}
-function convTypeBadge(t){if(!t||t==="definitiva")return'<span class="badge conv-def">✅ DEFINITIVA</span>';if(t==="provisional")return'<span class="badge conv-prov">⏳ PROVISIONAL</span>';if(t==="entrenamiento")return'<span class="badge conv-prov" style="color:var(--text-muted)">🏋 ENTREN.</span>';return"";}
+function convTypeBadge(t){if(t==="definitiva")return'<span class="badge conv-def">✅ DEFINITIVA</span>';if(!t||t==="provisional")return'<span class="badge conv-prov">⏳ PROVISIONAL</span>';if(t==="provisional")return'<span class="badge conv-prov">⏳ PROVISIONAL</span>';if(t==="entrenamiento")return'<span class="badge conv-prov" style="color:var(--text-muted)">🏋 ENTREN.</span>';return"";}
 function statusBadge(st){var c=STATUS[st]||STATUS.finalizada;return'<span class="badge '+c.c+'">'+c.i+" "+c.l+"</span>";}
 function emptyState(msg,ico){return'<div class="empty"><span class="empty-ico">'+(ico||"\uD83D\uDCCB")+'</span><p class="empty-t">'+msg+"</p></div>";}
 function toast(msg){var t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.classList.add("show");},10);setTimeout(function(){t.classList.remove("show");setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},300);},2800);}
@@ -1310,12 +1310,12 @@ function callupDetail(c){
   for(var i=0;i<pc;i++){rows+='<li class="pl-item" data-pidx="'+i+'"><span class="pl-num">'+(i+1)+'</span><div class="pl-info"><span class="pl-name">'+esc(c.players[i].fullName)+'</span><span class="pl-team">'+esc(c.players[i].teamName)+"</span></div>"+'<button class="pl-rm-btn" data-pidx="'+i+'" title="Eliminar">\u00d7</button>'+"</li>";
   }
   var promBtn="";
-  if(canEdit()&&(!c.convType||c.convType==="provisional"))promBtn='<button class="btn btn-gold btn-sm" data-promote="'+c.id+'" style="flex:1">\u2705 Confirmar definitiva</button>';
+  if(canEdit()&&c.convType!=="definitiva")promBtn='<button class="btn btn-gold btn-sm" data-promote="'+c.id+'" style="flex:1">\u2705 Confirmar definitiva</button>';
   var editBtn=canEdit()?'<button class="btn btn-ghost btn-sm" data-edit="'+c.id+'" style="flex:1">\u270E Editar</button>':"";
   var delBtn=canEdit()?'<button class="btn btn-danger btn-sm" data-del="'+c.id+'" style="flex:1">\uD83D\uDDD1 Eliminar</button>':"";
   return'<div class="dp-hdr">'+
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'+
-    '<div class="dp-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+(c.convType?convTypeBadge(c.convType):convTypeBadge("definitiva"))+"</div>"+
+    '<div class="dp-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+convTypeBadge(c.convType||"provisional")+"</div>"+
     '<span style="font-size:32px;line-height:1">'+getSelFlag(c.selectionType,c.pais)+"</span></div>"+
     '<h2 class="dp-title">'+esc(c.title)+"</h2>"+
     '<p class="dp-sea">Temporada '+c.season+"</p></div>"+
@@ -1565,7 +1565,7 @@ function renderNueva(){
     '<div class="fg" id="pais-g" style="display:none"><label class="fl">Pa\u00eds *</label><div id="pais-pills" class="pais-pills"></div><input class="fi" type="text" id="f-pais" name="pais" placeholder="Escribe el pa\u00eds..." style="display:none;margin-top:6px"/></div>'+
     '<div class="fg" id="cat-g" style="display:none"><label class="fl">Categor\u00eda *</label><select class="fsel" id="sel-cat" name="selCat"><option value="">Selecciona categor\u00eda</option></select></div>'+
     '<div class="fg"><label class="fl">T\u00edtulo *</label><input class="fi" type="text" name="title" placeholder="Ej: Concentraci\u00f3n Sub-17 Marzo"/></div>'+
-    '<div class="fg"><label class="fl">Rival / Torneo</label><input class="fi" type="text" name="rival" placeholder="Ej: Portugal, Francia"/></div>'+'<div class="fg"><label class="fl">Tipo de convocatoria</label><select class="fsel" name="convType"><option value="definitiva">✅ Definitiva</option><option value="provisional">⏳ Provisional</option><option value="entrenamiento">🏋 Entrenamiento</option></select></div>'+
+    '<div class="fg"><label class="fl">Rival / Torneo</label><input class="fi" type="text" name="rival" placeholder="Ej: Portugal, Francia"/></div>'+'<div class="fg"><label class="fl">Tipo de convocatoria</label><select class="fsel" name="convType"><option value="provisional">⏳ Provisional</option><option value="definitiva">✅ Definitiva</option><option value="entrenamiento">🏋 Entrenamiento</option></select></div>'+
     '<div class="frow"><div class="fg"><label class="fl">Inicio *</label><input class="fi" type="date" name="startDate"/></div><div class="fg"><label class="fl">Fin *</label><input class="fi" type="date" name="endDate"/></div></div>'+
     '<div class="fsec fsec-conc"><span class="fsec-ico">\uD83D\uDCCD</span><span class="fsec-lbl">Fecha convocatoria (ida)</span></div>'+
     '<div class="frow"><div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" name="concDate"/></div><div class="fg"><label class="fl">Hora</label><input class="fi" type="time" name="concTime"/></div></div>'+
@@ -1654,7 +1654,7 @@ function renderNueva(){
       return{playerId:cb.value,fullName:cb.dataset.n,teamId:per?per.teamId:"",teamName:cb.dataset.t};
     });
     var paisVal=(fd.get("pais")||"").trim()||($("f-pais")?$("f-pais").value.trim():"");
-    var data={selectionType:fd.get("selType")||"",selectionCategory:fd.get("selCat")||"",pais:paisVal,title:fd.get("title")||"",startDate:fd.get("startDate")||"",endDate:fd.get("endDate")||"",rival:fd.get("rival")||"",convType:fd.get("convType")||"definitiva",location:fd.get("location")||"",notes:fd.get("notes")||"",
+    var data={selectionType:fd.get("selType")||"",selectionCategory:fd.get("selCat")||"",pais:paisVal,title:fd.get("title")||"",startDate:fd.get("startDate")||"",endDate:fd.get("endDate")||"",rival:fd.get("rival")||"",convType:fd.get("convType")||"provisional",location:fd.get("location")||"",notes:fd.get("notes")||"",
       conc:{date:fd.get("concDate")||"",time:fd.get("concTime")||"",lugar:fd.get("concLugar")||"",transporte:fd.get("concTransporte")||""},
       vuelta:{date:fd.get("vueltaDate")||"",time:fd.get("vueltaTime")||"",lugar:fd.get("vueltaLugar")||"",transporte:fd.get("vueltaTransporte")||""},
       matches:matchesData,players:players};
