@@ -485,6 +485,8 @@ details[open] .fin-summary__label::before{transform:rotate(90deg)}
 .tbtn-sm{padding:5px 11px;font-size:12px;min-height:30px}
 .tbar-wrap-sm{margin-bottom:12px}
 
+.jug-team-bar{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.jug-team-bar::-webkit-scrollbar{display:none}
 .jug-edit-btn{background:none;border:1px solid var(--border-strong);border-radius:6px;color:var(--gold);font-size:11px;padding:4px 8px;cursor:pointer;flex-shrink:0;font-family:inherit;font-weight:600;transition:all var(--t)}
 .jug-edit-btn:active{background:var(--off-white-3)}
 </style>
@@ -1427,7 +1429,7 @@ function renderAgenda(viewMode){
   var done=sortDate(filtered.filter(function(c){return c.status==="finalizada";}),"asc");
   var h='<div class="vh" style="margin-bottom:12px"><div style="display:flex;align-items:center;justify-content:space-between"><h1 class="vt">Agenda</h1>'+
     '<div class="view-toggle"><button class="vtbtn'+(viewMode==="fichas"?" on":"")+'" data-vm="fichas">\u22A2\u25A1 Fichas</button><button class="vtbtn'+(viewMode==="tabla"?" on":"")+'" data-vm="tabla">\u2261 Tabla</button></div></div></div>'+
-    '<div class="fb"><button class="fbtn'+(!S.filterType?" on":"")+'" data-f="">Todas</button><button class="fbtn'+(S.filterType==="madrilena"?" on":"")+'" data-f="madrilena">\uD83D\uDD35 MAD</button><button class="fbtn'+(S.filterType==="espanola"?" on":"")+'" data-f="espanola">\uD83D\uDD34 ESP</button><button class="fbtn'+(S.filterType==="internacional"?" on":"")+'" data-f="internacional">\uD83D\uDFE2 INT</button></div>';
+    '<div class="fb"><button class="fbtn'+(!S.filterType?" on":"")+'" data-f="">Todas</button><button class="fbtn'+(S.filterType==="madrilena"?" on":"")+'" data-f="madrilena">\uD83D\uDD35 RFFM</button><button class="fbtn'+(S.filterType==="espanola"?" on":"")+'" data-f="espanola">\uD83D\uDD34 RFEF</button><button class="fbtn'+(S.filterType==="internacional"?" on":"")+'" data-f="internacional">\uD83D\uDFE2 OTRAS</button></div>';
   if(!filtered.length){h+=emptyState("Sin convocatorias en "+S.season,"\uD83D\uDCCB");}
   else if(viewMode==="tabla"){
     var thead='<thead><tr><th></th><th>Categor\u00eda</th><th class=\"th-ida\">\uD83D\uDCCD Ida</th><th class=\"th-vuelta\">\uD83D\uDD19 Vuelta</th><th class=\"th-matches\">\u26BD Partidos</th><th>\uD83D\uDC55</th><th>Estado</th></tr></thead>';
@@ -1695,34 +1697,58 @@ function bindAiParser(){
 // ── JUGADORES ──
 function renderJugadores(){
   if(!canWrite()){$("main").innerHTML=emptyState("Inicia sesi\u00f3n para ver los jugadores","\uD83D\uDD12");return;}
+  if(!S.jugTeam)S.jugTeam="";
   var players=getPlayersBySeason(S.season);
   var q=(S.jugSearch||"").toLowerCase();
-  var filtered=q?players.filter(function(p){return p.fullName.toLowerCase().indexOf(q)!==-1;}):players;
+  var filtered=players.filter(function(p){
+    var per=teamInSeason(p,S.season)||teamNow(p);
+    if(S.jugTeam&&(!per||per.teamName!==S.jugTeam))return false;
+    if(q&&p.fullName.toLowerCase().indexOf(q)===-1)return false;
+    return true;
+  });
   var byTeam={};var tord={};TEAMS.forEach(function(t){tord[t.name]=t.order;});
   filtered.forEach(function(p){var per=teamInSeason(p,S.season)||teamNow(p);if(!per)return;if(!byTeam[per.teamName])byTeam[per.teamName]=[];byTeam[per.teamName].push(p);});
   var sortedTeams=Object.keys(byTeam).sort(function(a,b){return(tord[b]||0)-(tord[a]||0);});
   var callups=getCallups({season:S.season});
   var callupCount={};callups.forEach(function(c){c.players.forEach(function(cp){callupCount[cp.playerId]=(callupCount[cp.playerId]||0)+1;});});
+
+  // Team filter pills
+  var allTeams=TEAMS.slice().reverse();
+  var teamPills='<div class="jug-team-bar">'+
+    '<button class="fbtn'+(S.jugTeam===""?" on":"")+'" data-jt="">Todos</button>'+
+    allTeams.map(function(t){return'<button class="fbtn'+(S.jugTeam===t.name?" on":"")+'" data-jt="'+esc(t.name)+'">'+esc(t.name)+'</button>';}).join("")+
+    '</div>';
+
   var h='<div class="vh"><h1 class="vt">Jugadores</h1><span class="vs">'+filtered.filter(function(p){return p.active;}).length+" activos</span></div>"+
-    '<input class="fi" id="jug-search" type="text" placeholder="\uD83D\uDD0D Buscar jugador..." value="'+esc(S.jugSearch||"")+'" style="margin-bottom:12px" autocomplete="off"/>'+
-    '<button class="btn btn-gold" id="btn-add-player" style="width:100%;margin-bottom:12px">+ A\u00f1adir jugador</button>';
+    '<input class="fi" id="jug-search" type="text" placeholder="\uD83D\uDD0D Buscar jugador..." value="'+esc(S.jugSearch||"")+'" style="margin-bottom:8px" autocomplete="off"/>'+
+    teamPills+
+    '<button class="btn btn-gold" id="btn-add-player" style="width:100%;margin-bottom:8px;margin-top:10px">+ A\u00f1adir jugador</button>'+
+    '<button class="btn btn-ghost" id="btn-new-season" style="width:100%;margin-bottom:12px">\uD83D\uDCC5 Nueva temporada '+nextSea(S.season)+'</button>'
   h+=sortedTeams.map(function(team){
     var ps=byTeam[team];
     return'<div class="tb"><div class="tb-hdr"><span class="tb-name">'+esc(team)+'</span><span class="tb-cnt">'+ps.filter(function(p){return p.active;}).length+'</span></div>'+
       '<ul class="tpl">'+ps.map(function(p){
         var n=callupCount[p.id]||0;
         return'<li class="tpl-item">'+
-          '<div style="flex:1;min-width:0"><span class="tpl-name"'+(!p.active?' style="opacity:.4;text-decoration:line-through"':'')+">"+ esc(p.fullName)+"</span></div>"+
+          '<div style="flex:1;min-width:0"><span class="tpl-name"'+(!p.active?' style="opacity:.4;text-decoration:line-through"':'')+">"+esc(p.fullName)+"</span></div>"+
           (n?'<span class="tpl-badge">'+n+"</span>":"")+
-          '<button class="jug-edit-btn" data-pid="'+p.id+'">✎</button>'+
+          '<button class="jug-edit-btn" data-pid="'+p.id+'">\u270E</button>'+
           "</li>";
       }).join("")+"</ul></div>";
   }).join("");
+  if(!sortedTeams.length)h+=emptyState("Sin jugadores"+(S.jugTeam?" en "+S.jugTeam:"")+(q?" con \""+q+"\"":""),"\uD83D\uDC65");
   $("main").innerHTML=h;
+
   var inp=$("jug-search");
   if(inp){inp.addEventListener("input",function(){S.jugSearch=inp.value;renderJugadores();});if(S.jugSearch)setTimeout(function(){inp.focus();inp.setSelectionRange(9999,9999);},50);}
+
+  document.querySelectorAll("[data-jt]").forEach(function(btn){
+    btn.addEventListener("click",function(){S.jugTeam=btn.dataset.jt;S.jugSearch="";renderJugadores();});
+  });
+
   document.querySelectorAll(".jug-edit-btn").forEach(function(btn){btn.addEventListener("click",function(e){e.stopPropagation();openPlayerEdit(btn.dataset.pid);});});
   var addBtn=$("btn-add-player");if(addBtn)addBtn.addEventListener("click",openPlayerAdd);
+  var nsBtn=$("btn-new-season");if(nsBtn)nsBtn.addEventListener("click",function(){openNewSeasonWizard(S.season,nextSea(S.season));});
 }
 
 function openPlayerEdit(pid){
@@ -1781,6 +1807,56 @@ function openPlayerAdd(){
     var newP={id:gid(),fullName:name,active:true,teamHistory:[{teamId:team.id,teamName:team.name,season:S.season,from:new Date().toISOString().slice(0,10),to:null}]};
     _players.push(newP);
     toast("\u2705 "+name+" a\u00f1adido");closeMo();renderJugadores();
+  });
+}
+
+
+// ── NUEVA TEMPORADA ──
+function openNewSeasonWizard(curSea, newSea){
+  var roster=genRoster(getPlayersBySeason(curSea),curSea,newSea);
+  var ov=document.createElement("div");ov.className="mo";
+  var rows=roster.map(function(e,i){
+    var teamOpts=TEAMS.map(function(t){return'<option value="'+t.id+'" data-n="'+esc(t.name)+'"'+(t.id===e.teamId?" selected":"")+">"+esc(t.name)+"</option>";}).join("");
+    return'<div class="ri" id="ri-'+i+'">'+
+      '<label class="ri-cl"><input type="checkbox" class="rk" data-i="'+i+'" checked/>'+
+      '<span class="ri-name">'+esc(e.fullName)+"</span></label>"+
+      '<div class="ri-teams"><span class="ri-from">'+esc(e.curTeamName)+'</span>'+
+      '<span class="ri-arr">'+(e.hasNext?"→":"↻")+"</span>"+
+      '<select class="ri-sel" data-i="'+i+'">'+teamOpts+"</select></div></div>";
+  }).join("");
+  ov.innerHTML='<div class="modal modal-tall" role="dialog"><button class="mcl" id="ws-cl">×</button>'+
+    '<div class="mtitle">Nueva temporada '+newSea+'</div>'+
+    '<p class="msub">Revisa los ascensos. Desmarca los que no continúen.</p>'+
+    '<div class="rl">'+rows+'</div>'+
+    '<div id="ws-err" class="ferr" style="display:none"></div>'+
+    '<div class="mact">'+
+    '<button class="btn btn-ghost" id="ws-can">Cancelar</button>'+
+    '<button class="btn btn-gold" id="ws-ok">✓ Crear temporada '+newSea+'</button>'+
+    '</div></div>';
+  document.body.appendChild(ov);
+  function closeOv(){if(ov.parentNode)ov.parentNode.removeChild(ov);}
+  document.getElementById("ws-cl").addEventListener("click",closeOv);
+  document.getElementById("ws-can").addEventListener("click",closeOv);
+  document.getElementById("ws-ok").addEventListener("click",function(){
+    var start=newSea.split("-")[0]+"-09-01";
+    roster.forEach(function(entry,i){
+      var cb=ov.querySelector('.rk[data-i="'+i+'"]');
+      var sel=ov.querySelector('.ri-sel[data-i="'+i+'"]');
+      var keep=cb?cb.checked:true;
+      var teamId=sel?sel.value:entry.teamId;
+      var teamName="";for(var t=0;t<TEAMS.length;t++){if(TEAMS[t].id===teamId){teamName=TEAMS[t].name;break;}}
+      var p=null;for(var j=0;j<_players.length;j++){if(_players[j].id===entry.playerId){p=_players[j];break;}}
+      if(!p)return;
+      if(!keep){p.active=false;p.teamHistory=p.teamHistory.map(function(h){return h.to===null?Object.assign({},h,{to:start}):h;});return;}
+      p.teamHistory=p.teamHistory.map(function(h){return h.to===null?Object.assign({},h,{to:start}):h;});
+      p.teamHistory.push({teamId:teamId,teamName:teamName,season:newSea,from:start,to:null});
+    });
+    if(_seasons.indexOf(newSea)===-1)_seasons.push(newSea);
+    S.season=newSea;
+    renderSeasonSel();
+    toast("✅ Temporada "+newSea+" creada");
+    closeOv();
+    route("jugadores");
   });
 }
 
