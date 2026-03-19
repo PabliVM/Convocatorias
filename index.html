@@ -524,9 +524,9 @@ loadCallups();
   <nav class="nav">
     <button class="nb nb-new" data-v="nueva"><span class="ni">+</span><span class="nl">Nueva</span></button>
     <button class="nb" data-v="agenda"><span class="ni">📅</span><span class="nl">Agenda</span></button>
-    <button class="nb" data-v="madrilena"><span class="ni">🔵</span><span class="nl">RFFM</span></button>
-    <button class="nb" data-v="espanola"><span class="ni">🔴</span><span class="nl">RFEF</span></button>
-    <button class="nb" data-v="internacional"><span class="ni">🟢</span><span class="nl">OTRAS</span></button>
+    <button class="nb" data-v="madrilena"><span class="ni"><svg width="24" height="16" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="16" fill="#CC0000"/><circle cx="4" cy="4" r="1.5" fill="white"/><circle cx="12" cy="3" r="1.5" fill="white"/><circle cx="20" cy="4" r="1.5" fill="white"/><circle cx="6" cy="10" r="1.5" fill="white"/><circle cx="12" cy="12" r="1.5" fill="white"/><circle cx="18" cy="10" r="1.5" fill="white"/><circle cx="12" cy="7" r="1.5" fill="white"/></svg></span><span class="nl">RFFM</span></button>
+    <button class="nb" data-v="espanola"><span class="ni"><svg width="24" height="16" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="16" fill="#c60b1e"/><rect y="4" width="24" height="8" fill="#ffc400"/></svg></span><span class="nl">RFEF</span></button>
+    <button class="nb" data-v="internacional"><span class="ni"><svg width="24" height="16" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="16" rx="2" fill="#1a3a8f"/><circle cx="12" cy="8" r="5" fill="none" stroke="white" stroke-width="1"/><line x1="7" y1="8" x2="17" y2="8" stroke="white" stroke-width="1"/><line x1="12" y1="3" x2="12" y2="13" stroke="white" stroke-width="1"/><ellipse cx="12" cy="8" rx="2.5" ry="5" fill="none" stroke="white" stroke-width="1"/></svg></span><span class="nl">OTRAS</span></button>
     <button class="nb" data-v="jugadores"><span class="ni">👥</span><span class="nl">Jugadores</span></button>
     <button class="nb" data-v="calendario"><span class="ni">🗓</span><span class="nl">Cal/Plan</span></button>
     <button class="nb" data-v="stats"><span class="ni">📊</span><span class="nl">Stats</span></button>
@@ -1498,14 +1498,20 @@ function bindCatTabs(){
   document.querySelectorAll(".tbtn-sm[data-cat]").forEach(function(b){b.addEventListener("click",function(){document.querySelectorAll(".tbtn-sm[data-cat]").forEach(function(x){x.classList.remove("on");});b.classList.add("on");var allC=sortDate(getCallups({season:S.season,type:"internacional"}),"desc");var cs=allC.filter(function(c){return(c.pais||"Sin pa\u00eds")===S.intlPais;});var el=$("catc2");if(el){el.innerHTML=renderCatCallups(cs,b.dataset.cat);bindCards();}});});
 }
 
+function titleCase(s){
+  if(!s)return"";
+  return s.toLowerCase().replace(/(?:^|\s|-)([a-záéíóúüñàèìòùâêîôûäëïöüçã])/g,function(m,l){return m.replace(l,l.toUpperCase());});
+}
+
 // ── NUEVA / EDITAR ──
 function renderNueva(){
   if(!canEdit()){$("main").innerHTML=emptyState("Inicia sesi\u00f3n para crear convocatorias","\uD83D\uDD12");return;}
   var players=getPlayersBySeason(S.season).filter(function(p){return p.active;});
   var byTeam={},tord={};TEAMS.forEach(function(t){tord[t.name]=t.order;});
-  players.forEach(function(p){var per=teamInSeason(p,S.season)||teamNow(p);if(!per)return;if(!byTeam[per.teamName])byTeam[per.teamName]=[];byTeam[per.teamName].push({id:p.id,fullName:p.fullName,teamName:per.teamName});});
+  players.forEach(function(p){var per=teamInSeason(p,S.season)||teamNow(p);if(!per)return;if(!byTeam[per.teamName])byTeam[per.teamName]=[];byTeam[per.teamName].push({id:p.id,fullName:titleCase(p.fullName),teamName:per.teamName});});
+  Object.keys(byTeam).forEach(function(t){byTeam[t].sort(function(a,b){return a.fullName.localeCompare(b.fullName,"es");});});
   var sortedTeams=Object.keys(byTeam).sort(function(a,b){return(tord[b]||0)-(tord[a]||0);});
-  var pselHTML=sortedTeams.map(function(team){return'<div class="pg"><div class="pg-hdr" data-team="'+esc(team)+'"><span>'+esc(team)+'</span><span class="pg-cnt" id="pgc-'+esc(team)+'">0</span></div><div class="pg-body" id="pgb-'+esc(team)+'">'+byTeam[team].map(function(p){return'<label class="po" data-pn="'+esc(p.fullName)+'" data-pt="'+esc(team)+'"><input type="checkbox" name="pids" value="'+p.id+'" data-n="'+esc(p.fullName)+'" data-t="'+esc(team)+'"/><span class="po-n">'+esc(p.fullName)+'</span><span class="po-t">'+esc(team)+"</span></label>";}).join("")+"</div></div>";}).join("");
+  var pselHTML=sortedTeams.map(function(team){return'<div class="pg"><div class="pg-hdr" data-team="'+esc(team)+'"><span>'+esc(team)+'</span><span class="pg-cnt" id="pgc-'+esc(team)+'">0</span></div><div class="pg-body" id="pgb-'+esc(team)+'">'+byTeam[team].map(function(p){return'<label class="po" data-pn="'+esc(p.fullName.toLowerCase())+'" data-pt="'+esc(team)+'"><input type="checkbox" name="pids" value="'+p.id+'" data-n="'+esc(p.fullName)+'" data-t="'+esc(team)+'"/><span class="po-n">'+esc(p.fullName)+'</span><span class="po-t">'+esc(team)+"</span></label>";}).join("")+"</div></div>";}).join("");
   $("main").innerHTML=
     '<div class="vh" style="margin-bottom:8px"><h1 class="vt">'+(S.editingId?"Editar Convocatoria":"Nueva Convocatoria")+'</h1><span class="vs">'+S.season+"</span></div>"+
     '<div id="ai-parser-wrap" style="margin-bottom:12px"><button type="button" class="btn-ai-parser" id="btn-ai-parser">\u2728 Rellenar con nota de prensa</button></div>'+
@@ -1563,7 +1569,7 @@ function renderNueva(){
 
   // Player search
   var psearch=$("psearch");
-  if(psearch)psearch.addEventListener("input",function(){var q=psearch.value.toLowerCase();document.querySelectorAll(".po").forEach(function(po){po.style.display=(po.dataset.pn||"").toLowerCase().indexOf(q)!==-1?"":"none";});document.querySelectorAll(".pg").forEach(function(pg){var vis=pg.querySelectorAll('.po[style*=""]').length||!q;pg.style.display=vis?"":"none";});});
+  if(psearch)psearch.addEventListener("input",function(){var q=psearch.value.toLowerCase().trim();document.querySelectorAll(".po").forEach(function(po){var match=!q||(po.dataset.pn||"").indexOf(q)!==-1;po.style.display=match?"":"none";});document.querySelectorAll(".pg").forEach(function(pg){var anyVis=false;pg.querySelectorAll(".po").forEach(function(po){if(po.style.display!=="none")anyVis=true;});pg.style.display=anyVis?"":"none";});});
 
   // Checkbox preview
   function updatePreview(){
@@ -1664,6 +1670,7 @@ function bindAiParser(){
         "\"vuelta\":{\"date\":\"YYYY-MM-DD\",\"time\":\"HH:MM\",\"lugar\":\"aeropuerto llegada\",\"transporte\":\"vuelo regreso\"},",
         "\"matches\":[{\"date\":\"YYYY-MM-DD\",\"time\":\"HH:MM\",\"rival\":\"rival\"}],",
         "\"notes\":\"estado D/P/E + alojamiento + obs\"}",
+        "Adem\u00e1s extrae en el campo \"players\" la lista de nombres de los jugadores convocados del Real Madrid (solo apellidos o nombre+apellido como aparecen en el texto). Devuelve players como array de strings, ej: [\"YEREMAIAH RAMOS\",\"ENZO ALVES\"].",
         "TEXTO:",text
       ].join("\n");
       fetch("/api/parse-convocatoria",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:prompt})})
@@ -1685,8 +1692,47 @@ function bindAiParser(){
           if(parsed.conc){var cf2={concDate:parsed.conc.date,concTime:parsed.conc.time,concLugar:parsed.conc.lugar,concTransporte:parsed.conc.transporte};Object.keys(cf2).forEach(function(k){if(!cf2[k])return;var el=form.querySelector('[name="'+k+'"]');if(el)el.value=cf2[k];});}
           if(parsed.vuelta){var vf={vueltaDate:parsed.vuelta.date,vueltaTime:parsed.vuelta.time,vueltaLugar:parsed.vuelta.lugar,vueltaTransporte:parsed.vuelta.transporte};Object.keys(vf).forEach(function(k){if(!vf[k])return;var el=form.querySelector('[name="'+k+'"]');if(el)el.value=vf[k];});}
           if(parsed.matches&&parsed.matches.length){var ml=$("matches-list");if(ml){ml.innerHTML="";parsed.matches.forEach(function(m,i){var row=document.createElement("div");row.className="match-row";row.dataset.idx=i;row.innerHTML='<input class="fi" type="date" name="mdate_'+i+'" value="'+(m.date||"")+'" style="flex:1.2"/><input class="fi" type="time" name="mtime_'+i+'" value="'+(m.time||"")+'" style="flex:.8"/><input class="fi" type="text" name="mrival_'+i+'" value="'+esc(m.rival||"")+'" placeholder="Rival" style="flex:1.5"/><button type="button" class="btn-rm">\u00d7</button>';row.querySelector(".btn-rm").addEventListener("click",function(){row.remove();});ml.appendChild(row);});}}
-          status.className="ai-status ok";status.textContent="\u2713 Datos extra\u00eddos. Revisa y completa.";okBtn.textContent="Hecho";
-          setTimeout(function(){closeMo();},1200);
+          // ── Player matching ──
+          if(parsed.players&&parsed.players.length){
+            function normalize(s){return(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9 ]/g,"").trim();}
+            var matched=[],unmatched=[];
+            parsed.players.forEach(function(rawName){
+              var normRaw=normalize(rawName);
+              var rawParts=normRaw.split(" ");
+              var best=null,bestScore=0;
+              _players.forEach(function(p){
+                if(!p.active)return;
+                var normP=normalize(p.fullName);
+                var pParts=normP.split(" ");
+                // Score: count matching words
+                var score=0;
+                rawParts.forEach(function(w){if(w.length>2&&pParts.indexOf(w)!==-1)score++;});
+                // Bonus for matching last name (last word)
+                var rawLast=rawParts[rawParts.length-1];
+                var pLast=pParts[pParts.length-1];
+                if(rawLast&&rawLast.length>2&&pLast===rawLast)score+=2;
+                if(score>bestScore){bestScore=score;best=p;}
+              });
+              if(best&&bestScore>=2){
+                var cb=form.querySelector('[name="pids"][value="'+best.id+'"]');
+                if(cb){cb.checked=true;cb.dispatchEvent(new Event("change"));}
+                matched.push({raw:rawName,player:best});
+              } else {
+                unmatched.push(rawName);
+              }
+            });
+            // Show match summary
+            var summary="";
+            if(matched.length)summary+="\u2705 "+matched.length+" jugador"+(matched.length!==1?"es":"")+" identificado"+(matched.length!==1?"s":"");
+            if(unmatched.length)summary+=(summary?" · ":"")+"\u26A0\uFE0F No encontrado"+(unmatched.length!==1?"s":"")+" (b\u00fascalos manualmente): "+unmatched.join(", ");
+            status.className="ai-status"+(unmatched.length?" err":" ok");
+            status.textContent=summary||"\u2713 Datos extra\u00eddos.";
+            okBtn.textContent="Hecho";
+            setTimeout(function(){closeMo();},unmatched.length?3000:1500);
+          } else {
+            status.className="ai-status ok";status.textContent="\u2713 Datos extra\u00eddos. Revisa y completa.";okBtn.textContent="Hecho";
+            setTimeout(function(){closeMo();},1200);
+          }
         },80);
       })
       .catch(function(err){status.className="ai-status err";status.textContent="\u26A0 Error: "+err.message;okBtn.disabled=false;okBtn.textContent="\u2728 Extraer datos";});
