@@ -524,9 +524,9 @@ loadCallups();
   <nav class="nav">
     <button class="nb nb-new" data-v="nueva"><span class="ni">+</span><span class="nl">Nueva</span></button>
     <button class="nb" data-v="agenda"><span class="ni">📅</span><span class="nl">Agenda</span></button>
-    <button class="nb" data-v="madrilena"><span class="ni"><svg width="24" height="16" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="16" fill="#CC0000"/><circle cx="4" cy="4" r="1.5" fill="white"/><circle cx="12" cy="3" r="1.5" fill="white"/><circle cx="20" cy="4" r="1.5" fill="white"/><circle cx="6" cy="10" r="1.5" fill="white"/><circle cx="12" cy="12" r="1.5" fill="white"/><circle cx="18" cy="10" r="1.5" fill="white"/><circle cx="12" cy="7" r="1.5" fill="white"/></svg></span><span class="nl">RFFM</span></button>
-    <button class="nb" data-v="espanola"><span class="ni"><svg width="24" height="16" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="16" fill="#c60b1e"/><rect y="4" width="24" height="8" fill="#ffc400"/></svg></span><span class="nl">RFEF</span></button>
-    <button class="nb" data-v="internacional"><span class="ni"><svg width="24" height="16" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="16" rx="2" fill="#1a3a8f"/><circle cx="12" cy="8" r="5" fill="none" stroke="white" stroke-width="1"/><line x1="7" y1="8" x2="17" y2="8" stroke="white" stroke-width="1"/><line x1="12" y1="3" x2="12" y2="13" stroke="white" stroke-width="1"/><ellipse cx="12" cy="8" rx="2.5" ry="5" fill="none" stroke="white" stroke-width="1"/></svg></span><span class="nl">OTRAS</span></button>
+    <button class="nb" data-v="madrilena"><span class="ni">🔵</span><span class="nl">RFFM</span></button>
+    <button class="nb" data-v="espanola"><span class="ni">🔴</span><span class="nl">RFEF</span></button>
+    <button class="nb" data-v="internacional"><span class="ni">🌍</span><span class="nl">OTRAS</span></button>
     <button class="nb" data-v="jugadores"><span class="ni">👥</span><span class="nl">Jugadores</span></button>
     <button class="nb" data-v="calendario"><span class="ni">🗓</span><span class="nl">Cal/Plan</span></button>
     <button class="nb" data-v="stats"><span class="ni">📊</span><span class="nl">Stats</span></button>
@@ -584,7 +584,7 @@ var PAIS_ADJ={
 function selKey(type){if(!type)return"";var t=type.toLowerCase();if(t.indexOf("madril")!==-1)return"madrilena";if(t.indexOf("espa")!==-1)return"espanola";if(t.indexOf("intern")!==-1)return"internacional";return t;}
 function paisAdj(p){return PAIS_ADJ[p]||p;}
 function getFlag(p){return FLAGS[p]||"\uD83C\uDFF4";}
-function getSelFlag(type,pais){var k=selKey(type);if(k==="madrilena")return"\uD83D\uDCCD";if(k==="espanola")return"\uD83C\uDDEA\uD83C\uDDF8";if(k==="internacional")return getFlag(pais);return"\uD83C\uDFF4";}
+function getSelFlag(type,pais){var k=selKey(type);if(k==="madrilena")return"\uD83D\uDCCD";if(k==="espanola")return"\uD83C\uDDEA\uD83C\uDDF8";if(k==="internacional")return pais?getFlag(pais):"\uD83C\uDF0D";return"\uD83C\uDFF4";}
 
 var _refEvents = [
   {id:"ref_u16_apr",cat:"sub16",type:"espanola",title:"Partidos pendiente",startDate:"2026-04-06",endDate:"2026-04-08"},
