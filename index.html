@@ -2014,41 +2014,29 @@ window._onAuthChange = function(user){
     if(user){lb.textContent="🔓";lb.title="Sesión: "+user.email;lb.classList.add("logged");}
     else{lb.textContent="🔒";lb.title="Iniciar sesión";lb.classList.remove("logged");}
   }
-  // Show/hide editor nav items
   document.querySelectorAll(".nb-new,.nb[data-v='jugadores']").forEach(function(b){b.style.display=user?"":"none";});
-  // Only re-render if already booted
-  if(_booted)route(S.view||"agenda");
+  route(S.view||"agenda");
 };
 
-// ── BOOT — wait for both Firebase loads ──
-var _callupsReady = false;
-var _playersReady = false;
-var _booted = false;
+// ── BOOT — arranca inmediatamente, recarga cuando llegan datos de Firebase ──
 
-function _tryBoot(){
-  if(!_callupsReady || !_playersReady) return;
-  if(_booted) return;
-  _booted = true;
-  renderSeasonSel();
-  route(S.view || "agenda");
-}
-
-window._onCallupsLoaded = function(){ _callupsReady = true; _tryBoot(); };
-window._onPlayersLoaded = function(){ _playersReady = true; _tryBoot(); };
-
-// Fallback: if Firebase takes too long, boot anyway after 6 seconds
-setTimeout(function(){
-  if(!_booted){
-    console.warn("Firebase timeout — booting with empty data");
-    _callupsReady = true; _playersReady = true;
-    _tryBoot();
-  }
-}, 6000);
-
-// Init UI immediately (login btn, season selector shell)
+// Arranque inmediato: muestra la UI con datos vacíos
+window._callups = window._callups || [];
+window._players = window._players || [];
 renderSeasonSel();
 bindLoginBtn();
+route(S.view || "agenda");
+
+// Cuando Firebase termine de cargar, re-renderiza si hay datos nuevos
+window._onCallupsLoaded = function(){
+  route(S.view || "agenda");
+};
+window._onPlayersLoaded = function(){
+  // Solo re-render si ya tenemos callups también (evita doble render)
+  if(window._callups && window._callups.length >= 0){
+    route(S.view || "agenda");
+  }
+};
 </script>
 </body>
 </html>
-
