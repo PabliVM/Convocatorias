@@ -133,7 +133,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:#13131A;color:var(--tex
 .pl-name{font-size:14px;font-weight:600;color:var(--text)}
 .pl-team{font-size:11px;color:var(--text-muted)}
 .pl-rm-btn{background:none;border:none;color:var(--text-muted);font-size:16px;cursor:pointer;padding:4px 6px;border-radius:4px;line-height:1;flex-shrink:0;transition:all var(--t)}
-.pl-rm-btn:active{color:#EF4444;background:rgba(239,68,68,.1)}
+.pl-rm-btn:active{color:#EF4444;background:rgba(239,68,68,.1)} .pl-drop-btn{background:none;border:none;color:var(--text-muted);font-size:12px;cursor:pointer;padding:4px 6px;border-radius:4px;line-height:1;flex-shrink:0;transition:all var(--t)}.pl-drop-btn:active{color:#F59E0B;background:rgba(245,158,11,.1)} .pl-restore-btn{background:none;border:none;color:#10B981;font-size:14px;cursor:pointer;padding:4px 6px;border-radius:4px;line-height:1;flex-shrink:0;transition:all var(--t)}.pl-restore-btn:active{background:rgba(16,185,129,.1)} .pl-dropped-hdr{padding:10px 12px;font-size:11px;font-weight:700;color:#EF4444;letter-spacing:.5px;text-transform:uppercase;border-top:2px solid rgba(239,68,68,.2);margin-top:6px;list-style:none} .pl-item-dropped{background:rgba(239,68,68,.04);border-color:rgba(239,68,68,.15)} 
+
+
 .dp-notes{margin-bottom:16px}
 .notes-t{font-size:13px;color:var(--text-mid);line-height:1.5;background:var(--off-white-3);padding:12px;border-radius:var(--r-sm);border:1px solid var(--border)}
 .dp-act{padding-top:12px;border-top:1px solid var(--border)}
@@ -363,7 +365,7 @@ details[open] .fin-summary__label::before{transform:rotate(90deg)}
 .tabla thead th{color:#fff;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:10px 10px;text-align:left;white-space:nowrap}
 .tabla thead th:first-child{padding-left:14px}
 .trow{border-bottom:1px solid var(--border);cursor:pointer;transition:background var(--t);background:var(--off-white-2)}
-.trow:last-child{border-bottom:none}
+.trow:last-child{border-bottom:none}.trow-empty{opacity:.45;background:rgba(220,38,38,.03)}.trow-empty td{color:var(--text-muted)}
 .trow:active{background:var(--off-white-3)}
 .trow td{padding:10px 8px;vertical-align:middle}
 .trow td:first-child{padding-left:14px}
@@ -692,38 +694,12 @@ function callupCard(c){
 }
 
 // ── TABLE ROW ──
-function callupTableRow(c){
-  var k=selKey(c.selectionType);var sel=SELS[k];
-  var col=(sel&&sel.colors&&sel.colors[c.selectionCategory])?sel.colors[c.selectionCategory]:{badge:"#1A3A8F"};
-  var pc=(c.players&&c.players.length)||0,flag=getSelFlag(c.selectionType,c.pais);
-  var st=STATUS[c.status]||STATUS.finalizada;
-  var catLabel=CAT[c.selectionCategory]||c.selectionCategory;
-  var selLabel=k==="internacional"&&c.pais?paisAdj(c.pais):(sel?sel.label:c.selectionType);
-  function logCell(obj,fallbackDate){
-    if(!obj||(!obj.date&&!obj.time&&!obj.lugar&&!obj.transporte))return'<span class="td-log-date">'+fmtDateShort(fallbackDate)+"</span>";
-    return (obj.date?'<span class="td-log-date">'+fmtDateShort(obj.date)+"</span>":"")+
-      (obj.time||obj.lugar?'<span class="td-log-sub">'+(obj.time?obj.time+"h ":"")+esc(obj.lugar||"")+"</span>":"")+
-      (obj.transporte?'<span class="td-log-trans">'+esc(obj.transporte)+"</span>":"");
-  }
-  var matchCell=c.matches&&c.matches.length?c.matches.map(function(m){
-    return'<div class="td-match"><span class="td-match-rival">'+(m.matchType==="oficial"?"\uD83C\uDFC6 ":"\u26BD ")+esc(m.rival||"?")+"</span>"+(m.date||m.time?'<span class="td-match-sub">'+(m.date?fmtDateShort(m.date)+" ":"")+(m.time?m.time+"h":"")+"</span>":"")+"</div>";
-  }).join(""):'<span class="td-log-empty">\u2014</span>';
-  return'<tr class="trow" data-id="'+c.id+'">'+
-    '<td class="td-flag">'+flag+"</td>"+
-    '<td class="td-cat"><span class="badge" style="background:'+col.badge+';color:#fff;font-size:10px">'+catLabel+"</span>"+
-    '<div class="td-sel-sub">'+esc(selLabel)+"</div></td>"+
-    '<td class="td-log">'+logCell(c.conc,c.startDate)+"</td>"+
-    '<td class="td-log">'+logCell(c.vuelta,c.endDate)+"</td>"+
-    '<td class="td-matches">'+matchCell+"</td>"+
-    '<td class="td-players">'+pc+"</td>"+
-    '<td class="td-status"><span class="badge '+st.c+'" style="font-size:9px;padding:2px 7px">'+st.l+"</span></td></tr>";
-}
-
+function callupTableRow(c){ var k=selKey(c.selectionType);var sel=SELS[k]; var col=(sel&&sel.colors&&sel.colors[c.selectionCategory])?sel.colors[c.selectionCategory]:{badge:"#1A3A8F"}; var flag=getSelFlag(c.selectionType,c.pais); var st=STATUS[c.status]||STATUS.finalizada; var catLabel=CAT[c.selectionCategory]||c.selectionCategory; var selLabel=k==="internacional"&&c.pais?paisAdj(c.pais):(sel?sel.label:c.selectionType); // Active players only var activePlayers=(c.players||[]).filter(function(p){return !p.dropStatus||p.dropStatus==="active";}); var pc=activePlayers.length; var playerChips=activePlayers.slice(0,4).map(function(p){var pts=p.fullName.split(" ");return'<span class="chip" style="font-size:10px;padding:2px 6px">'+esc(pts[0]+(pts[1]?" "+pts[1].charAt(0)+".":""))+"</span>";}).join(""); if(pc>4)playerChips+='<span class="chip chip-more" style="font-size:10px;padding:2px 6px">+'+(pc-4)+"</span>"; if(!pc)playerChips='<span style="color:var(--text-muted);font-size:11px">\u2014</span>'; function logCell(obj,fallbackDate){ if(!obj||(!obj.date&&!obj.time&&!obj.lugar&&!obj.transporte))return'<span class="td-log-date">'+fmtDateShort(fallbackDate)+"</span>"; return (obj.date?'<span class="td-log-date">'+fmtDateShort(obj.date)+"</span>":"")+ (obj.time||obj.lugar?'<span class="td-log-sub">'+(obj.time?obj.time+"h ":"")+esc(obj.lugar||"")+"</span>":"")+ (obj.transporte?'<span class="td-log-trans">'+esc(obj.transporte)+"</span>":""); } var matchCell=c.matches&&c.matches.length?c.matches.map(function(m){ return'<div class="td-match"><span class="td-match-rival">'+(m.matchType==="oficial"?"\uD83C\uDFC6 ":"\u26BD ")+esc(m.rival||"?")+"</span>"+(m.date||m.time?'<span class="td-match-sub">'+(m.date?fmtDateShort(m.date)+" ":"")+(m.time?m.time+"h":"")+"</span>":"")+"</div>"; }).join(""):'<span class="td-log-empty">\u2014</span>'; return'<tr class="trow'+(pc===0?" trow-empty":"")+'" data-id="'+c.id+'">'+ '<td class="td-flag">'+flag+"</td>"+ '<td class="td-cat"><span class="badge" style="background:'+col.badge+';color:#fff;font-size:10px">'+catLabel+"</span>"+ '<div class="td-sel-sub">'+esc(selLabel)+"</div></td>"+ '<td class="td-status">'+(c.convType?convTypeBadge(c.convType):"")+"</td>"+ '<td style="max-width:140px"><div style="display:flex;flex-wrap:wrap;gap:2px">'+playerChips+"</div></td>"+ '<td class="td-log">'+logCell(c.conc,c.startDate)+"</td>"+ '<td class="td-log">'+logCell(c.vuelta,c.endDate)+"</td>"+ '<td class="td-matches">'+matchCell+"</td>"+ '<td class="td-status"><span class="badge '+st.c+'" style="font-size:9px;padding:2px 7px">'+st.l+"</span></td></tr>"; }
 // ── DETAIL ──
 function callupDetail(c){
   var pc=(c.players&&c.players.length)||0,rows="";
-  for(var i=0;i<pc;i++){rows+='<li class="pl-item" data-pidx="'+i+'"><span class="pl-num">'+(i+1)+'</span><div class="pl-info"><span class="pl-name">'+esc(c.players[i].fullName)+'</span><span class="pl-team">'+esc(c.players[i].teamName)+"</span></div>"+'<button class="pl-rm-btn" data-pidx="'+i+'" title="Eliminar">\u00d7</button>'+"</li>";
-  }
+var activePlayers=[],droppedPlayers=[]; for(var i=0;i<pc;i++){if(c.players[i].dropStatus&&c.players[i].dropStatus!=="active")droppedPlayers.push({idx:i,p:c.players[i]});else activePlayers.push({idx:i,p:c.players[i]});} for(var i=0;i<activePlayers.length;i++){var ap=activePlayers[i];rows+='<li class="pl-item" data-pidx="'+ap.idx+'"><span class="pl-num">'+(i+1)+'</span><div class="pl-info"><span class="pl-name">'+esc(ap.p.fullName)+'</span><span class="pl-team">'+esc(ap.p.teamName)+"</span></div>"+'<button class="pl-drop-btn" data-pidx="'+ap.idx+'" title="Descartar">\u25BC</button>'+'<button class="pl-rm-btn" data-pidx="'+ap.idx+'" title="Eliminar">\u00d7</button>'+"</li>";} if(droppedPlayers.length){rows+='<li class="pl-dropped-hdr">\u274C No convocados / No liberados ('+droppedPlayers.length+')</li>'; for(var j=0;j<droppedPlayers.length;j++){var dp=droppedPlayers[j];var dropLabel=dp.p.dropStatus==="no_convocado"?"No convocado":dp.p.dropStatus==="no_liberado"?"No liberado":"Otros";rows+='<li class="pl-item pl-item-dropped" data-pidx="'+dp.idx+'"><span class="pl-num" style="color:#EF4444;text-decoration:line-through">'+(j+1)+'</span><div class="pl-info"><span class="pl-name" style="text-decoration:line-through;color:#EF4444;opacity:.7">'+esc(dp.p.fullName)+'</span><span class="pl-team" style="color:#EF4444;opacity:.6">'+esc(dp.p.teamName)+' \u2014 '+dropLabel+"</span></div>"+'<button class="pl-restore-btn" data-pidx="'+dp.idx+'" title="Restaurar">\u21A9</button>'+"</li>";}} 
+
   var promBtn="";
   if(canEdit()&&c.convType!=="definitiva")promBtn='<button class="btn btn-gold btn-sm" data-promote="'+c.id+'" style="flex:1">\u2705 Confirmar definitiva</button>';
   var editBtn=canEdit()?'<button class="btn btn-ghost btn-sm" data-edit="'+c.id+'" style="flex:1">\u270E Editar</button>':"";
@@ -836,6 +812,7 @@ function openDetail(id){
       openDetail(id);
     });
   });
+// Bind drop buttons ov.querySelectorAll(".pl-drop-btn").forEach(function(btn){ btn.addEventListener("click",function(e){ e.stopPropagation(); var idx=parseInt(btn.dataset.pidx); var conv=null;for(var i=0;i<_callups.length;i++){if(_callups[i].id===id){conv=_callups[i];break;}} if(!conv||!conv.players||!conv.players[idx])return; var pname=conv.players[idx].fullName; var mo2=document.createElement("div");mo2.className="mo"; mo2.innerHTML='<div class="modal" style="padding-bottom:40px"><button class="mcl" id="dr-close">\u00d7</button><div class="mtitle">Descartar jugador</div><p class="msub">'+esc(pname)+' no ir\u00e1 a esta convocatoria.</p><div class="fg"><label class="fl">Motivo</label><select class="fsel" id="dr-reason"><option value="no_convocado">No convocado</option><option value="no_liberado">No liberado</option><option value="otros">Otros</option></select></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-ghost btn-sm" id="dr-cancel" style="flex:1">Cancelar</button><button class="btn btn-danger btn-sm" id="dr-ok" style="flex:1">\u274C Descartar</button></div></div>'; document.body.appendChild(mo2); function closeMo2(){if(mo2.parentNode)mo2.parentNode.removeChild(mo2);} document.getElementById("dr-close").addEventListener("click",closeMo2); document.getElementById("dr-cancel").addEventListener("click",closeMo2); mo2.addEventListener("click",function(ev){if(ev.target===mo2)closeMo2();}); document.getElementById("dr-ok").addEventListener("click",function(){ var reason=document.getElementById("dr-reason").value; conv.players[idx].dropStatus=reason; if(window._db&&window._fbUser){var fns=window._fbFns;fns.setDoc(fns.doc(window._db,"callups",id),Object.assign({},conv)).catch(function(e){console.error(e);});} toast("\u274C "+pname+" descartado");closeMo2();close();openDetail(id); }); }); }); // Bind restore buttons ov.querySelectorAll(".pl-restore-btn").forEach(function(btn){ btn.addEventListener("click",function(e){ e.stopPropagation(); var idx=parseInt(btn.dataset.pidx); var conv=null;for(var i=0;i<_callups.length;i++){if(_callups[i].id===id){conv=_callups[i];break;}} if(!conv||!conv.players||!conv.players[idx])return; var pname=conv.players[idx].fullName; conv.players[idx].dropStatus="active"; if(window._db&&window._fbUser){var fns=window._fbFns;fns.setDoc(fns.doc(window._db,"callups",id),Object.assign({},conv)).catch(function(e){console.error(e);});} toast("\u2705 "+pname+" restaurado");close();openDetail(id); }); });
   var editBtn=ov.querySelector("[data-edit]");
   if(editBtn)editBtn.addEventListener("click",function(){
     close();S.editingId=id;route("nueva");
@@ -885,7 +862,7 @@ function renderAgenda(viewMode){
     '<div class="fb"><button class="fbtn'+(!S.filterType?" on":"")+'" data-f="">Todas</button><button class="fbtn'+(S.filterType==="madrilena"?" on":"")+'" data-f="madrilena">\uD83D\uDD35 RFFM</button><button class="fbtn'+(S.filterType==="espanola"?" on":"")+'" data-f="espanola">\uD83D\uDD34 RFEF</button><button class="fbtn'+(S.filterType==="internacional"?" on":"")+'" data-f="internacional">\uD83D\uDFE2 OTRAS</button></div>';
   if(!filtered.length){h+=emptyState("Sin convocatorias en "+S.season,"\uD83D\uDCCB");}
   else if(viewMode==="tabla"){
-    var thead='<thead><tr><th></th><th>Categor\u00eda</th><th class=\"th-ida\">\uD83D\uDCCD Ida</th><th class=\"th-vuelta\">\uD83D\uDD19 Vuelta</th><th class=\"th-matches\">\u26BD Partidos</th><th>\uD83D\uDC55</th><th>Estado</th></tr></thead>';
+var thead='<thead><tr><th></th><th>Cat.</th><th>Conv.</th><th>Jugadores</th><th class=\"th-ida\">\uD83D\uDCCD Convocatoria</th><th class=\"th-vuelta\">\uD83D\uDD19 Vuelta</th><th class=\"th-matches\">\u26BD Partidos</th><th>Estado</th></tr></thead>';
     if(up.length)h+='<div class="tabla-wrap"><table class="tabla">'+thead+'<tbody>'+up.map(callupTableRow).join("")+"</tbody></table></div>";
     if(done.length)h+='<details class="fin-details"'+(S.finOpen?" open":"")+'><summary class="fin-summary"><span class="fin-summary__label">Finalizadas</span><span class="fin-summary__count">'+done.length+'</span></summary><div style="margin-top:8px"><div class="tabla-wrap"><table class="tabla">'+thead+'<tbody>'+done.map(callupTableRow).join("")+"</tbody></table></div></div></details>";
   } else {
@@ -1661,4 +1638,5 @@ route("agenda");
 </script>
 </body>
 </html>
+
 
