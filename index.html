@@ -478,55 +478,76 @@ details[open] .fin-summary__label::before{transform:rotate(90deg)}
 </style>
 
 <!-- Firebase SDK -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, setDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+<!-- Firebase compat SDKs (script clásico, no módulo ES) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script>
+(function(){
+  var cfg = {
+    apiKey:"AIzaSyCPcij56A4Gc-sgqcVQ4Lj3N1bQtsVFGKU",
+    authDomain:"convocatorias-51f3e.firebaseapp.com",
+    projectId:"convocatorias-51f3e",
+    storageBucket:"convocatorias-51f3e.firebasestorage.app",
+    messagingSenderId:"275421566007",
+    appId:"1:275421566007:web:c6655499e8e5e89503dbb2"
+  };
 
-const firebaseConfig={
-  apiKey:"AIzaSyCPcij56A4Gc-sgqcVQ4Lj3N1bQtsVFGKU",
-  authDomain:"convocatorias-51f3e.firebaseapp.com",
-  projectId:"convocatorias-51f3e",
-  storageBucket:"convocatorias-51f3e.firebasestorage.app",
-  messagingSenderId:"275421566007",
-  appId:"1:275421566007:web:c6655499e8e5e89503dbb2"
-};
+  window._callups = [];
+  window._players = [];
 
-try {
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app);
-  window._db = db;
-  window._auth = auth;
-  window._fbFns = { collection, getDocs, addDoc, setDoc, deleteDoc, doc, signInWithEmailAndPassword, signOut, onAuthStateChanged };
+  try {
+    firebase.initializeApp(cfg);
+    var db  = firebase.firestore();
+    var auth = firebase.auth();
 
-  onAuthStateChanged(auth, function(user) {
-    window._fbUser = user || null;
-    if (typeof window._onAuthChange === "function") window._onAuthChange(user);
-  });
+    window._db   = db;
+    window._auth = auth;
 
-  getDocs(collection(db, "callups"))
-    .then(function(snap) {
-      window._callups = [];
-      snap.forEach(function(d) { window._callups.push(Object.assign({id:d.id}, d.data())); });
-    })
-    .catch(function(e) { console.error("callups:", e); window._callups = []; })
-    .finally(function() { if (typeof window._onCallupsLoaded==="function") window._onCallupsLoaded(); });
+    // Emular la API modular que usa el resto del código
+    window._fbFns = {
+      collection: function(db,col){ return db.collection(col); },
+      getDocs:    function(ref){ return ref.get(); },
+      addDoc:     function(ref,data){ return ref.add(data); },
+      setDoc:     function(ref,data,opts){ return opts&&opts.merge ? ref.set(data,{merge:true}) : ref.set(data); },
+      deleteDoc:  function(ref){ return ref.delete(); },
+      doc:        function(db,col,id){ return db.collection(col).doc(id); },
+      signInWithEmailAndPassword: function(auth,e,p){ return auth.signInWithEmailAndPassword(e,p); },
+      signOut:    function(auth){ return auth.signOut(); },
+      onAuthStateChanged: function(auth,cb){ return auth.onAuthStateChanged(cb); }
+    };
 
-  getDocs(collection(db, "players"))
-    .then(function(snap) {
-      window._players = [];
-      snap.forEach(function(d) { window._players.push(Object.assign({id:d.id}, d.data())); });
-    })
-    .catch(function(e) { console.error("players:", e); window._players = []; })
-    .finally(function() { if (typeof window._onPlayersLoaded==="function") window._onPlayersLoaded(); });
+    auth.onAuthStateChanged(function(user){
+      window._fbUser = user || null;
+      if(typeof window._onAuthChange === "function") window._onAuthChange(user);
+    });
 
-} catch(e) {
-  console.error("Firebase init:", e);
-  window._callups = []; window._players = [];
-  if (typeof window._onCallupsLoaded==="function") window._onCallupsLoaded();
-  if (typeof window._onPlayersLoaded==="function") window._onPlayersLoaded();
-}
+    db.collection("callups").get()
+      .then(function(snap){
+        window._callups = [];
+        snap.forEach(function(d){ window._callups.push(Object.assign({id:d.id}, d.data())); });
+      })
+      .catch(function(e){ console.error("callups error:", e); })
+      .finally(function(){ window._fbCallupsFlag=true; if(typeof window._onCallupsLoaded==="function") window._onCallupsLoaded(); });
+
+    db.collection("players").get()
+      .then(function(snap){
+        window._players = [];
+        snap.forEach(function(d){ window._players.push(Object.assign({id:d.id}, d.data())); });
+      })
+      .catch(function(e){ console.error("players error:", e); })
+      .finally(function(){ window._fbPlayersFlag=true; if(typeof window._onPlayersLoaded==="function") window._onPlayersLoaded(); });
+
+  } catch(e) {
+    console.error("Firebase init error:", e);
+    // Notificar igualmente para que la app arranque
+    window._fbCallupsFlag=true; window._fbPlayersFlag=true;
+    setTimeout(function(){
+      if(typeof window._onCallupsLoaded==="function") window._onCallupsLoaded();
+      if(typeof window._onPlayersLoaded==="function") window._onPlayersLoaded();
+    }, 50);
+  }
+})();
 </script>
 </head>
 <body>
@@ -2012,28 +2033,28 @@ window._onAuthChange = function(user){
 };
 
 // ── BOOT ──
-
-// Inicializa arrays vacíos por si el módulo Firebase tarda
 window._callups = window._callups || [];
 window._players = window._players || [];
 
-// Arranca la UI inmediatamente con lo que haya (vacío o ya cargado)
-renderSeasonSel();
-bindLoginBtn();
-route(S.view || "agenda");
-
-// El módulo Firebase llama estas funciones cuando termina de cargar
-// Si ya han cargado antes de que se definan, el || [] de arriba lo cubre
+// Callbacks para cuando Firebase termine — si ya terminó (flag), las llamamos ya
 window._onCallupsLoaded = function(){
+  window._fbCallupsFlag = true;
   renderSeasonSel();
   route(S.view || "agenda");
 };
 window._onPlayersLoaded = function(){
+  window._fbPlayersFlag = true;
   route(S.view || "agenda");
 };
 
-// Auth change: actualiza botón de login y re-renderiza
-// (ya definido arriba como window._onAuthChange)
+// Arranca inmediatamente
+renderSeasonSel();
+bindLoginBtn();
+route(S.view || "agenda");
+
+// Si Firebase ya terminó antes de que definiéramos las callbacks, ejecutar ahora
+if(window._fbCallupsFlag) { renderSeasonSel(); route(S.view || "agenda"); }
+if(window._fbPlayersFlag) { route(S.view || "agenda"); }
 </script>
 </body>
 </html>
