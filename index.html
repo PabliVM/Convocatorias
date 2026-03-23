@@ -492,48 +492,41 @@ const firebaseConfig={
   appId:"1:275421566007:web:c6655499e8e5e89503dbb2"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+try {
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  window._db = db;
+  window._auth = auth;
+  window._fbFns = { collection, getDocs, addDoc, setDoc, deleteDoc, doc, signInWithEmailAndPassword, signOut, onAuthStateChanged };
 
-window._db = db;
-window._auth = auth;
-window._fbFns = { collection, getDocs, addDoc, setDoc, deleteDoc, doc, signInWithEmailAndPassword, signOut, onAuthStateChanged };
+  onAuthStateChanged(auth, function(user) {
+    window._fbUser = user || null;
+    if (typeof window._onAuthChange === "function") window._onAuthChange(user);
+  });
 
-// Auth state observer — fires once on load
-onAuthStateChanged(auth, function(user) {
-  window._fbUser = user || null;
-  // Notify app if already booted
-  if (typeof window._onAuthChange === "function") window._onAuthChange(user);
-});
+  getDocs(collection(db, "callups"))
+    .then(function(snap) {
+      window._callups = [];
+      snap.forEach(function(d) { window._callups.push(Object.assign({id:d.id}, d.data())); });
+    })
+    .catch(function(e) { console.error("callups:", e); window._callups = []; })
+    .finally(function() { if (typeof window._onCallupsLoaded==="function") window._onCallupsLoaded(); });
 
-async function loadCallups() {
-  try {
-    const snap = await getDocs(collection(db, "callups"));
-    window._callups = [];
-    snap.forEach(function(d) { window._callups.push(Object.assign({id: d.id}, d.data())); });
-  } catch(e) {
-    console.error("Firestore callups error:", e);
-    window._callups = window._callups || [];
-  }
-  if (typeof window._onCallupsLoaded === "function") window._onCallupsLoaded();
+  getDocs(collection(db, "players"))
+    .then(function(snap) {
+      window._players = [];
+      snap.forEach(function(d) { window._players.push(Object.assign({id:d.id}, d.data())); });
+    })
+    .catch(function(e) { console.error("players:", e); window._players = []; })
+    .finally(function() { if (typeof window._onPlayersLoaded==="function") window._onPlayersLoaded(); });
+
+} catch(e) {
+  console.error("Firebase init:", e);
+  window._callups = []; window._players = [];
+  if (typeof window._onCallupsLoaded==="function") window._onCallupsLoaded();
+  if (typeof window._onPlayersLoaded==="function") window._onPlayersLoaded();
 }
-
-async function loadPlayers() {
-  try {
-    const snap = await getDocs(collection(db, "players"));
-    window._players = [];
-    snap.forEach(function(d) { window._players.push(Object.assign({id: d.id}, d.data())); });
-    console.log("Players loaded:", window._players.length);
-  } catch(e) {
-    console.error("Firestore players error:", e);
-    window._players = window._players || [];
-  }
-  if (typeof window._onPlayersLoaded === "function") window._onPlayersLoaded();
-}
-
-loadCallups();
-loadPlayers();
 </script>
 </head>
 <body>
@@ -2018,25 +2011,29 @@ window._onAuthChange = function(user){
   route(S.view||"agenda");
 };
 
-// ── BOOT — arranca inmediatamente, recarga cuando llegan datos de Firebase ──
+// ── BOOT ──
 
-// Arranque inmediato: muestra la UI con datos vacíos
+// Inicializa arrays vacíos por si el módulo Firebase tarda
 window._callups = window._callups || [];
 window._players = window._players || [];
+
+// Arranca la UI inmediatamente con lo que haya (vacío o ya cargado)
 renderSeasonSel();
 bindLoginBtn();
 route(S.view || "agenda");
 
-// Cuando Firebase termine de cargar, re-renderiza si hay datos nuevos
+// El módulo Firebase llama estas funciones cuando termina de cargar
+// Si ya han cargado antes de que se definan, el || [] de arriba lo cubre
 window._onCallupsLoaded = function(){
+  renderSeasonSel();
   route(S.view || "agenda");
 };
 window._onPlayersLoaded = function(){
-  // Solo re-render si ya tenemos callups también (evita doble render)
-  if(window._callups && window._callups.length >= 0){
-    route(S.view || "agenda");
-  }
+  route(S.view || "agenda");
 };
+
+// Auth change: actualiza botón de login y re-renderiza
+// (ya definido arriba como window._onAuthChange)
 </script>
 </body>
 </html>
