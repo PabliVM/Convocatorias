@@ -475,6 +475,119 @@ details[open] .fin-summary__label::before{transform:rotate(90deg)}
   .ri{flex-direction:row;align-items:center;gap:12px}
   .ri-teams{padding-left:0}
 }
+
+/* ═══════════════════════════════════════════════
+   ESTILOS DE IMPRESIÓN
+═══════════════════════════════════════════════ */
+@media print {
+  /* Ocultar todo lo que no se imprime */
+  .hdr, .nav, .fb, .view-toggle, .fin-summary,
+  .btn, .mcl, .pl-rm-btn, .pl-drop-btn, .pl-restore-btn,
+  .jug-edit-btn, .ibar, .tbar-wrap, .tbar-arrow,
+  [data-v], #btn-cancel, #btn-submit, #btn-add-match,
+  .btn-ai-parser, .dp-act, .fact, .nbtn,
+  #hdr-login-btn, .season-sel { display:none !important; }
+
+  /* Reset page */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  html, body { background:#fff !important; color:#000 !important; font-size:11pt; }
+  .app { display:block; }
+  .main { padding:0 !important; max-width:100% !important; margin:0 !important; }
+
+  /* Cabecera de impresión */
+  .print-header { display:flex !important; align-items:center; gap:12px; margin-bottom:16px; padding-bottom:10px; border-bottom:2px solid #001489; }
+  .print-header-logo { font-size:28pt; font-weight:900; color:#001489; font-family:"Bebas Neue",sans-serif; letter-spacing:2px; }
+  .print-header-sub  { font-size:10pt; color:#555; }
+
+  /* Títulos */
+  .vt { color:#001489 !important; font-size:22pt; }
+  .vs { color:#555 !important; }
+  .st { color:#001489 !important; border-bottom:1px solid #ccc; padding-bottom:4px; margin-bottom:8px; }
+
+  /* Cards en papel: sin sombras, bordes simples */
+  .cc {
+    border:1px solid #ccc !important;
+    border-left:4px solid var(--ca, #001489) !important;
+    background:#fff !important;
+    box-shadow:none !important;
+    break-inside:avoid;
+    page-break-inside:avoid;
+    margin-bottom:10px;
+    padding:10px 12px;
+  }
+  .cc-title { color:#000 !important; font-size:12pt; }
+  .cc-mi    { color:#333 !important; font-size:9pt; }
+  .cc-mi-label { color:#666 !important; }
+  .cc-mi-sub   { color:#444 !important; }
+  .cc-mi-conc  { background:#eef2ff !important; }
+  .cc-mi-vuelta{ background:#f5f5f5 !important; }
+  .badge       { border:1px solid #999 !important; }
+  .chip        { border:1px solid #ccc !important; background:#f5f5f5 !important; color:#333 !important; }
+
+  /* Tabla en papel */
+  .tabla-wrap { border:1px solid #ccc !important; box-shadow:none !important; overflow:visible !important; }
+  .tabla { font-size:8pt !important; width:100% !important; }
+  .tabla thead tr { background:#001489 !important; }
+  .tabla thead th { color:#fff !important; padding:5px 6px !important; font-size:8pt !important; }
+  .trow { background:#fff !important; }
+  .trow:nth-child(even) { background:#f8f8f8 !important; }
+  .trow td { padding:5px 6px !important; color:#000 !important; font-size:8pt !important; }
+  .td-log-date  { color:#000 !important; }
+  .td-log-sub   { color:#444 !important; }
+  .td-log-trans { color:#555 !important; }
+  .td-match-rival{ color:#000 !important; }
+  .td-match-sub  { color:#555 !important; }
+  .tabla-wrap { page-break-inside:auto; }
+  .trow { page-break-inside:avoid; }
+
+  /* Fichas: 2 columnas en A4 */
+  .cl.print-2col { display:grid !important; grid-template-columns:1fr 1fr; gap:8px; }
+
+  /* Detalles desplegados al imprimir */
+  details { display:block !important; }
+  details > summary { display:none !important; }
+  details > div, details > .cl { display:block !important; }
+  .cl-past { opacity:1 !important; }
+
+  /* Ficha detalle de convocatoria (modal → print) */
+  .print-ficha { display:block !important; }
+  .print-ficha-hdr { border-bottom:2px solid #001489; margin-bottom:12px; padding-bottom:8px; display:flex; justify-content:space-between; align-items:flex-start; }
+  .print-ficha-title { font-size:16pt; font-weight:700; color:#001489; }
+  .print-ficha-meta  { font-size:9pt; color:#555; margin-top:3px; }
+  .print-ficha-grid  { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+  .print-ficha-block { border:1px solid #ddd; border-radius:4px; padding:8px 10px; }
+  .print-ficha-block-label { font-size:7pt; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:.5px; margin-bottom:3px; }
+  .print-ficha-block-val   { font-size:9pt; color:#000; }
+  .print-ficha-players { columns:2; column-gap:12px; margin-top:8px; }
+  .print-ficha-player  { font-size:9pt; break-inside:avoid; padding:3px 0; border-bottom:1px solid #eee; display:flex; gap:6px; }
+  .print-ficha-player-num { color:#001489; font-weight:700; min-width:18px; }
+
+  /* Ocultar el modal overlay, mostrar solo contenido */
+  .mo { position:static !important; background:none !important; backdrop-filter:none !important; display:block !important; }
+  .modal { box-shadow:none !important; border-radius:0 !important; max-height:none !important; overflow:visible !important; padding:0 !important; background:#fff !important; }
+
+  /* Botón imprimir: oculto al imprimir */
+  .btn-print { display:none !important; }
+}
+
+/* Botón imprimir: visible solo en pantalla */
+.btn-print {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 14px;
+  border-radius:8px;
+  border:1px solid var(--border-strong);
+  background:var(--off-white-2);
+  color:var(--text);
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all var(--t);
+  font-family:inherit;
+}
+.btn-print:active { background:var(--navy); color:#fff; }
+.print-header { display:none; }
 </style>
 
 <!-- Firebase SDK -->
@@ -826,6 +939,7 @@ function callupDetail(c){
     }
   }
   var promBtn=canEdit()&&c.convType!=="definitiva"?'<button class="btn btn-gold btn-sm" data-promote="'+c.id+'" style="flex:1">✅ Confirmar definitiva</button>':"";
+  var printBtn='<button class="btn btn-ghost btn-sm btn-print-ficha" style="flex:1">🖨️ Imprimir ficha</button>';
   var editBtn=canEdit()?'<button class="btn btn-ghost btn-sm" data-edit="'+c.id+'" style="flex:1">✎ Editar</button>':"";
   var delBtn=canEdit()?'<button class="btn btn-danger btn-sm" data-del="'+c.id+'" style="flex:1">🗑 Eliminar</button>':"";
 
@@ -873,7 +987,7 @@ function callupDetail(c){
     }).join("")+"</div>":"")+
     '<div style="margin-bottom:16px"><h4 class="dp-st">👕 Jugadores convocados ('+pc+")</h4><ul class=\"pl\">"+rows+"</ul></div>"+
     (c.notes?'<div class="dp-notes"><h4 class="dp-st">📝 Observaciones</h4><p class="notes-t">'+esc(c.notes)+"</p></div>":"")+
-    (editBtn||delBtn?'<div class="dp-act" style="display:flex;gap:8px;flex-wrap:wrap">'+promBtn+editBtn+delBtn+"</div>":"");
+    '<div class="dp-act" style="display:flex;gap:8px;flex-wrap:wrap">'+promBtn+printBtn+editBtn+delBtn+"</div>";
 }
 
 // ── STATE ──
@@ -1065,6 +1179,102 @@ function openDetail(id){
     if(!confirm("¿Eliminar \""+c.title+"\"?"))return;
     deleteCallup(id,function(){close();toast("🗑 Eliminada");route(S.view);});
   });
+
+  // Imprimir ficha de convocatoria
+  var printFichaBtn=ov.querySelector(".btn-print-ficha");
+  if(printFichaBtn)printFichaBtn.addEventListener("click",function(){
+    // Crear ventana de impresión con la ficha formateada
+    var win=window.open("","_blank","width=800,height=600");
+    var sel=SELS[selKey(c.selectionType)];
+    var col=(sel&&sel.colors&&sel.colors[c.selectionCategory])?sel.colors[c.selectionCategory]:{badge:"#001489"};
+    var activePlayers=(c.players||[]).filter(function(p){return !p.dropStatus||p.dropStatus==="active";});
+    var droppedPlayers=(c.players||[]).filter(function(p){return p.dropStatus&&p.dropStatus!=="active";});
+    var playersHtml=activePlayers.map(function(p,i){
+      return '<div class="pl-row"><span class="pl-num">'+(i+1)+'</span><span class="pl-name">'+esc(p.fullName)+'</span><span class="pl-team">'+esc(p.teamName)+'</span></div>';
+    }).join("");
+    if(droppedPlayers.length){
+      playersHtml+='<div class="pl-dropped-hdr">❌ No convocados / No liberados</div>';
+      playersHtml+=droppedPlayers.map(function(p){
+        var lbl=p.dropStatus==="no_convocado"?"No convocado":p.dropStatus==="no_liberado"?"No liberado":"Otros";
+        return '<div class="pl-row pl-dropped"><span class="pl-name" style="text-decoration:line-through;color:#c00">'+esc(p.fullName)+'</span><span class="pl-team">'+esc(p.teamName)+' — '+lbl+'</span></div>';
+      }).join("");
+    }
+    function logBlock(label,ico,obj){
+      if(!obj)return"";
+      var rows="";
+      if(obj.date||obj.time) rows+='<div class="log-row"><span class="log-l">Fecha y hora</span><span class="log-v">'+(obj.date?fmtDateShort(obj.date)+" ":"")+(obj.time?obj.time+"h":"")+"</span></div>";
+      if(obj.lugar) rows+='<div class="log-row"><span class="log-l">Lugar</span><span class="log-v">'+esc(obj.lugar)+"</span></div>";
+      if(obj.hotel) rows+='<div class="log-row"><span class="log-l">🏨 Alojamiento</span><span class="log-v">'+esc(obj.hotel)+"</span></div>";
+      if(obj.transporte) rows+='<div class="log-row"><span class="log-l">Transporte</span><span class="log-v">'+esc(obj.transporte)+"</span></div>";
+      if(!rows)return"";
+      return '<div class="log-block"><div class="log-title">'+ico+" "+label+"</div>"+rows+"</div>";
+    }
+    var matchesHtml="";
+    if(c.matches&&c.matches.length){
+      matchesHtml='<div class="section-title">⚽ Partidos</div>';
+      matchesHtml+=c.matches.map(function(m){
+        var dt=m.date?new Date(m.date+"T12:00:00").toLocaleDateString("es-ES",{weekday:"short",day:"2-digit",month:"short"}):"Fecha TBD";
+        return '<div class="match-row">'+(m.matchType==="oficial"?"🏆":"⚽")+' <strong>vs '+esc(m.rival||"Por confirmar")+'</strong> — '+dt+(m.time?" · "+m.time+"h":"")+"</div>";
+      }).join("");
+    }
+    win.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><title>'+esc(c.title)+'</title><style>'+
+      '*{box-sizing:border-box;margin:0;padding:0}'+
+      'body{font-family:Arial,sans-serif;font-size:10pt;color:#000;padding:16px 20px}'+
+      '.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid '+col.badge+';padding-bottom:10px;margin-bottom:14px}'+
+      '.hdr-left{}'+
+      '.title{font-size:16pt;font-weight:700;color:'+col.badge+';margin-bottom:3px}'+
+      '.meta{font-size:9pt;color:#555}'+
+      '.badge{display:inline-block;background:'+col.badge+';color:#fff;padding:2px 8px;border-radius:10px;font-size:8pt;font-weight:700;margin-right:4px}'+
+      '.rm-logo{font-size:11pt;font-weight:700;color:#001489;text-align:right}'+
+      '.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}'+
+      '.log-block{border:1px solid #ddd;border-radius:4px;padding:7px 9px;border-left:3px solid '+col.badge+'}'+
+      '.log-title{font-size:8pt;font-weight:700;color:'+col.badge+';text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}'+
+      '.log-row{display:flex;gap:8px;margin-bottom:3px;font-size:9pt}'+
+      '.log-l{color:#888;min-width:110px;font-size:8pt;font-weight:600;text-transform:uppercase}'+
+      '.log-v{color:#000;flex:1}'+
+      '.section-title{font-size:9pt;font-weight:700;color:#001489;text-transform:uppercase;letter-spacing:.5px;margin:10px 0 6px;border-bottom:1px solid #ddd;padding-bottom:3px}'+
+      '.match-row{font-size:9pt;padding:3px 0;border-bottom:1px solid #eee}'+
+      '.players-grid{columns:2;column-gap:14px;margin-top:6px}'+
+      '.pl-row{display:flex;gap:6px;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;break-inside:avoid;font-size:9pt}'+
+      '.pl-num{color:'+col.badge+';font-weight:700;min-width:20px;font-size:8pt}'+
+      '.pl-name{flex:1;font-weight:600}'+
+      '.pl-team{color:#888;font-size:8pt}'+
+      '.pl-dropped-hdr{font-size:8pt;font-weight:700;color:#c00;text-transform:uppercase;margin:8px 0 4px;letter-spacing:.5px}'+
+      '.pl-dropped .pl-name{text-decoration:line-through;color:#c00}'+
+      '.notes{background:#f9f9f9;border:1px solid #ddd;border-radius:4px;padding:8px;font-size:9pt;margin-top:10px}'+
+      '.footer{margin-top:14px;padding-top:6px;border-top:1px solid #ddd;font-size:8pt;color:#888;display:flex;justify-content:space-between}'+
+      '@media print{body{padding:10px 14px}@page{margin:1cm}}'+
+      '</style></head><body>'+
+      '<div class="hdr">'+
+        '<div class="hdr-left">'+
+          '<div class="title">'+esc(c.title)+'</div>'+
+          '<div class="meta">'+
+            '<span class="badge">'+(CAT[c.selectionCategory]||c.selectionCategory)+(sel?" "+sel.short:"")+'</span>'+
+            (c.pais?'<span class="badge">'+getFlag(c.pais)+" "+esc(c.pais)+'</span>':"")+
+            " "+fmtRange(c.startDate,c.endDate)+
+          '</div>'+
+        '</div>'+
+        '<div class="rm-logo">⚽ Real Madrid<br/><span style="font-weight:400;font-size:9pt;color:#888">Temporada '+c.season+'</span></div>'+
+      '</div>'+
+      (c.rival||c.location?'<div class="section-title">📋 Datos generales</div>'+
+        (c.rival?'<div class="log-row"><span class="log-l">Rival / Torneo</span><span class="log-v">'+esc(c.rival)+'</span></div>':"")+
+        (c.location?'<div class="log-row"><span class="log-l">Lugar concentración</span><span class="log-v">'+esc(c.location)+'</span></div>':"")+
+      "":"")+
+      '<div class="grid">'+
+        logBlock("Citación","📍",c.conc)+
+        logBlock("Traslado / Salida","✈️",c.traslado)+
+        logBlock("Vuelta","🔙",c.vuelta)+
+      '</div>'+
+      matchesHtml+
+      '<div class="section-title">👕 Jugadores convocados ('+activePlayers.length+')</div>'+
+      '<div class="players-grid">'+playersHtml+'</div>'+
+      (c.notes?'<div class="notes"><strong>📝 Observaciones:</strong> '+esc(c.notes)+'</div>':"")+
+      '<div class="footer"><span>Real Madrid Cantera · '+esc(c.title)+'</span><span>Generado '+new Date().toLocaleDateString("es-ES")+'</span></div>'+
+      '</body></html>');
+    win.document.close();
+    win.focus();
+    setTimeout(function(){win.print();},400);
+  });
 }
 
 // ── AGENDA ──
@@ -1074,11 +1284,13 @@ function renderAgenda(viewMode){
   var filtered=S.filterType?all.filter(function(c){return selKey(c.selectionType)===S.filterType;}):all;
   var up=filtered.filter(function(c){return c.status!=="finalizada";});
   var done=sortDate(filtered.filter(function(c){return c.status==="finalizada";}),"asc");
-  var h='<div class="vh" style="margin-bottom:12px"><div style="display:flex;align-items:center;justify-content:space-between">'+
+  var h='<div class="vh" style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:8px;justify-content:space-between">'+
     '<h1 class="vt">Agenda</h1>'+
     '<div class="view-toggle">'+
     '<button class="vtbtn'+(viewMode==="fichas"?" on":"")+'" data-vm="fichas">⊢□ Fichas</button>'+
     '<button class="vtbtn'+(viewMode==="tabla"?" on":"")+'" data-vm="tabla">≡ Tabla</button>'+
+    '</div>'+
+    '<button class="btn-print" id="btn-print-agenda">🖨️</button>'+
     '</div></div></div>'+
     '<div class="fb">'+
     '<button class="fbtn'+(!S.filterType?" on":"")+'" data-f="">Todas</button>'+
@@ -1104,6 +1316,18 @@ function renderAgenda(viewMode){
   else document.querySelectorAll(".trow").forEach(function(row){row.addEventListener("click",function(){openDetail(row.dataset.id);});});
   document.querySelectorAll("[data-f]").forEach(function(b){b.addEventListener("click",function(){S.filterType=b.dataset.f||null;renderAgenda(S.agendaView);});});
   document.querySelectorAll("[data-vm]").forEach(function(b){b.addEventListener("click",function(){renderAgenda(b.dataset.vm);});});
+
+  // Botón imprimir agenda
+  var btnPrint=document.getElementById("btn-print-agenda");
+  if(btnPrint)btnPrint.addEventListener("click",function(){
+    var det=document.querySelector(".fin-details");
+    if(det&&!det.open)det.open=true;
+    if(viewMode==="fichas") document.querySelectorAll(".cl").forEach(function(el){el.classList.add("print-2col");});
+    setTimeout(function(){
+      window.print();
+      if(viewMode==="fichas") document.querySelectorAll(".cl").forEach(function(el){el.classList.remove("print-2col");});
+    },100);
+  });
 }
 
 // ── SELECCIÓN ──
