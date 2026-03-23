@@ -479,75 +479,58 @@ details[open] .fin-summary__label::before{transform:rotate(90deg)}
 
 <!-- Firebase SDK -->
 <!-- Firebase compat SDKs (script clásico, no módulo ES) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script>
-(function(){
-  var cfg = {
-    apiKey:"AIzaSyCPcij56A4Gc-sgqcVQ4Lj3N1bQtsVFGKU",
-    authDomain:"convocatorias-51f3e.firebaseapp.com",
-    projectId:"convocatorias-51f3e",
-    storageBucket:"convocatorias-51f3e.firebasestorage.app",
-    messagingSenderId:"275421566007",
-    appId:"1:275421566007:web:c6655499e8e5e89503dbb2"
-  };
+// ── Firebase: carga dinámica tolerante a fallos ──
+window._callups=[];window._players=[];window._fbCallupsFlag=false;window._fbPlayersFlag=false;
 
-  window._callups = [];
-  window._players = [];
-
-  try {
-    firebase.initializeApp(cfg);
-    var db  = firebase.firestore();
-    var auth = firebase.auth();
-
-    window._db   = db;
-    window._auth = auth;
-
-    // Emular la API modular que usa el resto del código
-    window._fbFns = {
-      collection: function(db,col){ return db.collection(col); },
-      getDocs:    function(ref){ return ref.get(); },
-      addDoc:     function(ref,data){ return ref.add(data); },
-      setDoc:     function(ref,data,opts){ return opts&&opts.merge ? ref.set(data,{merge:true}) : ref.set(data); },
-      deleteDoc:  function(ref){ return ref.delete(); },
-      doc:        function(db,col,id){ return db.collection(col).doc(id); },
-      signInWithEmailAndPassword: function(auth,e,p){ return auth.signInWithEmailAndPassword(e,p); },
-      signOut:    function(auth){ return auth.signOut(); },
-      onAuthStateChanged: function(auth,cb){ return auth.onAuthStateChanged(cb); }
+function _fbNotify(which){
+  if(which==="callups"){window._fbCallupsFlag=true;if(typeof window._onCallupsLoaded==="function")window._onCallupsLoaded();}
+  else{window._fbPlayersFlag=true;if(typeof window._onPlayersLoaded==="function")window._onPlayersLoaded();}
+}
+function _loadScript(src,cb){
+  var s=document.createElement("script");s.src=src;
+  s.onload=cb;s.onerror=function(){console.warn("Error cargando SDK:",src);cb();};
+  document.head.appendChild(s);
+}
+function _initFirebase(){
+  try{
+    if(typeof firebase==="undefined"){console.warn("Firebase SDK no disponible. Modo sin conexión.");_fbNotify("callups");_fbNotify("players");return;}
+    firebase.initializeApp({apiKey:"AIzaSyCPcij56A4Gc-sgqcVQ4Lj3N1bQtsVFGKU",authDomain:"convocatorias-51f3e.firebaseapp.com",projectId:"convocatorias-51f3e",storageBucket:"convocatorias-51f3e.firebasestorage.app",messagingSenderId:"275421566007",appId:"1:275421566007:web:c6655499e8e5e89503dbb2"});
+    var db=firebase.firestore(),auth=firebase.auth();
+    window._db=db;window._auth=auth;
+    window._fbFns={
+      collection:function(d,c){return d.collection(c);},
+      getDocs:function(r){return r.get();},
+      addDoc:function(r,d){return r.add(d);},
+      setDoc:function(r,d,o){return o&&o.merge?r.set(d,{merge:true}):r.set(d);},
+      deleteDoc:function(r){return r.delete();},
+      doc:function(d,c,i){return d.collection(c).doc(i);},
+      signInWithEmailAndPassword:function(a,e,p){return a.signInWithEmailAndPassword(e,p);},
+      signOut:function(a){return a.signOut();},
+      onAuthStateChanged:function(a,cb){return a.onAuthStateChanged(cb);}
     };
-
-    auth.onAuthStateChanged(function(user){
-      window._fbUser = user || null;
-      if(typeof window._onAuthChange === "function") window._onAuthChange(user);
-    });
-
+    auth.onAuthStateChanged(function(u){window._fbUser=u||null;if(typeof window._onAuthChange==="function")window._onAuthChange(u);});
     db.collection("callups").get()
-      .then(function(snap){
-        window._callups = [];
-        snap.forEach(function(d){ window._callups.push(Object.assign({id:d.id}, d.data())); });
-      })
-      .catch(function(e){ console.error("callups error:", e); })
-      .finally(function(){ window._fbCallupsFlag=true; if(typeof window._onCallupsLoaded==="function") window._onCallupsLoaded(); });
-
+      .then(function(s){window._callups=[];s.forEach(function(d){window._callups.push(Object.assign({id:d.id},d.data()));});})
+      .catch(function(e){console.error("callups:",e);})
+      .finally(function(){_fbNotify("callups");});
     db.collection("players").get()
-      .then(function(snap){
-        window._players = [];
-        snap.forEach(function(d){ window._players.push(Object.assign({id:d.id}, d.data())); });
-      })
-      .catch(function(e){ console.error("players error:", e); })
-      .finally(function(){ window._fbPlayersFlag=true; if(typeof window._onPlayersLoaded==="function") window._onPlayersLoaded(); });
-
-  } catch(e) {
-    console.error("Firebase init error:", e);
-    // Notificar igualmente para que la app arranque
-    window._fbCallupsFlag=true; window._fbPlayersFlag=true;
-    setTimeout(function(){
-      if(typeof window._onCallupsLoaded==="function") window._onCallupsLoaded();
-      if(typeof window._onPlayersLoaded==="function") window._onPlayersLoaded();
-    }, 50);
+      .then(function(s){window._players=[];s.forEach(function(d){window._players.push(Object.assign({id:d.id},d.data()));});})
+      .catch(function(e){console.error("players:",e);})
+      .finally(function(){_fbNotify("players");});
+  }catch(e){
+    console.error("Firebase error:",e);
+    _fbNotify("callups");_fbNotify("players");
   }
-})();
+}
+// Carga los 3 SDKs en cadena y luego inicializa
+_loadScript("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js",function(){
+  _loadScript("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js",function(){
+    _loadScript("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js",function(){
+      _initFirebase();
+    });
+  });
+});
 </script>
 </head>
 <body>
@@ -796,11 +779,12 @@ function callupTableRow(c){
       (obj.time||obj.lugar?'<span class="td-log-sub">'+(obj.time?obj.time+"h ":"")+esc(obj.lugar||"")+"</span>":"")+
       (obj.transporte?'<span class="td-log-trans">'+esc(obj.transporte)+"</span>":"");
   }
-  var matchCell=c.matches&&c.matches.length?c.matches.map(function(m){
+  var _mcells=c.matches&&c.matches.length?c.matches.map(function(m){
     if(!m.rival&&!m.date&&!m.time)return"";
     return'<div class="td-match"><span class="td-match-rival">'+(m.matchType==="oficial"?"🏆 ":"⚽ ")+esc(m.rival||"Por confirmar")+"</span>"+
       '<span class="td-match-sub">'+(m.date?fmtDateShort(m.date)+" ":"")+(m.time?m.time+"h":(!m.date?"Fecha TBD":""))+"</span></div>";
-  }).filter(Boolean).join("")||'<span class="td-log-empty">—</span>'
+  }).filter(Boolean):[];
+  var matchCell=_mcells.length?_mcells.join(""):'<span class="td-log-empty">—</span>';
   return'<tr class="trow'+(pc===0?" trow-empty":"")+'" data-id="'+c.id+'">'+
     '<td class="td-flag">'+flag+"</td>"+
     '<td class="td-cat"><span class="badge" style="background:'+col.badge+';color:#fff;font-size:10px">'+catLabel+"</span>"+
