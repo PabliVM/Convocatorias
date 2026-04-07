@@ -844,8 +844,9 @@ function selBadge(type,cat,pais){
   var k=selKey(type);var s=SELS[k];if(!s)return"";
   if(!cat)cat="abs";
   var c=(s.colors&&s.colors[cat])?s.colors[cat]:{badge:"#666"};
+  var flag=k==="madrilena"?'<img src="https://raw.githubusercontent.com/PabliVM/Convocatorias/main/MADRID.png" style="width:16px;height:12px;object-fit:cover;border-radius:2px;vertical-align:middle"/>':k==="espanola"?"🇪🇸":(pais?getFlag(pais):"🌍");
   var label=k==="internacional"&&pais?(CAT[cat]||cat)+" "+paisAdj(pais):(CAT[cat]||cat)+" "+s.short;
-  return'<span class="badge" style="background:'+c.badge+';color:#fff">'+label+"</span>";
+  return'<span class="badge" style="background:'+c.badge+';color:#fff">'+flag+" "+label+"</span>";
 }
 function convTypeBadge(t){
   if(t==="definitiva")return'<span class="badge conv-def" title="Definitiva">✅</span>';
@@ -870,12 +871,10 @@ function callupCard(c){
     '<span style="font-size:24px;line-height:1">'+(c.convType==="definitiva"?"✅":(c.convType==="descartada"?"❌":"⏳"))+'</span>'+
     '<span style="font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:'+(c.convType==="definitiva"?"#34D399":(c.convType==="descartada"?"#EF4444":"#FBBF24"))+'">'+(c.convType==="definitiva"?"Definitiva":(c.convType==="descartada"?"No seleccionados":"Provisional"))+'</span>'+
     '</div>'+
-    '<div class="cc-hdr"><div class="cc-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+"</div>"+
-    '<span class="cc-flag">'+flag+'</span></div>'+
+    '<div class="cc-hdr"><div class="cc-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+"</div></div>"+
     '<h3 class="cc-title">'+esc(c.title)+"</h3>"+
     '<div class="cc-meta">'+
     '<div class="cc-mi"><span class="mi">📅</span><span>'+fmtRange(c.startDate,c.endDate)+"</span></div>"+
-    (c.rival?'<div class="cc-mi"><span class="mi">🆚</span><span>'+esc(c.rival)+"</span></div>":"")+
     (function(){
       var tl=[];
       if(c.conc&&(c.conc.date||c.conc.time||c.conc.lugar))
