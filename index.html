@@ -258,7 +258,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#13131A;color:var(--tex
 .tabla thead tr{background:var(--navy)}
 .tabla thead th{color:#fff;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:10px 10px;text-align:left;white-space:nowrap}
 .tabla thead th:first-child{padding-left:14px}
-.trow{border-bottom:1px solid var(--border);cursor:pointer;transition:background var(--t);background:var(--off-white-2)}
+.trow{border-bottom:1px solid var(--border);cursor:pointer;transition:background var(--t);background:var(--off-white-2);height:52px}
 .trow:last-child{border-bottom:none}
 .trow-empty{opacity:.45;background:rgba(220,38,38,.03)}
 .trow-empty td{color:var(--text-muted)}
@@ -944,9 +944,7 @@ function callupTableRow(c){
   var matchCell=_mcells.length?_mcells.join(""):'<span class="td-log-empty">—</span>';
   return'<tr class="trow'+(pc===0?" trow-empty":"")+(c.convType==="descartada"?" trow-empty":"")+'" data-id="'+c.id+'">'+
     '<td style="text-align:center;font-size:20px;width:32px;padding:8px 4px">'+(c.convType==="definitiva"?"✅":(c.convType==="descartada"?"❌":"⏳"))+"</td>"+
-    '<td class="td-flag">'+flag+"</td>"+
-    '<td class="td-cat">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+
-    '<div class="td-sel-sub">'+esc(selLabel)+"</div></td>"+
+    '<td class="td-cat">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+"</td>"+
     '<td><div style="display:flex;flex-wrap:wrap;gap:2px">'+playerChips+"</div></td>"+
     '<td class="td-log">'+logCellConc(c.conc,c.startDate)+"</td>"+
     '<td class="td-log">'+logCellTraslado(c.traslado)+"</td>"+
@@ -1377,7 +1375,7 @@ function renderAgenda(viewMode){
 
   if(!filtered.length){h+=emptyState("Sin convocatorias en "+S.season,"📋");}
   else if(viewMode==="tabla"){
-    var thead='<thead><tr><th style="width:32px"></th><th></th><th>Cat.</th><th>Jugadores</th><th class="th-ida">📍 Citación</th><th class="th-ida">✈️ Traslado</th><th class="th-vuelta">🔙 Vuelta</th><th class="th-matches">⚽ Partidos</th><th>Estado</th></tr></thead>';
+    var thead='<thead><tr><th style="width:32px"></th><th>Cat.</th><th>Jugadores</th><th class="th-ida">📍 Citación</th><th class="th-ida">✈️ Traslado</th><th class="th-vuelta">🔙 Vuelta</th><th class="th-matches">⚽ Partidos</th><th>Estado</th></tr></thead>';
     if(up.length)h+='<div class="tabla-wrap"><table class="tabla">'+thead+'<tbody>'+up.map(callupTableRow).join("")+"</tbody></table></div>";
     if(done.length)h+='<details class="fin-details"'+(S.finOpen?" open":"")+'><summary class="fin-summary"><span class="fin-summary__label">Finalizadas</span><span class="fin-summary__count">'+done.length+'</span></summary><div style="margin-top:8px"><div class="tabla-wrap"><table class="tabla">'+thead+'<tbody>'+done.map(callupTableRow).join("")+"</tbody></table></div></div></details>";
   } else {
