@@ -944,12 +944,12 @@ function callupTableRow(c){
   return'<tr class="trow'+(pc===0?" trow-empty":"")+(c.convType==="descartada"?" trow-empty":"")+'" data-id="'+c.id+'">'+
     '<td style="text-align:center;font-size:20px;width:32px;padding:8px 4px">'+(c.convType==="definitiva"?"✅":(c.convType==="descartada"?"❌":"⏳"))+"</td>"+
     '<td class="td-cat">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+"</td>"+
+    '<td class="td-status"><span class="badge '+st.c+'" style="font-size:9px;padding:2px 7px">'+st.l+"</span></td>"+
     '<td><div style="display:flex;flex-wrap:wrap;gap:2px">'+playerChips+"</div></td>"+
     '<td class="td-log">'+logCellConc(c.conc,c.startDate)+"</td>"+
     '<td class="td-log">'+logCellTraslado(c.traslado)+"</td>"+
     '<td class="td-log">'+logCellVuelta(c.vuelta,c.endDate)+"</td>"+
-    '<td class="td-matches">'+matchCell+"</td>"+
-    '<td class="td-status"><span class="badge '+st.c+'" style="font-size:9px;padding:2px 7px">'+st.l+"</span></td></tr>";
+    '<td class="td-matches">'+matchCell+"</td></tr>";
 }
 
 // ── DETAIL ──
@@ -1374,7 +1374,7 @@ function renderAgenda(viewMode){
 
   if(!filtered.length){h+=emptyState("Sin convocatorias en "+S.season,"📋");}
   else if(viewMode==="tabla"){
-    var thead='<thead><tr><th style="width:32px"></th><th>Cat.</th><th>Jugadores</th><th class="th-ida">📍 Citación</th><th class="th-ida">✈️ Traslado</th><th class="th-vuelta">🔙 Vuelta</th><th class="th-matches">⚽ Partidos</th><th>Estado</th></tr></thead>';
+    var thead='<thead><tr><th style="width:32px"></th><th>Cat.</th><th>Estado</th><th>Jugadores</th><th class="th-ida">📍 Citación</th><th class="th-ida">✈️ Traslado</th><th class="th-vuelta">🔙 Vuelta</th><th class="th-matches">⚽ Partidos</th></tr></thead>';
     if(up.length)h+='<div class="tabla-wrap"><table class="tabla">'+thead+'<tbody>'+up.map(callupTableRow).join("")+"</tbody></table></div>";
     if(done.length)h+='<details class="fin-details"'+(S.finOpen?" open":"")+'><summary class="fin-summary"><span class="fin-summary__label">Finalizadas</span><span class="fin-summary__count">'+done.length+'</span></summary><div style="margin-top:8px"><div class="tabla-wrap"><table class="tabla">'+thead+'<tbody>'+done.map(callupTableRow).join("")+"</tbody></table></div></div></details>";
   } else {
