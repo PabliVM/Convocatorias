@@ -61,8 +61,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:#13131A;color:var(--tex
 .st::after{content:"";flex:1;height:1px;background:var(--border)}
 
 /* FILTER BAR */
-.fb{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.fb::-webkit-scrollbar{display:none}
+.fb{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media(max-width:639px){.fb{scrollbar-width:none}.fb::-webkit-scrollbar{display:none}}
 .fbtn{flex-shrink:0;padding:8px 16px;border-radius:20px;border:1px solid var(--border-strong);background:var(--off-white-2);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:all var(--t);min-height:36px;box-shadow:var(--shadow-sm)}
 .fbtn.on{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:600;box-shadow:0 2px 8px rgba(26,58,143,.4)}
 
@@ -106,8 +106,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:#13131A;color:var(--tex
 .tbar-arrow:disabled{opacity:.2;cursor:default}
 .tbar-arrow-l{border-radius:8px 0 0 8px;margin-right:2px}
 .tbar-arrow-r{border-radius:0 8px 8px 0;margin-left:2px}
-.tbar{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
-.tbar::-webkit-scrollbar{display:none}
+.tbar{display:flex;gap:6px;overflow-x:auto;flex:1;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+@media(max-width:639px){.tbar{scrollbar-width:none}.tbar::-webkit-scrollbar{display:none}}
 .tbtn{flex-shrink:0;padding:8px 14px;border-radius:8px;border:1px solid var(--border-strong);background:var(--off-white-2);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:all var(--t);min-height:36px;box-shadow:var(--shadow-sm)}
 .tbtn.on{background:var(--navy);color:#fff !important;border-color:var(--navy);font-weight:600;box-shadow:0 2px 8px rgba(26,58,143,.35)}
 .tbtn-sm{padding:5px 11px;font-size:12px;min-height:30px}
@@ -384,8 +384,8 @@ details[open] .fin-summary__label::before{transform:rotate(90deg)}
 .pd-conv-sea{font-size:11px;color:var(--text-muted);flex-shrink:0;font-weight:600}
 
 /* JUGADORES */
-.jug-team-bar{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px;-webkit-overflow-scrolling:touch;padding-bottom:2px}
-.jug-team-bar::-webkit-scrollbar{display:none}
+.jug-team-bar{display:flex;gap:6px;overflow-x:auto;margin-bottom:8px;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+@media(max-width:639px){.jug-team-bar{scrollbar-width:none}.jug-team-bar::-webkit-scrollbar{display:none}}
 .jug-edit-btn{background:none;border:1px solid var(--border-strong);border-radius:6px;color:var(--gold);font-size:11px;padding:4px 8px;cursor:pointer;flex-shrink:0;font-family:inherit;font-weight:600;transition:all var(--t)}
 .jug-edit-btn:active{background:var(--off-white-3)}
 
@@ -495,6 +495,7 @@ details[open] .fin-summary__label::before{transform:rotate(90deg)}
   .btn-primary{width:auto;min-width:200px}
   .ri{flex-direction:row;align-items:center;gap:12px}
   .ri-teams{padding-left:0}
+  .fb,.jug-team-bar{flex-wrap:wrap}
 }
 
 /* ═══════════════════════════════════════════════
