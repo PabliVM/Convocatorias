@@ -914,8 +914,7 @@ function callupTableRow(c){
   var selLabel=k==="internacional"&&c.pais?paisAdj(c.pais):(sel?sel.label:c.selectionType);
   var activePlayers=(c.players||[]).filter(function(p){return !p.dropStatus||p.dropStatus==="active";});
   var pc=activePlayers.length;
-  var playerChips=activePlayers.slice(0,4).map(function(p){var pts=p.fullName.split(" ");return'<span class="chip" style="font-size:10px;padding:2px 6px">'+esc(pts[0]+(pts[1]?" "+pts[1].charAt(0)+".":""))+"</span>";}).join("");
-  if(pc>4)playerChips+='<span class="chip chip-more" style="font-size:10px;padding:2px 6px">+'+(pc-4)+"</span>";
+  var playerChips=activePlayers.map(function(p){var pts=p.fullName.split(" ");return'<span class="chip" style="font-size:10px;padding:2px 6px">'+esc(pts[0]+(pts[1]?" "+pts[1].charAt(0)+".":""))+"</span>";}).join("");
   if(!pc)playerChips='<span style="color:var(--text-muted);font-size:11px">—</span>';
   function logCellConc(obj,fallbackDate){
     if(!obj||(!obj.date&&!obj.time&&!obj.lugar&&!obj.hotel))return'<span class="td-log-empty">—</span>';
