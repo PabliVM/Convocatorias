@@ -844,7 +844,7 @@ function selBadge(type,cat,pais){
   var k=selKey(type);var s=SELS[k];if(!s)return"";
   if(!cat)cat="abs";
   var c=(s.colors&&s.colors[cat])?s.colors[cat]:{badge:"#666"};
-  var flag=k==="madrilena"?'<img src="https://raw.githubusercontent.com/PabliVM/Convocatorias/main/MADRID.png" style="width:16px;height:12px;object-fit:cover;border-radius:2px;vertical-align:middle"/>':k==="espanola"?"🇪🇸":(pais?getFlag(pais):"🌍");
+  var flag=k==="madrilena"?'<img src="https://raw.githubusercontent.com/PabliVM/Convocatorias/main/MADRID.png" style="width:16px;height:12px;object-fit:cover;border-radius:2px;vertical-align:middle"/>':k==="espanola"?'<img src="https://raw.githubusercontent.com/PabliVM/Convocatorias/main/Espa%C3%B1a.png" style="width:16px;height:12px;object-fit:cover;border-radius:2px;vertical-align:middle"/>':(pais?getFlag(pais):"🌍");
   var label=k==="internacional"&&pais?(CAT[cat]||cat)+" "+paisAdj(pais):(CAT[cat]||cat)+" "+s.short;
   return'<span class="badge" style="background:'+c.badge+';color:#fff">'+flag+" "+label+"</span>";
 }
@@ -945,7 +945,7 @@ function callupTableRow(c){
   return'<tr class="trow'+(pc===0?" trow-empty":"")+(c.convType==="descartada"?" trow-empty":"")+'" data-id="'+c.id+'">'+
     '<td style="text-align:center;font-size:20px;width:32px;padding:8px 4px">'+(c.convType==="definitiva"?"✅":(c.convType==="descartada"?"❌":"⏳"))+"</td>"+
     '<td class="td-flag">'+flag+"</td>"+
-    '<td class="td-cat"><span class="badge" style="background:'+col.badge+';color:#fff;font-size:10px">'+catLabel+"</span>"+
+    '<td class="td-cat">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+
     '<div class="td-sel-sub">'+esc(selLabel)+"</div></td>"+
     '<td><div style="display:flex;flex-wrap:wrap;gap:2px">'+playerChips+"</div></td>"+
     '<td class="td-log">'+logCellConc(c.conc,c.startDate)+"</td>"+
