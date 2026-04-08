@@ -65,6 +65,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:#13131A;color:var(--tex
 @media(max-width:639px){.fb{scrollbar-width:none}.fb::-webkit-scrollbar{display:none}}
 .fbtn{flex-shrink:0;padding:8px 16px;border-radius:20px;border:1px solid var(--border-strong);background:var(--off-white-2);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:all var(--t);min-height:36px;box-shadow:var(--shadow-sm)}
 .fbtn.on{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:600;box-shadow:0 2px 8px rgba(26,58,143,.4)}
+.fbtn-mad.on{background:#1A3A8F;border-color:#1A3A8F;box-shadow:0 2px 8px rgba(26,58,143,.5)}
+.fbtn-esp.on{background:#DC2626;border-color:#DC2626;box-shadow:0 2px 8px rgba(220,38,38,.4)}
+.fbtn-int.on{background:#059669;border-color:#059669;box-shadow:0 2px 8px rgba(5,150,105,.4)}
 
 /* BADGES */
 .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
@@ -671,13 +674,13 @@ _loadScript("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js",
   </main>
   <nav class="nav">
     <button class="nb nb-new" data-v="nueva" style="display:none"><span class="ni">+</span><span class="nl">Nueva</span></button>
-    <button class="nb active" data-v="agenda"><span class="ni">📅</span><span class="nl">Agenda</span></button>
-    <button class="nb" data-v="madrilena"><span class="ni">🔵</span><span class="nl">RFFM</span></button>
-    <button class="nb" data-v="espanola"><span class="ni">🔴</span><span class="nl">RFEF</span></button>
-    <button class="nb" data-v="internacional"><span class="ni">🌍</span><span class="nl">OTRAS</span></button>
-    <button class="nb" data-v="jugadores" style="display:none"><span class="ni">👥</span><span class="nl">Jugadores</span></button>
-    <button class="nb" data-v="calendario"><span class="ni">🗓</span><span class="nl">Cal/Plan</span></button>
-    <button class="nb" data-v="stats"><span class="ni">📊</span><span class="nl">Stats</span></button>
+    <button class="nb active" data-v="agenda"><span class="ni">☰</span><span class="nl">Agenda</span></button>
+    <button class="nb" data-v="madrilena"><span class="ni"><img src="https://raw.githubusercontent.com/PabliVM/Convocatorias/main/MADRID.png" style="width:18px;height:13px;object-fit:cover;border-radius:2px"/></span><span class="nl">RFFM</span></button>
+    <button class="nb" data-v="espanola"><span class="ni"><img src="https://raw.githubusercontent.com/PabliVM/Convocatorias/main/Espa%C3%B1a.png" style="width:18px;height:13px;object-fit:cover;border-radius:2px"/></span><span class="nl">RFEF</span></button>
+    <button class="nb" data-v="internacional"><span class="ni">◉</span><span class="nl">OTRAS</span></button>
+    <button class="nb" data-v="jugadores" style="display:none"><span class="ni">⊞</span><span class="nl">Jugadores</span></button>
+    <button class="nb" data-v="calendario"><span class="ni">▦</span><span class="nl">Cal/Plan</span></button>
+    <button class="nb" data-v="stats"><span class="ni">▥</span><span class="nl">Stats</span></button>
   </nav>
 </div>
 
@@ -1367,9 +1370,9 @@ function renderAgenda(viewMode){
     '</div></div></div>'+
     '<div class="fb">'+
     '<button class="fbtn'+(!S.filterType?" on":"")+'" data-f="">Todas</button>'+
-    '<button class="fbtn'+(S.filterType==="madrilena"?" on":"")+'" data-f="madrilena">🔵 RFFM</button>'+
-    '<button class="fbtn'+(S.filterType==="espanola"?" on":"")+'" data-f="espanola">🔴 RFEF</button>'+
-    '<button class="fbtn'+(S.filterType==="internacional"?" on":"")+'" data-f="internacional">🟢 OTRAS</button>'+
+    '<button class="fbtn fbtn-mad'+(S.filterType==="madrilena"?" on":"")+'" data-f="madrilena"><img src="https://raw.githubusercontent.com/PabliVM/Convocatorias/main/MADRID.png" style="width:14px;height:10px;object-fit:cover;border-radius:1px;vertical-align:middle"/> RFFM</button>'+
+    '<button class="fbtn fbtn-esp'+(S.filterType==="espanola"?" on":"")+'" data-f="espanola"><img src="https://raw.githubusercontent.com/PabliVM/Convocatorias/main/Espa%C3%B1a.png" style="width:14px;height:10px;object-fit:cover;border-radius:1px;vertical-align:middle"/> RFEF</button>'+
+    '<button class="fbtn fbtn-int'+(S.filterType==="internacional"?" on":"")+'" data-f="internacional">🌍 OTRAS</button>'+
     (descartadas.length?'<button class="fbtn'+(S.showDescartadas?" on":"")+'" id="btn-show-desc" style="border-color:rgba(239,68,68,.4);'+(S.showDescartadas?"background:rgba(239,68,68,.15);color:#EF4444":"")+'">❌ Descartadas ('+descartadas.length+')</button>':"")+
     '</div>';
 
