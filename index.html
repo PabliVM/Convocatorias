@@ -238,13 +238,21 @@ body{font-family:'Inter',system-ui,sans-serif;background:#13131A;color:var(--tex
 .sp-chips{display:flex;flex-wrap:wrap;gap:4px}
 .ferr{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.25);border-radius:var(--r-sm);padding:12px;margin-bottom:16px;color:#B91C1C;font-size:13px;line-height:1.6}
 .fact{display:flex;flex-direction:column;gap:10px;padding-top:8px}
-.fsec{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;margin-top:14px;margin-bottom:8px}
+.fsec{display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:8px;margin-top:20px;margin-bottom:12px}
 .fsec-ico{font-size:16px}
-.fsec-lbl{font-size:13px;font-weight:700;letter-spacing:.03em}
+.fsec-lbl{font-size:14px;font-weight:700;letter-spacing:.03em}
 .fsec-conc{background:rgba(26,58,143,.18);border:1px solid rgba(26,58,143,.35)}
 .fsec-conc .fsec-lbl{color:#7BA4F8}
 .fsec-vuelta{background:rgba(80,80,110,.15);border:1px solid rgba(100,100,140,.25)}
 .fsec-vuelta .fsec-lbl{color:var(--text-mid)}
+.fsec-info{background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.3)}
+.fsec-info .fsec-lbl{color:var(--gold)}
+.fsec-match{background:rgba(200,169,110,.12);border:1px solid rgba(200,169,110,.3)}
+.fsec-match .fsec-lbl{color:var(--gold)}
+.fsec-players{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3)}
+.fsec-players .fsec-lbl{color:#34D399}
+.fsec-extra{background:rgba(107,114,128,.1);border:1px solid rgba(107,114,128,.25)}
+.fsec-extra .fsec-lbl{color:var(--text-mid)}
 
 /* MATCHES IN FORM */
 .matches-wrap{}
@@ -675,9 +683,6 @@ _loadScript("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js",
   <nav class="nav">
     <button class="nb nb-new" data-v="nueva" style="display:none"><span class="ni">+</span><span class="nl">Nueva</span></button>
     <button class="nb active" data-v="agenda"><span class="ni">☰</span><span class="nl">Agenda</span></button>
-    <button class="nb" data-v="madrilena"><span class="ni"><img src="https://raw.githubusercontent.com/PabliVM/Convocatorias/main/MADRID.png" style="width:18px;height:13px;object-fit:cover;border-radius:2px"/></span><span class="nl">RFFM</span></button>
-    <button class="nb" data-v="espanola"><span class="ni"><img src="https://raw.githubusercontent.com/PabliVM/Convocatorias/main/Espa%C3%B1a.png" style="width:18px;height:13px;object-fit:cover;border-radius:2px"/></span><span class="nl">RFEF</span></button>
-    <button class="nb" data-v="internacional"><span class="ni">◉</span><span class="nl">OTRAS</span></button>
     <button class="nb" data-v="jugadores" style="display:none"><span class="ni">⊞</span><span class="nl">Jugadores</span></button>
     <button class="nb" data-v="calendario"><span class="ni">▦</span><span class="nl">Cal/Plan</span></button>
     <button class="nb" data-v="stats"><span class="ni">▥</span><span class="nl">Stats</span></button>
@@ -1354,12 +1359,26 @@ if(c.vuelta){var vf={vueltaDesde:c.vuelta.desde,vueltaDate:c.vuelta.date,vueltaT
 function renderAgenda(viewMode){
   viewMode=viewMode||S.agendaView||"fichas";S.agendaView=viewMode;
   if(S.showDescartadas===undefined)S.showDescartadas=false;
+  if(!S.filterCat)S.filterCat=null;
   var all=sortDate(getCallups({season:S.season}),"asc");
   var descartadas=all.filter(function(c){return c.convType==="descartada";});
   var visible=S.showDescartadas?all:all.filter(function(c){return c.convType!=="descartada";});
   var filtered=S.filterType?visible.filter(function(c){return selKey(c.selectionType)===S.filterType;}):visible;
+  if(S.filterCat)filtered=filtered.filter(function(c){return c.selectionCategory===S.filterCat;});
   var up=filtered.filter(function(c){return c.status!=="finalizada";});
   var done=sortDate(filtered.filter(function(c){return c.status==="finalizada";}),"asc");
+  // Build category pills when a type is selected
+  var catPills="";
+  if(S.filterType){
+    var sel=SELS[S.filterType];
+    if(sel){
+      var cats=sel.cats||[];
+      catPills='<div class="fb" style="margin-top:-8px">'+
+        '<button class="fbtn'+(!S.filterCat?" on":"")+'" data-cat="">Todas</button>'+
+        cats.map(function(c){return'<button class="fbtn'+(S.filterCat===c?" on":"")+'" data-cat="'+c+'">'+(CAT[c]||c)+"</button>";}).join("")+
+        '</div>';
+    }
+  }
   var h='<div class="vh" style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:8px;justify-content:space-between">'+
     '<h1 class="vt">Agenda</h1>'+
     '<div class="view-toggle">'+
@@ -1374,7 +1393,7 @@ function renderAgenda(viewMode){
     '<button class="fbtn fbtn-esp'+(S.filterType==="espanola"?" on":"")+'" data-f="espanola"><img src="https://raw.githubusercontent.com/PabliVM/Convocatorias/main/Espa%C3%B1a.png" style="width:14px;height:10px;object-fit:cover;border-radius:1px;vertical-align:middle"/> RFEF</button>'+
     '<button class="fbtn fbtn-int'+(S.filterType==="internacional"?" on":"")+'" data-f="internacional">🌍 OTRAS</button>'+
     (descartadas.length?'<button class="fbtn'+(S.showDescartadas?" on":"")+'" id="btn-show-desc" style="border-color:rgba(239,68,68,.4);'+(S.showDescartadas?"background:rgba(239,68,68,.15);color:#EF4444":"")+'">❌ Descartadas ('+descartadas.length+')</button>':"")+
-    '</div>';
+    '</div>'+catPills;
 
   if(!filtered.length){h+=emptyState("Sin convocatorias en "+S.season,"📋");}
   else if(viewMode==="tabla"){
@@ -1391,7 +1410,8 @@ function renderAgenda(viewMode){
   if(det)det.addEventListener("toggle",function(){S.finOpen=det.open;});
   if(viewMode==="fichas")bindCards();
   else document.querySelectorAll(".trow").forEach(function(row){row.addEventListener("click",function(){openDetail(row.dataset.id);});});
-  document.querySelectorAll("[data-f]").forEach(function(b){b.addEventListener("click",function(){S.filterType=b.dataset.f||null;renderAgenda(S.agendaView);});});
+  document.querySelectorAll("[data-f]").forEach(function(b){b.addEventListener("click",function(){S.filterType=b.dataset.f||null;S.filterCat=null;renderAgenda(S.agendaView);});});
+  document.querySelectorAll("[data-cat]").forEach(function(b){b.addEventListener("click",function(){S.filterCat=b.dataset.cat||null;renderAgenda(S.agendaView);});});
   document.querySelectorAll("[data-vm]").forEach(function(b){b.addEventListener("click",function(){renderAgenda(b.dataset.vm);});});
   var btnDesc=document.getElementById("btn-show-desc");
   if(btnDesc)btnDesc.addEventListener("click",function(){S.showDescartadas=!S.showDescartadas;renderAgenda(S.agendaView);});
@@ -1538,10 +1558,11 @@ function renderNueva(){
     '<div class="vh" style="margin-bottom:8px"><h1 class="vt">'+(S.editingId?"Editar Convocatoria":"Nueva Convocatoria")+'</h1><span class="vs">'+S.season+"</span></div>"+
     '<div id="ai-parser-wrap" style="margin-bottom:12px"><button type="button" class="btn-ai-parser" id="btn-ai-parser">✨ Rellenar con nota de prensa</button></div>'+
     '<form id="cf" autocomplete="off">'+
+    '<div class="fsec fsec-info"><span class="fsec-ico">📋</span><span class="fsec-lbl">Información general</span></div>'+
     '<div class="fg"><label class="fl">Tipo de selección *</label><div class="rc-group">'+
-    '<label class="rc"><input type="radio" name="selType" value="madrilena"/><span class="rc-ico">🔵</span><span class="rc-lbl">Madrileña</span></label>'+
-    '<label class="rc"><input type="radio" name="selType" value="espanola"/><span class="rc-ico">🔴</span><span class="rc-lbl">Española</span></label>'+
-    '<label class="rc"><input type="radio" name="selType" value="internacional"/><span class="rc-ico">🟢</span><span class="rc-lbl">Internacional</span></label>'+
+    '<label class="rc"><input type="radio" name="selType" value="madrilena"/><span class="rc-ico"><img src="https://raw.githubusercontent.com/PabliVM/Convocatorias/main/MADRID.png" style="width:24px;height:16px;object-fit:cover;border-radius:2px"/></span><span class="rc-lbl">Madrileña</span></label>'+
+    '<label class="rc"><input type="radio" name="selType" value="espanola"/><span class="rc-ico"><img src="https://raw.githubusercontent.com/PabliVM/Convocatorias/main/Espa%C3%B1a.png" style="width:24px;height:16px;object-fit:cover;border-radius:2px"/></span><span class="rc-lbl">Española</span></label>'+
+    '<label class="rc"><input type="radio" name="selType" value="internacional"/><span class="rc-ico">🌍</span><span class="rc-lbl">Internacional</span></label>'+
     "</div></div>"+
     '<div class="fg" id="pais-g" style="display:none"><label class="fl">País *</label><div id="pais-pills" class="pais-pills"></div><input class="fi" type="text" id="f-pais" name="pais" placeholder="Escribe el país..." style="display:none;margin-top:6px"/></div>'+
     '<div class="fg" id="cat-g" style="display:none"><label class="fl">Categoría *</label><select class="fsel" id="sel-cat" name="selCat"><option value="">Selecciona categoría</option></select></div>'+
@@ -1550,6 +1571,7 @@ function renderNueva(){
     '<div class="fg"><label class="fl">Tipo de convocatoria</label><select class="fsel" name="convType"><option value="provisional">⏳ Provisional</option><option value="definitiva">✅ Definitiva</option></select></div>'+
     '<div class="fg" id="limit-date-g"><label class="fl">Fecha límite confirmación</label><input class="fi" type="date" name="limitDate"/><p style="font-size:11px;color:var(--text-muted);margin-top:4px">Si no se confirma antes de esta fecha, se descartará automáticamente</p></div>'+
     '<div class="frow"><div class="fg"><label class="fl">Inicio *</label><input class="fi" type="date" name="startDate"/></div><div class="fg"><label class="fl">Fin *</label><input class="fi" type="date" name="endDate"/></div></div>'+
+    '<div class="fg"><label class="fl">Lugar de concentración</label><input class="fi" type="text" name="location" placeholder="Ej: Ciudad del Fútbol, Las Rozas"/></div>'+
 '<div class="fsec fsec-conc"><span class="fsec-ico">📍</span><span class="fsec-lbl">Citación</span></div>'+
 '<div class="frow"><div class="fg"><label class="fl">Fecha citación</label><input class="fi" type="date" name="concDate"/></div><div class="fg"><label class="fl">Hora</label><input class="fi" type="time" name="concTime"/></div></div>'+
 '<div class="fg"><label class="fl">Lugar de citación</label><input class="fi" type="text" name="concLugar" placeholder="Ej: Ciudad del Fútbol, Las Rozas..."/></div>'+
@@ -1568,11 +1590,13 @@ function renderNueva(){
 '<div class="fg"><label class="fl">Medio y localizador</label><input class="fi" type="text" name="vueltaTransporte" placeholder="Ej: Vuelo IB5678 · Localizador XYZ789"/></div>'+
 '<div class="fg"><label class="fl">Hasta (destino vuelta)</label><input class="fi" type="text" name="vueltaHasta" placeholder="Ej: Aeropuerto T4 Madrid..."/></div>'+
 '<div class="fg"><label class="fl">Notas vuelta</label><textarea class="fta" name="vueltaNotas" rows="2" placeholder="Ej: Bus al CRM. Llegada 16:30h. Recogida familias..." style="min-height:50px"></textarea></div>'+
-    '<div class="fg matches-wrap"><label class="fl">Partidos / Entrenamientos</label><div id="matches-list"></div><button type="button" class="btn-add-match" id="btn-add-match">+ Añadir partido / entrenamiento</button></div>'+
-    '<div class="fg"><label class="fl">Lugar de concentración</label><input class="fi" type="text" name="location" placeholder="Ej: Ciudad del Fútbol, Las Rozas"/></div>'+
-    '<div class="fg"><label class="fl">Jugadores convocados</label>'+
+    '<div class="fsec fsec-match"><span class="fsec-ico">⚽</span><span class="fsec-lbl">Partidos / Entrenamientos</span></div>'+
+    '<div class="fg matches-wrap"><div id="matches-list"></div><button type="button" class="btn-add-match" id="btn-add-match">+ Añadir partido / entrenamiento</button></div>'+
+    '<div class="fsec fsec-players"><span class="fsec-ico">👕</span><span class="fsec-lbl">Jugadores convocados</span></div>'+
+    '<div class="fg">'+
     '<input class="fi" type="text" id="psearch" placeholder="🔍 Buscar jugador..." autocomplete="off" style="margin-bottom:8px"/>'+
     '<div class="psel" id="psel">'+pselHTML+'</div><div id="sprev" class="sp"></div></div>'+
+    '<div class="fsec fsec-extra"><span class="fsec-ico">📝</span><span class="fsec-lbl">Información adicional</span></div>'+
     '<div class="fg"><label class="fl">Observaciones</label><textarea class="fta" name="notes" rows="3" placeholder="Info adicional..."></textarea></div>'+
     '<div id="ferr" class="ferr" style="display:none"></div>'+
     '<div class="fact"><button type="button" class="btn btn-ghost" id="btn-cancel">Cancelar</button><button type="submit" class="btn btn-primary" id="btn-submit">✓ Guardar convocatoria</button></div>'+
