@@ -253,6 +253,16 @@ body{font-family:'Inter',system-ui,sans-serif;background:#13131A;color:var(--tex
 .fsec-players .fsec-lbl{color:#34D399}
 .fsec-extra{background:rgba(107,114,128,.1);border:1px solid rgba(107,114,128,.25)}
 .fsec-extra .fsec-lbl{color:var(--text-mid)}
+.fblock{background:var(--off-white);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:6px}
+.fblock-info{border-color:rgba(200,169,110,.2);background:rgba(200,169,110,.02)}
+.fblock-conc{border-color:rgba(26,58,143,.2);background:rgba(26,58,143,.02)}
+.fblock-traslado{border-color:rgba(59,130,246,.2);background:rgba(59,130,246,.02)}
+.fblock-vuelta{border-color:rgba(100,100,140,.15);background:rgba(80,80,110,.02)}
+.fblock-match{border-color:rgba(200,169,110,.2);background:rgba(200,169,110,.02)}
+.fblock-players{border-color:rgba(52,211,153,.2);background:rgba(52,211,153,.02)}
+.fblock-extra{border-color:rgba(107,114,128,.15);background:rgba(107,114,128,.02)}
+.fblock .fsec{margin-top:0;margin-bottom:14px;margin-left:-16px;margin-right:-16px;border-radius:0;border-left:none;border-right:none}
+.fblock .fsec:first-child{margin-top:-16px;border-top:none;border-radius:var(--r) var(--r) 0 0}
 
 /* MATCHES IN FORM */
 .matches-wrap{}
@@ -1558,6 +1568,7 @@ function renderNueva(){
     '<div class="vh" style="margin-bottom:8px"><h1 class="vt">'+(S.editingId?"Editar Convocatoria":"Nueva Convocatoria")+'</h1><span class="vs">'+S.season+"</span></div>"+
     '<div id="ai-parser-wrap" style="margin-bottom:12px"><button type="button" class="btn-ai-parser" id="btn-ai-parser">✨ Rellenar con nota de prensa</button></div>'+
     '<form id="cf" autocomplete="off">'+
+    '<div class="fblock fblock-info">'+
     '<div class="fsec fsec-info"><span class="fsec-ico">📋</span><span class="fsec-lbl">Información general</span></div>'+
     '<div class="fg"><label class="fl">Tipo de selección *</label><div class="rc-group">'+
     '<label class="rc"><input type="radio" name="selType" value="madrilena"/><span class="rc-ico"><img src="https://raw.githubusercontent.com/PabliVM/Convocatorias/main/MADRID.png" style="width:24px;height:16px;object-fit:cover;border-radius:2px"/></span><span class="rc-lbl">Madrileña</span></label>'+
@@ -1572,11 +1583,15 @@ function renderNueva(){
     '<div class="fg" id="limit-date-g"><label class="fl">Fecha límite confirmación</label><input class="fi" type="date" name="limitDate"/><p style="font-size:11px;color:var(--text-muted);margin-top:4px">Si no se confirma antes de esta fecha, se descartará automáticamente</p></div>'+
     '<div class="frow"><div class="fg"><label class="fl">Inicio *</label><input class="fi" type="date" name="startDate"/></div><div class="fg"><label class="fl">Fin *</label><input class="fi" type="date" name="endDate"/></div></div>'+
     '<div class="fg"><label class="fl">Lugar de concentración</label><input class="fi" type="text" name="location" placeholder="Ej: Ciudad del Fútbol, Las Rozas"/></div>'+
+    '</div>'+
+'<div class="fblock fblock-conc">'+
 '<div class="fsec fsec-conc"><span class="fsec-ico">📍</span><span class="fsec-lbl">Citación</span></div>'+
 '<div class="frow"><div class="fg"><label class="fl">Fecha citación</label><input class="fi" type="date" name="concDate"/></div><div class="fg"><label class="fl">Hora</label><input class="fi" type="time" name="concTime"/></div></div>'+
 '<div class="fg"><label class="fl">Lugar de citación</label><input class="fi" type="text" name="concLugar" placeholder="Ej: Ciudad del Fútbol, Las Rozas..."/></div>'+
 '<div class="fg"><label class="fl">Alojamiento</label><input class="fi" type="text" name="concHotel" placeholder="Ej: Hotel NH Las Rozas..."/></div>'+
 '<div class="fg"><label class="fl">Notas citación</label><textarea class="fta" name="concNotas" rows="2" placeholder="Ej: Presentarse con DNI. Cena a las 21:00..." style="min-height:50px"></textarea></div>'+
+'</div>'+
+'<div class="fblock fblock-traslado">'+
 '<div class="fsec fsec-traslado"><span class="fsec-ico">✈️</span><span class="fsec-lbl">Traslado (ida)</span></div>'+
 '<div class="fg"><label class="fl">Desde (origen)</label><input class="fi" type="text" name="trasladoDesde" placeholder="Ej: Aeropuerto T4 Madrid..."/></div>'+
 '<div class="frow"><div class="fg"><label class="fl">Fecha salida</label><input class="fi" type="date" name="trasladoDate"/></div><div class="fg"><label class="fl">Hora</label><input class="fi" type="time" name="trasladoTime"/></div></div>'+
@@ -1584,20 +1599,29 @@ function renderNueva(){
 '<div class="fg"><label class="fl">Hasta (destino)</label><input class="fi" type="text" name="trasladoHasta" placeholder="Ej: Aeropuerto de Lisboa..."/></div>'+
 '<div class="fg"><label class="fl">Alojamiento en destino</label><input class="fi" type="text" name="trasladoHotel" placeholder="Ej: Hotel Marriott Lisboa..."/></div>'+
 '<div class="fg"><label class="fl">Notas traslado</label><textarea class="fta" name="trasladoNotas" rows="2" placeholder="Ej: Bus desde aeropuerto al hotel (30 min)..." style="min-height:50px"></textarea></div>'+
+'</div>'+
+'<div class="fblock fblock-vuelta">'+
 '<div class="fsec fsec-vuelta"><span class="fsec-ico">🔙</span><span class="fsec-lbl">Vuelta</span></div>'+
 '<div class="fg"><label class="fl">Desde (origen vuelta)</label><input class="fi" type="text" name="vueltaDesde" placeholder="Ej: Aeropuerto de Lisboa..."/></div>'+
 '<div class="frow"><div class="fg"><label class="fl">Fecha vuelta</label><input class="fi" type="date" name="vueltaDate"/></div><div class="fg"><label class="fl">Hora</label><input class="fi" type="time" name="vueltaTime"/></div></div>'+
 '<div class="fg"><label class="fl">Medio y localizador</label><input class="fi" type="text" name="vueltaTransporte" placeholder="Ej: Vuelo IB5678 · Localizador XYZ789"/></div>'+
 '<div class="fg"><label class="fl">Hasta (destino vuelta)</label><input class="fi" type="text" name="vueltaHasta" placeholder="Ej: Aeropuerto T4 Madrid..."/></div>'+
 '<div class="fg"><label class="fl">Notas vuelta</label><textarea class="fta" name="vueltaNotas" rows="2" placeholder="Ej: Bus al CRM. Llegada 16:30h. Recogida familias..." style="min-height:50px"></textarea></div>'+
+'</div>'+
+    '<div class="fblock fblock-match">'+
     '<div class="fsec fsec-match"><span class="fsec-ico">⚽</span><span class="fsec-lbl">Partidos / Entrenamientos</span></div>'+
     '<div class="fg matches-wrap"><div id="matches-list"></div><button type="button" class="btn-add-match" id="btn-add-match">+ Añadir partido / entrenamiento</button></div>'+
+    '</div>'+
+    '<div class="fblock fblock-players">'+
     '<div class="fsec fsec-players"><span class="fsec-ico">👕</span><span class="fsec-lbl">Jugadores convocados</span></div>'+
     '<div class="fg">'+
     '<input class="fi" type="text" id="psearch" placeholder="🔍 Buscar jugador..." autocomplete="off" style="margin-bottom:8px"/>'+
     '<div class="psel" id="psel">'+pselHTML+'</div><div id="sprev" class="sp"></div></div>'+
+    '</div>'+
+    '<div class="fblock fblock-extra">'+
     '<div class="fsec fsec-extra"><span class="fsec-ico">📝</span><span class="fsec-lbl">Información adicional</span></div>'+
     '<div class="fg"><label class="fl">Observaciones</label><textarea class="fta" name="notes" rows="3" placeholder="Info adicional..."></textarea></div>'+
+    '</div>'+
     '<div id="ferr" class="ferr" style="display:none"></div>'+
     '<div class="fact"><button type="button" class="btn btn-ghost" id="btn-cancel">Cancelar</button><button type="submit" class="btn btn-primary" id="btn-submit">✓ Guardar convocatoria</button></div>'+
     "</form>";
