@@ -75,6 +75,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:#13131A;color:var(--tex
 .conv-prov{background:rgba(251,191,36,.1);color:#FBBF24;border:1px solid rgba(251,191,36,.3);font-size:10px;padding:2px 8px}
 .conv-def{background:rgba(52,211,153,.1);color:#34D399;border:1px solid rgba(52,211,153,.3);font-size:10px;padding:2px 8px}
 .conv-desc{background:rgba(239,68,68,.1);color:#EF4444;border:1px solid rgba(239,68,68,.3);font-size:10px;padding:2px 8px}
+.prov-alert{font-size:10px;padding:2px 8px;animation:pulseAlert 2s ease-in-out infinite}
+.prov-alert-soon{background:rgba(251,191,36,.15);color:#F59E0B;border:1px solid rgba(251,191,36,.4)}
+.prov-alert-today{background:rgba(239,68,68,.15);color:#EF4444;border:1px solid rgba(239,68,68,.4)}
+.prov-alert-late{background:rgba(239,68,68,.2);color:#EF4444;border:1px solid rgba(239,68,68,.5)}
+@keyframes pulseAlert{0%,100%{opacity:1}50%{opacity:.6}}
 .s-cur{background:rgba(5,150,105,.1);color:var(--s-cur);border:1px solid rgba(5,150,105,.3)}
 .s-fin{background:rgba(107,114,154,.1);color:var(--s-fin);border:1px solid rgba(107,114,154,.2)}
 
@@ -756,6 +761,8 @@ function canEdit(){return !!window._fbUser;}
 function canWrite(){return !!window._fbUser;}
 function esc(s){if(!s)return"";return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function calcStatus(s,e){var n=new Date();n.setHours(0,0,0,0);var a=new Date(s+"T00:00:00"),b=new Date(e+"T23:59:59");return n<a?"proxima":n>b?"finalizada":"en_curso";}
+function daysUntil(dateStr){if(!dateStr)return 999;var now=new Date();now.setHours(0,0,0,0);var d=new Date(dateStr+"T00:00:00");return Math.ceil((d-now)/(1000*60*60*24));}
+function provAlertBadge(c){if(c.convType!=="provisional")return"";var days=daysUntil(c.startDate);if(days>7)return"";if(days<0)return'<span class="badge prov-alert prov-alert-late">⚠️ Sin confirmar</span>';if(days===0)return'<span class="badge prov-alert prov-alert-today">⚠️ HOY</span>';return'<span class="badge prov-alert prov-alert-soon">⚠️ '+days+'d</span>';}
 function fmtRange(s,e){if(!s)return"—";var a=new Date(s+"T12:00:00"),b=new Date(e+"T12:00:00");return a.toLocaleDateString("es-ES",{day:"2-digit",month:"short"})+" — "+b.toLocaleDateString("es-ES",{day:"2-digit",month:"short",year:"numeric"});}
 function fmtDateShort(d){if(!d)return"";var dt=new Date(d+"T12:00:00");return dt.toLocaleDateString("es-ES",{day:"2-digit",month:"short"});}
 function teamNow(p){if(!p||!p.teamHistory||!p.teamHistory.length)return null;for(var i=0;i<p.teamHistory.length;i++){if(p.teamHistory[i].to===null)return p.teamHistory[i];}return p.teamHistory[p.teamHistory.length-1];}
@@ -894,6 +901,7 @@ function callupCard(c){
     '<div class="cc-convtype" style="display:flex;align-items:center;gap:8px;margin:-16px -16px 10px;padding:8px 16px;border-radius:var(--r) var(--r) 0 0;background:rgba(255,255,255,.03)">'+
     '<span style="font-size:24px;line-height:1">'+(c.convType==="definitiva"?"✅":(c.convType==="descartada"?"❌":"⏳"))+'</span>'+
     '<span style="font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:'+(c.convType==="definitiva"?"#34D399":(c.convType==="descartada"?"#EF4444":"#FBBF24"))+'">'+(c.convType==="definitiva"?"Definitiva":(c.convType==="descartada"?"No seleccionados":"Provisional"))+'</span>'+
+    provAlertBadge(c)+
     '</div>'+
     '<div class="cc-hdr"><div class="cc-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+"</div></div>"+
     '<h3 class="cc-title">'+esc(c.title)+"</h3>"+
@@ -968,7 +976,7 @@ function callupTableRow(c){
   }).filter(Boolean):[];
   var matchCell=_mcells.length?_mcells.join(""):'<span class="td-log-empty">—</span>';
   return'<tr class="trow'+(pc===0?" trow-empty":"")+(c.convType==="descartada"?" trow-empty":"")+'" data-id="'+c.id+'">'+
-    '<td style="text-align:center;font-size:20px;width:32px;padding:8px 4px">'+(c.convType==="definitiva"?"✅":(c.convType==="descartada"?"❌":"⏳"))+"</td>"+
+    '<td style="text-align:center;font-size:20px;width:44px;padding:8px 4px">'+(c.convType==="definitiva"?"✅":(c.convType==="descartada"?"❌":"⏳"))+provAlertBadge(c)+"</td>"+
     '<td class="td-cat">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+"</td>"+
     '<td class="td-status"><span class="badge '+st.c+'" style="font-size:9px;padding:2px 7px">'+st.l+"</span></td>"+
     '<td><div style="display:flex;flex-wrap:wrap;gap:2px">'+playerChips+"</div></td>"+
@@ -1014,7 +1022,7 @@ function callupDetail(c){
 
   return'<div class="dp-hdr">'+
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'+
-    '<div class="dp-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+convTypeBadge(c.convType||"provisional")+"</div>"+
+    '<div class="dp-badges">'+selBadge(c.selectionType,c.selectionCategory,c.pais)+statusBadge(c.status)+convTypeBadge(c.convType||"provisional")+provAlertBadge(c)+"</div>"+
     '<span style="font-size:32px;line-height:1">'+getSelFlag(c.selectionType,c.pais)+"</span></div>"+
     '<h2 class="dp-title">'+esc(c.title)+"</h2>"+
     '<p class="dp-sea">Temporada '+c.season+"</p></div>"+
@@ -1423,7 +1431,7 @@ function renderAgenda(viewMode){
 
   if(!filtered.length){h+=emptyState("Sin convocatorias en "+S.season,"📋");}
   else if(viewMode==="tabla"){
-    var thead='<thead><tr><th style="width:32px"></th><th>Cat.</th><th>Estado</th><th>Jugadores</th><th class="th-ida">📍 Citación</th><th class="th-ida">✈️ Traslado</th><th class="th-vuelta">🔙 Vuelta</th><th class="th-matches">⚽ Partidos</th></tr></thead>';
+    var thead='<thead><tr><th style="width:44px"></th><th>Cat.</th><th>Estado</th><th>Jugadores</th><th class="th-ida">📍 Citación</th><th class="th-ida">✈️ Traslado</th><th class="th-vuelta">🔙 Vuelta</th><th class="th-matches">⚽ Partidos</th></tr></thead>';
     if(up.length)h+='<div class="tabla-wrap"><table class="tabla">'+thead+'<tbody>'+up.map(callupTableRow).join("")+"</tbody></table></div>";
     if(done.length)h+='<details class="fin-details"'+(S.finOpen?" open":"")+'><summary class="fin-summary"><span class="fin-summary__label">Finalizadas</span><span class="fin-summary__count">'+done.length+'</span></summary><div style="margin-top:8px"><div class="tabla-wrap"><table class="tabla">'+thead+'<tbody>'+done.map(callupTableRow).join("")+"</tbody></table></div></div></details>";
   } else {
