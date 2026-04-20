@@ -1393,25 +1393,25 @@ if(c.llegada){var lf={llegadaDate:c.llegada.date,llegadaTime:c.llegada.time,lleg
 function renderAgenda(viewMode){
   viewMode=viewMode||S.agendaView||"fichas";S.agendaView=viewMode;
   if(S.showDescartadas===undefined)S.showDescartadas=false;
-  if(!S.filterCats)S.filterCats=[];
+  if(!S.filterCat)S.filterCat=null;
   var all=sortDate(getCallups({season:S.season}),"asc");
   var descartadas=all.filter(function(c){return c.convType==="descartada";});
   var visible=S.showDescartadas?all:all.filter(function(c){return c.convType!=="descartada";});
   var filtered=S.filterType?visible.filter(function(c){return selKey(c.selectionType)===S.filterType;}):visible;
-  if(S.filterCats.length)filtered=filtered.filter(function(c){return S.filterCats.indexOf(c.selectionCategory)!==-1;});
+  if(S.filterCat)filtered=filtered.filter(function(c){return c.selectionCategory===S.filterCat;});
   var up=filtered.filter(function(c){return c.status!=="finalizada";});
   var done=sortDate(filtered.filter(function(c){return c.status==="finalizada";}),"asc");
-  // Build category pills — always visible, collected from all visible convocatorias
-  var allCatsSet={};
-  visible.forEach(function(c){if(c.selectionCategory)allCatsSet[c.selectionCategory]=true;});
-  var catOrder=["sub12","sub13","sub14","sub15","sub16","sub17","sub18","sub19","sub20","sub21","abs"];
-  var allCats=catOrder.filter(function(c){return allCatsSet[c];});
+  // Build category pills when a type is selected
   var catPills="";
-  if(allCats.length>1){
-    catPills='<div class="fb" style="margin-top:-8px">'+
-      allCats.map(function(c){var isOn=S.filterCats.indexOf(c)!==-1;return'<button class="fbtn'+(isOn?" on":"")+'" data-cat="'+c+'">'+(CAT[c]||c)+"</button>";}).join("")+
-      (S.filterCats.length?'<button class="fbtn" data-cat-clear="" style="border-style:dashed;color:var(--text-muted)">✕ Limpiar</button>':"")+
-      '</div>';
+  if(S.filterType){
+    var sel=SELS[S.filterType];
+    if(sel){
+      var cats=sel.cats||[];
+      catPills='<div class="fb" style="margin-top:-8px">'+
+        '<button class="fbtn'+(!S.filterCat?" on":"")+'" data-cat="">Todas</button>'+
+        cats.map(function(c){return'<button class="fbtn'+(S.filterCat===c?" on":"")+'" data-cat="'+c+'">'+(CAT[c]||c)+"</button>";}).join("")+
+        '</div>';
+    }
   }
   var h='<div class="vh" style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:8px;justify-content:space-between">'+
     '<h1 class="vt">Agenda</h1>'+
@@ -1444,9 +1444,8 @@ function renderAgenda(viewMode){
   if(det)det.addEventListener("toggle",function(){S.finOpen=det.open;});
   if(viewMode==="fichas")bindCards();
   else document.querySelectorAll(".trow").forEach(function(row){row.addEventListener("click",function(){openDetail(row.dataset.id);});});
-  document.querySelectorAll("[data-f]").forEach(function(b){b.addEventListener("click",function(){S.filterType=b.dataset.f||null;S.filterCats=[];renderAgenda(S.agendaView);});});
-  document.querySelectorAll("[data-cat]").forEach(function(b){b.addEventListener("click",function(){var cat=b.dataset.cat;if(!cat)return;var idx=S.filterCats.indexOf(cat);if(idx===-1)S.filterCats.push(cat);else S.filterCats.splice(idx,1);renderAgenda(S.agendaView);});});
-  document.querySelectorAll("[data-cat-clear]").forEach(function(b){b.addEventListener("click",function(){S.filterCats=[];renderAgenda(S.agendaView);});});
+  document.querySelectorAll("[data-f]").forEach(function(b){b.addEventListener("click",function(){S.filterType=b.dataset.f||null;S.filterCat=null;renderAgenda(S.agendaView);});});
+  document.querySelectorAll("[data-cat]").forEach(function(b){b.addEventListener("click",function(){S.filterCat=b.dataset.cat||null;renderAgenda(S.agendaView);});});
   document.querySelectorAll("[data-vm]").forEach(function(b){b.addEventListener("click",function(){renderAgenda(b.dataset.vm);});});
   var btnDesc=document.getElementById("btn-show-desc");
   if(btnDesc)btnDesc.addEventListener("click",function(){S.showDescartadas=!S.showDescartadas;renderAgenda(S.agendaView);});
