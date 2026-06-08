@@ -745,8 +745,16 @@ var _seasons = ["2025-26"];
 var _refEvents = [];
 
 var SELS = {};
-SELS["madrilena"] = {label:"Madrileña",short:"MAD",cats:["sub12","sub14","sub16"],colors:{sub12:{badge:"#2563EB"},sub14:{badge:"#1D4ED8"},sub16:{badge:"#1E3A8A"}}};
-SELS["espanola"]  = {label:"Española",short:"ESP",cats:["sub14","sub15","sub16","sub17","sub18","sub19","sub20","sub21","abs"],colors:{sub14:{badge:"#DC2626"},sub15:{badge:"#DC2626"},sub16:{badge:"#B91C1C"},sub17:{badge:"#B91C1C"},sub18:{badge:"#991B1B"},sub19:{badge:"#7F1D1D"},sub20:{badge:"#7F1D1D"},sub21:{badge:"#450A0A"},abs:{badge:"#1A0000"}}};
+SELS["madrilena"] = {
+  label:"Madrileña",
+  short:"MAD",
+  cats:["sub12","sub14","sub15"],
+  colors:{
+    sub12:{badge:"#2563EB"},
+    sub14:{badge:"#1D4ED8"},
+    sub15:{badge:"#1E40AF"}
+  }
+};SELS["espanola"]  = {label:"Española",short:"ESP",cats:["sub14","sub15","sub16","sub17","sub18","sub19","sub20","sub21","abs"],colors:{sub14:{badge:"#DC2626"},sub15:{badge:"#DC2626"},sub16:{badge:"#B91C1C"},sub17:{badge:"#B91C1C"},sub18:{badge:"#991B1B"},sub19:{badge:"#7F1D1D"},sub20:{badge:"#7F1D1D"},sub21:{badge:"#450A0A"},abs:{badge:"#1A0000"}}};
 SELS["internacional"]={label:"Internacional",short:"INT",cats:["sub16","sub17","sub18","sub19","sub20","sub21","abs"],colors:{sub16:{badge:"#10B981"},sub17:{badge:"#10B981"},sub18:{badge:"#047857"},sub19:{badge:"#047857"},sub20:{badge:"#065F46"},sub21:{badge:"#065F46"},abs:{badge:"#064E3B"}}};
 
 var CAT={todas:"Todas",sub12:"Sub-12",sub13:"Sub-13",sub14:"Sub-14",sub15:"Sub-15",sub16:"Sub-16",sub17:"Sub-17",sub18:"Sub-18",sub19:"Sub-19",sub20:"Sub-20",sub21:"Sub-21",abs:"Absoluta"};
@@ -2445,3 +2453,4 @@ if(window._fbPlayersFlag) { route(S.view || "agenda"); }
 </script>
 </body>
 </html>
+
